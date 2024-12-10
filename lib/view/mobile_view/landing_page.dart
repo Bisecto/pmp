@@ -1,0 +1,143 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:pim/res/app_colors.dart';
+import 'package:pim/utills/app_utils.dart';
+import '../../main.dart';
+import '../../utills/custom_theme.dart';
+import 'dashboard/dashboard.dart';
+
+class LandingPage extends StatefulWidget {
+  int selectedIndex;
+
+  LandingPage({super.key, required this.selectedIndex});
+
+  @override
+  State<LandingPage> createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  List<Widget> views = const [];
+  int selectedIndex = 0;
+
+  //int selectedIndex = 0;
+  bool isNotification = false;
+
+  void _onPageChanged(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    selectedIndex = widget.selectedIndex;
+    //topicInitialization();
+
+    views = [
+      Dashboard(onPageChanged: _onPageChanged),
+    ];
+    super.initState();
+  }
+
+  final _androidAppRetain = const MethodChannel("android_app_retain");
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<CustomThemeState>(context).adaptiveThemeMode;
+
+    return WillPopScope(
+      onWillPop: () async {
+        if (Platform.isAndroid) {
+          if (Navigator.of(context).canPop()) {
+            return Future.value(true);
+          } else {
+            _androidAppRetain.invokeMethod("sendToBackground");
+            return Future.value(false);
+          }
+        } else {
+          return Future.value(true);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: selectedIndex,
+          children: views,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: AppColors.white,
+          showUnselectedLabels: true,
+          currentIndex: selectedIndex,
+          selectedItemColor: AppColors.mainAppColor,
+          unselectedItemColor:
+              theme.isDark ? AppColors.lightPrimary : AppColors.lightDivider,
+          onTap: (index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.dashboard,
+                color: selectedIndex == 0
+                    ? AppColors.mainAppColor
+                    : theme.isDark
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
+              ),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.payments,
+                color: selectedIndex == 1
+                    ? AppColors.mainAppColor
+                    : theme.isDark
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
+              ),
+              label: 'Fees',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.school,
+                color: selectedIndex == 2
+                    ? AppColors.mainAppColor
+                    : theme.isDark
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
+              ), //Icon(Icons.home),
+              label: 'SGS',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.list_alt,
+                color: selectedIndex == 3
+                    ? AppColors.mainAppColor
+                    : theme.isDark
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
+              ), //Icon(Icons.home),
+              label: 'Result',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.edit,
+                color: selectedIndex == 4
+                    ? AppColors.mainAppColor
+                    : theme.isDark
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
+              ), //Icon(Icons.home),
+              label: 'Course',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
