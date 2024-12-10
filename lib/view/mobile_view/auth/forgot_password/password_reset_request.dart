@@ -46,6 +46,7 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
     final theme = Provider.of<CustomThemeState>(context).adaptiveThemeMode;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: BlocConsumer<AuthBloc, AuthState>(
           bloc: authBloc,
           listenWhen: (previous, current) => current is! AuthInitial,
@@ -84,16 +85,16 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                         ),
 
                         CustomText(
-                          text: "Forgot your password?",
+                          text: "Reset Password",
                           weight: FontWeight.bold,
                           color: theme.isDark
                               ? AppColors.white
                               : AppColors.darkCardBackgroundColor,
-                          size: 20,
+                          size: 25,
                         ),
                         CustomText(
                           text:
-                              "Please enter your school mail to reset your password",
+                              "Forgotten your password? Enter your email address below, and we'll email you a code for setting a new one.",
                           weight: FontWeight.w400,
                           color: theme.isDark
                               ? AppColors.grey
@@ -105,22 +106,15 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Image.asset(
-                          AppImages.passwordRecovery,
-                          height: 150,
-                          width: 150,
-                        ),
-                        // const SizedBox(
-                        //   height: 20,
-                        // ),
+
                         Form(
                             key: _formKey,
                             child: Column(
                               children: [
                                 CustomTextFormField(
-                                  hint: 'Please enter your school email',
-                                  label: 'School Email',
-                                  borderColor: AppColors.mainAppColor,
+                                  hint: 'Please enter your email address',
+                                  label: 'Email Address',
+                                  borderColor: Colors.black54,
                                   controller: _emailController,
                                   backgroundColor: theme.isDark
                                       ? AppColors.darkCardBackgroundColor
@@ -134,35 +128,23 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // AppNavigator.pushAndStackPage(context,
-                                    //     page: const FindMyEmail());
-                                  },
-                                  child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: CustomText(
-                                      text: "Forgot school email ?",
-                                      color: !theme.isDark
-                                          ? AppColors.mainAppColor
-                                          : AppColors.white,
-                                      size: 16,
-                                      weight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
                                 FormButton(
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      authBloc.add(
-                                          RequestResetPasswordEventClick(
-                                              _emailController.text
-                                                  .toLowerCase()
-                                                  .trim(),
-                                              false));
+                                      AppNavigator.pushAndReplacePage(context,
+                                          page: VerifyOtp(
+                                            email: _emailController.text,
+                                          ));
+
+                                      // authBloc.add(
+                                      //     RequestResetPasswordEventClick(
+                                      //         _emailController.text
+                                      //             .toLowerCase()
+                                      //             .trim(),
+                                      //         false));
                                     }
                                   },
-                                  text: 'Next',
+                                  text: 'Continue',
                                   borderColor: AppColors.mainAppColor,
                                   bgColor: AppColors.mainAppColor,
                                   textColor: AppColors.white,
@@ -212,38 +194,6 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                 );
             }
           }),
-      floatingActionButton: FloatingActionButton.extended(
-        //mini: true,
-
-        onPressed: () async {
-          if (Platform.isAndroid) {
-            if (await canLaunchUrl(Uri.parse('https://support.unizik.edu.ng/open.php'))) {
-              await launchUrl(Uri.parse('https://support.unizik.edu.ng/open.php'));
-            } else {
-              throw 'Could not launch https://support.unizik.edu.ng/open.php';
-            }
-
-            //launch("https://play.google.com/store/apps/details?id=com.jithvar.gambhir_mudda");
-          } else if (Platform.isIOS) {
-            // iOS-specific code
-            if (await canLaunchUrl(Uri.parse('https://support.unizik.edu.ng/open.php'))) {
-              await launchUrl(Uri.parse('https://support.unizik.edu.ng/open.php'));
-            } else {
-              throw 'Could not launch https://support.unizik.edu.ng/open.php';
-            }
-          }
-        },
-        icon: Icon(
-          Icons.chat,
-          color: AppColors.white,
-        ),
-        label: CustomText(
-          text: "Support",
-          color: AppColors.white,
-        ),
-        backgroundColor: AppColors.mainAppColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

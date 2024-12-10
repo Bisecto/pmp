@@ -28,9 +28,6 @@ class AppRouter {
 
   ///LANDING PAGE LandingPage
   static const String landingPage = "/landing-page";
-  static const String notificationPage = "/notification-page";
-
-  static const String chooseLocation = "/choose-location-page";
 
   Route onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -45,12 +42,8 @@ class AppRouter {
             builder: (_) => LandingPage(
                   selectedIndex: 0,
                 ));
-
-      case notificationPage:
-        return MaterialPageRoute(builder: (_) => const NotificationPage());
-
       default:
-        return MaterialPageRoute(builder: (_) => AppLoadingPage('Loading'));
+        return MaterialPageRoute(builder: (_) => const AppLoadingPage('Loading'));
     }
   }
 }

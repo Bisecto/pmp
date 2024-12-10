@@ -119,7 +119,7 @@ class TextStyles {
       FontWeight? weight = FontWeight.w400,
       Function? onPress1,
       bool centerText = false,
-      Color? color2 = AppColors.green,
+      Color? color2 = Colors.blue,
       Color? color5 = AppColors.green,
       Color? color6 = AppColors.green,
       Color? color7 = AppColors.green,

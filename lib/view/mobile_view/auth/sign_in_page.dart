@@ -25,6 +25,7 @@ import '../../widgets/form_button.dart';
 import '../../widgets/form_input.dart';
 import '../../widgets/update.dart';
 import 'existin_signin.dart';
+import 'forgot_password/password_reset_request.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -110,6 +111,7 @@ class _SignInPageState extends State<SignInPage> {
     return _connected
         ? (isAppUpdated
             ? Scaffold(
+      backgroundColor: AppColors.white,
                 body: BlocConsumer<AuthBloc, AuthState>(
                     bloc: authBloc,
                     listenWhen: (previous, current) => current is! AuthInitial,
@@ -146,32 +148,38 @@ class _SignInPageState extends State<SignInPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         const SizedBox(
-                                          height: 20,
+                                          height: 50,
                                         ),
                                         CustomText(
-                                          text: "Login to your account",
+                                          text: "Login",
                                           weight: FontWeight.bold,
                                           color: theme.isDark
                                               ? AppColors.white
                                               : AppColors
                                                   .darkCardBackgroundColor,
-                                          size: 20,
+                                          size: 25,
                                         ),
-                                        const SizedBox(
-                                          height: 20,
+                                        CustomText(
+                                          text: "Login to your account",
+                                          weight: FontWeight.w400,
+                                          color: theme.isDark
+                                              ? AppColors.white
+                                              : Colors
+                                              .black54,
+                                          size: 16,
                                         ),
-                                        CircleAvatar(
-                                          radius: 50,
-                                          backgroundColor: theme.isDark
-                                              ? AppColors
-                                                  .darkCardBackgroundColor
-                                              : AppColors.white,
-                                          child: Image.asset(
-                                            AppImages.logo,
-                                            height: 100,
-                                            width: 100,
-                                          ),
-                                        ),
+                                        // CircleAvatar(
+                                        //   radius: 50,
+                                        //   backgroundColor: theme.isDark
+                                        //       ? AppColors
+                                        //           .darkCardBackgroundColor
+                                        //       : AppColors.white,
+                                        //   child: Image.asset(
+                                        //     AppImages.logo,
+                                        //     height: 100,
+                                        //     width: 100,
+                                        //   ),
+                                        // ),
                                         const SizedBox(
                                           height: 20,
                                         ),
@@ -181,11 +189,11 @@ class _SignInPageState extends State<SignInPage> {
                                               children: [
                                                 CustomTextFormField(
                                                   hint:
-                                                      'Enter School E-mail or Reg Number',
+                                                      'Enter your username',
                                                   label:
-                                                      'School E-mail/Reg Number',
+                                                      'Username',
                                                   borderColor:
-                                                      AppColors.mainAppColor,
+                                                      Colors.black54,
                                                   controller: _emailController,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
@@ -206,7 +214,7 @@ class _SignInPageState extends State<SignInPage> {
                                                   label: 'Password',
                                                   isPasswordField: true,
                                                   borderColor:
-                                                      AppColors.mainAppColor,
+                                                  Colors.black54,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
                                                           .darkCardBackgroundColor
@@ -225,6 +233,44 @@ class _SignInPageState extends State<SignInPage> {
                                                 const SizedBox(
                                                   height: 10,
                                                 ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .end,
+                                                  children: [
+
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        // if (_formKey.currentState!.validate()) {
+                                                        //   authBloc.add(SignInEventClick(
+                                                        //       _emailController.text,
+                                                        //       _passwordController.text));
+                                                        // }
+                                                        AppNavigator
+                                                            .pushAndStackPage(
+                                                            context,
+                                                            page:
+                                                            const PasswordResetRequest());
+                                                      },
+                                                      child: Align(
+                                                        alignment:
+                                                        Alignment.topRight,
+                                                        child: CustomText(
+                                                          text:
+                                                          "Forgot password ?",
+                                                          color: !theme.isDark
+                                                              ? AppColors
+                                                              .blue
+                                                              : AppColors.white,
+                                                          size: 16,
+                                                          weight:
+                                                          FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
                                                 FormButton(
                                                   onPressed: () async {
                                                     if (_formKey.currentState!
@@ -256,6 +302,8 @@ class _SignInPageState extends State<SignInPage> {
                                       ],
                                     ),
                                   ),
+                                  TextStyles.richTexts(text1: "Don't have an account yet? ",text2: "Create Account"),
+                                  SizedBox(height: 50,),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Column(
