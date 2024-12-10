@@ -37,7 +37,15 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor:
           theme.isDark ? AppColors.darkBackgroundColor : AppColors.lightPrimary,
-      body: Container(),
+      body: const SafeArea(child:SingleChildScrollView(
+        physics: ScrollPhysics(),
+        child: Column(
+          children: [
+             CustomAppBar(),
+
+          ],
+        ),
+      )),
     );
   }
 

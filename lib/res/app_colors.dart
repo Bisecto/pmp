@@ -9,6 +9,7 @@ class AppColors{
   static const Color lightDivider = Colors.black38;
   static const Color tableBorderColor = Color(0xFFDFE7F5);
 
+  static const Color lightPurple = Color(0xffC6B1DE);
 
   static const Color disableButtonColor =Color(0xFFF5F5F5);
   static const Color greyAccent=Color(0xFFF6EDE9);

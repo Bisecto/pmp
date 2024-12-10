@@ -64,7 +64,6 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
-
   StreamSubscription<ConnectivityStatus>? _connectivitySubscription;
 
   @override
@@ -111,7 +110,7 @@ class _SignInPageState extends State<SignInPage> {
     return _connected
         ? (isAppUpdated
             ? Scaffold(
-      backgroundColor: AppColors.white,
+                backgroundColor: AppColors.white,
                 body: BlocConsumer<AuthBloc, AuthState>(
                     bloc: authBloc,
                     listenWhen: (previous, current) => current is! AuthInitial,
@@ -124,7 +123,7 @@ class _SignInPageState extends State<SignInPage> {
                             page: LandingPage(
                               selectedIndex: 0,
                             ));
-                      }  else if (state is ErrorState) {
+                      } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
                       }
                     },
@@ -164,8 +163,7 @@ class _SignInPageState extends State<SignInPage> {
                                           weight: FontWeight.w400,
                                           color: theme.isDark
                                               ? AppColors.white
-                                              : Colors
-                                              .black54,
+                                              : Colors.black54,
                                           size: 16,
                                         ),
                                         // CircleAvatar(
@@ -188,12 +186,9 @@ class _SignInPageState extends State<SignInPage> {
                                             child: Column(
                                               children: [
                                                 CustomTextFormField(
-                                                  hint:
-                                                      'Enter your username',
-                                                  label:
-                                                      'Username',
-                                                  borderColor:
-                                                      Colors.black54,
+                                                  hint: 'Enter your username',
+                                                  label: 'Username',
+                                                  borderColor: Colors.black54,
                                                   controller: _emailController,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
@@ -213,8 +208,7 @@ class _SignInPageState extends State<SignInPage> {
                                                 CustomTextFormField(
                                                   label: 'Password',
                                                   isPasswordField: true,
-                                                  borderColor:
-                                                  Colors.black54,
+                                                  borderColor: Colors.black54,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
                                                           .darkCardBackgroundColor
@@ -235,10 +229,8 @@ class _SignInPageState extends State<SignInPage> {
                                                 ),
                                                 Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .end,
+                                                      MainAxisAlignment.end,
                                                   children: [
-
                                                     GestureDetector(
                                                       onTap: () {
                                                         // if (_formKey.currentState!.validate()) {
@@ -246,44 +238,48 @@ class _SignInPageState extends State<SignInPage> {
                                                         //       _emailController.text,
                                                         //       _passwordController.text));
                                                         // }
+
                                                         AppNavigator
                                                             .pushAndStackPage(
-                                                            context,
-                                                            page:
-                                                            const PasswordResetRequest());
+                                                                context,
+                                                                page:
+                                                                    const PasswordResetRequest());
                                                       },
                                                       child: Align(
                                                         alignment:
-                                                        Alignment.topRight,
+                                                            Alignment.topRight,
                                                         child: CustomText(
                                                           text:
-                                                          "Forgot password ?",
+                                                              "Forgot password ?",
                                                           color: !theme.isDark
-                                                              ? AppColors
-                                                              .blue
+                                                              ? AppColors.blue
                                                               : AppColors.white,
                                                           size: 16,
                                                           weight:
-                                                          FontWeight.w600,
+                                                              FontWeight.w600,
                                                         ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-
                                                 FormButton(
                                                   onPressed: () async {
-                                                    if (_formKey.currentState!
-                                                        .validate()) {
-                                                      authBloc.add(
-                                                          SignInEventClick(
-                                                              _emailController
-                                                                  .text
-                                                                  .toLowerCase()
-                                                                  .trim(),
-                                                              _passwordController
-                                                                  .text));
-                                                    }
+                                                    AppNavigator.pushAndRemovePreviousPages(context,
+                                                        page: LandingPage(
+                                                          selectedIndex: 0,
+                                                        ));
+                                                    // if (_formKey.currentState!
+                                                    //     .validate()) {
+                                                    //
+                                                      // authBloc.add(
+                                                      //     SignInEventClick(
+                                                      //         _emailController
+                                                      //             .text
+                                                      //             .toLowerCase()
+                                                      //             .trim(),
+                                                      //         _passwordController
+                                                      //             .text));
+                                                  //  }
                                                   },
                                                   text: 'Login',
                                                   borderColor:
@@ -302,8 +298,12 @@ class _SignInPageState extends State<SignInPage> {
                                       ],
                                     ),
                                   ),
-                                  TextStyles.richTexts(text1: "Don't have an account yet? ",text2: "Create Account"),
-                                  SizedBox(height: 50,),
+                                  TextStyles.richTexts(
+                                      text1: "Don't have an account yet? ",
+                                      text2: "Create Account"),
+                                  SizedBox(
+                                    height: 50,
+                                  ),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Column(

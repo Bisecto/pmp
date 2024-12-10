@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pim/view/mobile_view/profile/profile_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/res/app_colors.dart';
 import 'package:pim/utills/app_utils.dart';
 import '../../main.dart';
 import '../../utills/custom_theme.dart';
+import 'add_property/add_property_tab.dart';
 import 'dashboard/dashboard.dart';
 
 class LandingPage extends StatefulWidget {
@@ -39,6 +41,8 @@ class _LandingPageState extends State<LandingPage> {
 
     views = [
       Dashboard(onPageChanged: _onPageChanged),
+      const AddPropertyTab(),
+      const ProfileTab()
     ];
     super.initState();
   }
@@ -93,47 +97,25 @@ class _LandingPageState extends State<LandingPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.payments,
+                Icons.add_box,
                 color: selectedIndex == 1
                     ? AppColors.mainAppColor
                     : theme.isDark
                         ? AppColors.lightPrimary
                         : AppColors.lightDivider,
               ),
-              label: 'Fees',
+              label: 'Add Property',
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.school,
+                Icons.person,
                 color: selectedIndex == 2
                     ? AppColors.mainAppColor
                     : theme.isDark
                         ? AppColors.lightPrimary
                         : AppColors.lightDivider,
               ), //Icon(Icons.home),
-              label: 'SGS',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.list_alt,
-                color: selectedIndex == 3
-                    ? AppColors.mainAppColor
-                    : theme.isDark
-                        ? AppColors.lightPrimary
-                        : AppColors.lightDivider,
-              ), //Icon(Icons.home),
-              label: 'Result',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.edit,
-                color: selectedIndex == 4
-                    ? AppColors.mainAppColor
-                    : theme.isDark
-                        ? AppColors.lightPrimary
-                        : AppColors.lightDivider,
-              ), //Icon(Icons.home),
-              label: 'Course',
+              label: 'Profile',
             ),
           ],
         ),
