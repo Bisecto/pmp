@@ -6,8 +6,8 @@ import '../../../res/app_images.dart';
 import '../../../utills/app_utils.dart';
 import '../../widgets/app_custom_text.dart';
 
-class CafeList extends StatelessWidget {
-  CafeList({super.key});
+class LodgeList extends StatelessWidget {
+  LodgeList({super.key});
 
   final List<String> sessions = [
     'Ozo Lodge 1',

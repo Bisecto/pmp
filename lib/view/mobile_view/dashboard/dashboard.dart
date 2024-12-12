@@ -69,7 +69,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: CafeList(),
+              child: LodgeList(),
             ),
           ],
         ),
