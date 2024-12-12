@@ -1,10 +1,15 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:provider/provider.dart';
 import '../../../res/app_colors.dart';
+import '../../../res/app_svg_images.dart';
 import '../../../utills/custom_theme.dart';
+import '../../widgets/app_bar.dart';
+import '../../widgets/app_custom_text.dart';
+import 'cafe_list.dart';
 
 class Dashboard extends StatefulWidget {
   final Function(int) onPageChanged;
@@ -37,12 +42,35 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       backgroundColor:
           theme.isDark ? AppColors.darkBackgroundColor : AppColors.lightPrimary,
-      body: const SafeArea(child:SingleChildScrollView(
-        physics: ScrollPhysics(),
+      body:  SafeArea(
+          child: SingleChildScrollView(
+        physics: const ScrollPhysics(),
         child: Column(
           children: [
-             CustomAppBar(),
+            const CustomAppBar(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
 
+                SvgPicture.asset(
+                  AppSvgImages.finger,
+                  height: 20,
+                  width: 20,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                TextStyles.textSubHeadings(textValue: 'Welcome Precious!',textSize: 20),
+
+              ],
+            ),
+            Container(
+
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: CafeList(),
+            ),
           ],
         ),
       )),
@@ -56,5 +84,9 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       active.contains(index) ? active.remove(index) : active.add(index);
     });
+  }
+
+  Widget analyticsContainer() {
+    return Container();
   }
 }
