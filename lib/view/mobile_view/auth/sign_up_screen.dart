@@ -24,7 +24,6 @@ import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 import '../../widgets/form_input.dart';
 import '../../widgets/update.dart';
-import 'existin_signin.dart';
 import 'forgot_password/password_reset_request.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -210,65 +209,80 @@ class _SignUpPageState extends State<SignUpPage> {
                                               borderColor: Colors.black54,
                                               backgroundColor: theme.isDark
                                                   ? AppColors
-                                                  .darkCardBackgroundColor
+                                                      .darkCardBackgroundColor
                                                   : AppColors.white,
                                               hintColor: !theme.isDark
                                                   ? AppColors
-                                                  .darkCardBackgroundColor
+                                                      .darkCardBackgroundColor
                                                   : AppColors.grey,
                                               validator: AppValidator
                                                   .validateTextfield,
-                                              controller: _confirmPasswordController,
+                                              controller:
+                                                  _confirmPasswordController,
                                               hint: 'Confirm your password',
                                               icon: Icons.lock_outline,
                                             ),
                                             const SizedBox(
                                               height: 10,
                                             ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    // if (_formKey.currentState!.validate()) {
-                                                    //   authBloc.add(SignInEventClick(
-                                                    //       _emailController.text,
-                                                    //       _passwordController.text));
-                                                    // }
-                                                    AppNavigator.pushAndStackPage(
-                                                        context,
-                                                        page:
-                                                            const PasswordResetRequest());
-                                                  },
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: CustomText(
-                                                      text: "Forgot password ?",
-                                                      color: !theme.isDark
-                                                          ? AppColors.blue
-                                                          : AppColors.white,
-                                                      size: 16,
-                                                      weight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                            // Row(
+                                            //   mainAxisAlignment:
+                                            //       MainAxisAlignment.end,
+                                            //   children: [
+                                            //     GestureDetector(
+                                            //       onTap: () {
+                                            //         // if (_formKey.currentState!.validate()) {
+                                            //         //   authBloc.add(SignInEventClick(
+                                            //         //       _emailController.text,
+                                            //         //       _passwordController.text));
+                                            //         // }
+                                            //         AppNavigator.pushAndStackPage(
+                                            //             context,
+                                            //             page:
+                                            //                 const PasswordResetRequest());
+                                            //       },
+                                            //       child: Align(
+                                            //         alignment:
+                                            //             Alignment.topRight,
+                                            //         child: CustomText(
+                                            //           text: "Forgot password ?",
+                                            //           color: !theme.isDark
+                                            //               ? AppColors.blue
+                                            //               : AppColors.white,
+                                            //           size: 16,
+                                            //           weight: FontWeight.w600,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ],
+                                            // ),
                                             FormButton(
                                               onPressed: () async {
-                                                if (_formKey.currentState!
-                                                    .validate()) {
-                                                  authBloc.add(SignInEventClick(
-                                                      _emailController.text
-                                                          .toLowerCase()
-                                                          .trim(),
-                                                      _passwordController
-                                                          .text));
-                                                }
+                                                AppNavigator.pushAndStackPage(
+                                                    context,
+                                                    page: VerifyUser(
+                                                        email: _emailController
+                                                            .text,
+                                                        password:
+                                                            _passwordController
+                                                                .text, isSignUp: true,));
+                                                // AppNavigator
+                                                //     .pushAndRemovePreviousPages(
+                                                //         context,
+                                                //         page: LandingPage(
+                                                //           selectedIndex: 0,
+                                                //         ));
+                                                // if (_formKey.currentState!
+                                                //     .validate()) {
+                                                //   authBloc.add(SignInEventClick(
+                                                //       _emailController.text
+                                                //           .toLowerCase()
+                                                //           .trim(),
+                                                //       _passwordController
+                                                //           .text));
+                                                // }
                                               },
-                                              text: 'Login',
+                                              text: 'Create account',
                                               borderColor:
                                                   AppColors.mainAppColor,
                                               bgColor: AppColors.mainAppColor,

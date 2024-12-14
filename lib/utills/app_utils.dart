@@ -14,7 +14,6 @@ import '../res/app_colors.dart';
 import '../res/app_router.dart';
 import '../view/important_pages/dialog_box.dart';
 import '../view/important_pages/no_internet.dart';
-import '../view/mobile_view/auth/existin_signin.dart';
 import '../view/mobile_view/auth/sign_in_page.dart';
 import '../view/widgets/app_custom_text.dart';
 import 'app_navigator.dart';
@@ -55,15 +54,15 @@ class AppUtils {
 
     // if (!isFirstOpen) {
     //   if (userData.isEmpty || savedUserpassword.isEmpty) {
-        Future.delayed(const Duration(seconds: 3), () {
-          AppNavigator.pushAndReplaceName(context, name: AppRouter.signInPage);
-        });
-      // } else {
-      //   Future.delayed(const Duration(seconds: 3), () {
-      //     AppNavigator.pushAndReplacePage(context,
-      //         page: const ExistingSignIn());
-      //   });
-      // }
+    Future.delayed(const Duration(seconds: 3), () {
+      AppNavigator.pushAndReplaceName(context, name: AppRouter.signInPage);
+    });
+    // } else {
+    //   Future.delayed(const Duration(seconds: 3), () {
+    //     AppNavigator.pushAndReplacePage(context,
+    //         page: const ExistingSignIn());
+    //   });
+    // }
     // } else {
     //   AppUtils().debuglog(15);
     //

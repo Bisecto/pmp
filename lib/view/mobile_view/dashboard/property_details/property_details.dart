@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pim/res/app_svg_images.dart';
+import 'package:pim/utills/app_navigator.dart';
+import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:pim/view/widgets/form_button.dart';
@@ -123,22 +125,27 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       children: [
                         SvgPicture.asset(AppSvgImages.download),
                         const SizedBox(width: 10,),
-                        Container(
-                          height: 45,
-                          width: AppUtils.deviceScreenSize(context).width / 3,
-                          decoration: BoxDecoration(
-                              color: AppColors.blue,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_box,color: AppColors.white,),
-                              CustomText(
-                                text: " Add occupant",
-                                color: AppColors.white,
-                                weight: FontWeight.bold,
-                              ),
-                            ],
+                        GestureDetector(
+                          onTap: (){
+                            AppNavigator.pushAndStackPage(context, page: AddOccupantScreen());
+                          },
+                          child: Container(
+                            height: 45,
+                            width: AppUtils.deviceScreenSize(context).width / 3,
+                            decoration: BoxDecoration(
+                                color: AppColors.blue,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_box,color: AppColors.white,),
+                                CustomText(
+                                  text: " Add occupant",
+                                  color: AppColors.white,
+                                  weight: FontWeight.bold,
+                                ),
+                              ],
+                            ),
                           ),
                         )
 

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../view/important_pages/not_found_page.dart';
 import '../view/important_pages/notification_page.dart';
-import '../view/mobile_view/auth/existin_signin.dart';
 import '../view/mobile_view/auth/sign_in_page.dart';
 import '../view/mobile_view/landing_page.dart';
-import '../view/mobile_view/ob_boarding_screen.dart';
 import '../view/mobile_view/splash_screen.dart';
 
 class AppRouter {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/repository/auth_repository.dart';
 import 'package:pim/view/mobile_view/auth/verify_user.dart';
@@ -24,7 +25,6 @@ import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 import '../../widgets/form_input.dart';
 import '../../widgets/update.dart';
-import 'existin_signin.dart';
 import 'forgot_password/password_reset_request.dart';
 
 class SignInPage extends StatefulWidget {
@@ -264,22 +264,24 @@ class _SignInPageState extends State<SignInPage> {
                                                 ),
                                                 FormButton(
                                                   onPressed: () async {
-                                                    AppNavigator.pushAndRemovePreviousPages(context,
-                                                        page: LandingPage(
-                                                          selectedIndex: 0,
-                                                        ));
+                                                    AppNavigator
+                                                        .pushAndRemovePreviousPages(
+                                                            context,
+                                                            page: LandingPage(
+                                                              selectedIndex: 0,
+                                                            ));
                                                     // if (_formKey.currentState!
                                                     //     .validate()) {
                                                     //
-                                                      // authBloc.add(
-                                                      //     SignInEventClick(
-                                                      //         _emailController
-                                                      //             .text
-                                                      //             .toLowerCase()
-                                                      //             .trim(),
-                                                      //         _passwordController
-                                                      //             .text));
-                                                  //  }
+                                                    // authBloc.add(
+                                                    //     SignInEventClick(
+                                                    //         _emailController
+                                                    //             .text
+                                                    //             .toLowerCase()
+                                                    //             .trim(),
+                                                    //         _passwordController
+                                                    //             .text));
+                                                    //  }
                                                   },
                                                   text: 'Login',
                                                   borderColor:
@@ -298,10 +300,25 @@ class _SignInPageState extends State<SignInPage> {
                                       ],
                                     ),
                                   ),
-                                  TextStyles.richTexts(
-                                      text1: "Don't have an account yet? ",
-                                      text2: "Create Account"),
-                                  SizedBox(
+                                   Row(
+                                    mainAxisAlignment:MainAxisAlignment.center,
+                                    children: [
+                                      CustomText(
+                                        text: "Don't have an account yet? ",
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          AppNavigator.pushAndStackPage(context,
+                                              page: const SignUpPage());
+                                        },
+                                        child: CustomText(
+                                          text: "Create Account",
+                                          color: AppColors.blue,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
                                     height: 50,
                                   ),
                                   Align(

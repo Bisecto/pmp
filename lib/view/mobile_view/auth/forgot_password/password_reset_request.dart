@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/utills/app_navigator.dart';
-import 'package:pim/view/mobile_view/auth/find_my_email.dart';
 import 'package:pim/view/mobile_view/auth/forgot_password/verify_otp.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -83,7 +82,6 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                         const SizedBox(
                           height: 20,
                         ),
-
                         CustomText(
                           text: "Reset Password",
                           weight: FontWeight.bold,
@@ -106,7 +104,6 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                         const SizedBox(
                           height: 20,
                         ),
-
                         Form(
                             key: _formKey,
                             child: Column(

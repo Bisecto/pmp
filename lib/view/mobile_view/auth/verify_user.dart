@@ -19,20 +19,19 @@ import '../../important_pages/dialog_box.dart';
 import '../../important_pages/not_found_page.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
-import 'existin_signin.dart';
 
-
-class VerifyStudent extends StatefulWidget {
+class VerifyUser extends StatefulWidget {
   String email;
   String password;
+  bool isSignUp;
 
-  VerifyStudent({super.key, required this.email,required this.password});
+  VerifyUser({super.key, required this.email, required this.password,required this.isSignUp});
 
   @override
-  State<VerifyStudent> createState() => _VerifyStudentState();
+  State<VerifyUser> createState() => _VerifyUserState();
 }
 
-class _VerifyStudentState extends State<VerifyStudent> {
+class _VerifyUserState extends State<VerifyUser> {
   OtpFieldController otpFieldController = OtpFieldController();
   final AuthBloc authBloc = AuthBloc();
 
@@ -53,6 +52,7 @@ class _VerifyStudentState extends State<VerifyStudent> {
     final theme = Provider.of<CustomThemeState>(context).adaptiveThemeMode;
 
     return Scaffold(
+      backgroundColor: AppColors.white,
         body: BlocConsumer<AuthBloc, AuthState>(
             bloc: authBloc,
             listenWhen: (previous, current) => current is! AuthInitial,
@@ -68,7 +68,7 @@ class _VerifyStudentState extends State<VerifyStudent> {
                 MSG.snackBar(context, state.msg);
                 AppNavigator.pushAndRemovePreviousPages(context,
                     page: LandingPage(
-                       selectedIndex: 0,
+                      selectedIndex: 0,
                     ));
               } else if (state is ErrorState) {
                 setState(() {
@@ -79,10 +79,10 @@ class _VerifyStudentState extends State<VerifyStudent> {
             },
             builder: (context, state) {
               switch (state.runtimeType) {
-              // case PostsFetchingState:
-              //   return const Center(
-              //     child: CircularProgressIndicator(),
-              //   );
+                // case PostsFetchingState:
+                //   return const Center(
+                //     child: CircularProgressIndicator(),
+                //   );
                 case (AuthInitial || ErrorState) || OtpRequestSuccessState:
                   return SafeArea(
                     child: SingleChildScrollView(
@@ -108,7 +108,11 @@ class _VerifyStudentState extends State<VerifyStudent> {
                             ),
                             CustomText(
                               text:
-                              "We sent an otp to your school mail please enter the pin to verify device login",
+                                  "We sent a 5 digit code to your email "
+                                      "address ******@gmail.com,"
+                                      " please check your inbox and "
+                                      "enter the code below to "
+                                      "verify your profile",
                               weight: FontWeight.w400,
                               color: theme.isDark
                                   ? AppColors.grey
@@ -120,23 +124,25 @@ class _VerifyStudentState extends State<VerifyStudent> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Image.asset(
-                              AppImages.passwordRecovery,
-                              height: 150,
-                              width: 150,
-                            ),
-                            // const SizedBox(
-                            //   height: 20,
+                            // Image.asset(
+                            //   AppImages.passwordRecovery,
+                            //   height: 150,
+                            //   width: 150,
                             // ),
+                            // // const SizedBox(
+                            // //   height: 20,
+                            // // ),
                             OTPTextField(
                               length: 6,
                               //keyboardType: TextInputType.text,
                               width: MediaQuery.of(context).size.width,
                               fieldWidth: 50,
                               controller: otpFieldController,
-                              style:  TextStyle(fontSize: 17,color: theme.isDark
-                                  ? AppColors.white
-                                  : AppColors.darkCardBackgroundColor,
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: theme.isDark
+                                    ? AppColors.white
+                                    : AppColors.darkCardBackgroundColor,
                               ),
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldStyle: FieldStyle.box,
@@ -163,8 +169,13 @@ class _VerifyStudentState extends State<VerifyStudent> {
                             FormButton(
                               onPressed: () {
                                 if (isCompleted) {
+                                  if(widget.isSignUp){
+
+                                  }
                                   authBloc.add(OnVerifyDeviceEvent(
-                                      addedPin, widget.email.toLowerCase(),widget.password));
+                                      addedPin,
+                                      widget.email.toLowerCase(),
+                                      widget.password));
                                 } else {
                                   MSG.warningSnackBar(
                                       context, "OTP field not complete");
@@ -191,7 +202,7 @@ class _VerifyStudentState extends State<VerifyStudent> {
                                 onPress1: () {
                                   if (_start == 0) {
                                     authBloc.add(RequestResetPasswordEventClick(
-                                        widget.email,true));
+                                        widget.email, true));
 
                                     setState(() {
                                       _start = 59;
@@ -213,7 +224,6 @@ class _VerifyStudentState extends State<VerifyStudent> {
                                 color: theme.isDark
                                     ? AppColors.white
                                     : AppColors.darkCardBackgroundColor,
-
                                 text3: '  00:$_start s',
                                 text4: '')
                           ],
@@ -242,7 +252,7 @@ class _VerifyStudentState extends State<VerifyStudent> {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (_start == 0) {
           //_start = 59;
           _timer.cancel();
