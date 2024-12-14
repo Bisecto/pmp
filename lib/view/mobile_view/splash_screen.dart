@@ -55,20 +55,20 @@ class _SplashScreenState extends State<SplashScreen> {
             height: 150,
             width: 150,
           )),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              children: [
-                const CustomText(text: 'Powered by', color: AppColors.black),
-                Image.asset(
-                  AppImages.companyLogo,
-                  height: 80,
-                  width: 150,
-                  //color: AppColors.darkModeBlack,
-                ),
-              ],
-            ),
-          )
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Column(
+          //     children: [
+          //       const CustomText(text: 'Powered by', color: AppColors.black),
+          //       Image.asset(
+          //         AppImages.companyLogo,
+          //         height: 80,
+          //         width: 150,
+          //         //color: AppColors.darkModeBlack,
+          //       ),
+          //     ],
+          //   ),
+          // )
         ],
       ),
     ));
