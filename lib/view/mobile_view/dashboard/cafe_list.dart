@@ -1,45 +1,38 @@
 import 'package:flutter/material.dart';
-
+import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
 
 import '../../../../res/app_colors.dart';
 import '../../../res/app_images.dart';
+import '../../../utills/app_navigator.dart';
 import '../../../utills/app_utils.dart';
 import '../../widgets/app_custom_text.dart';
 
 class LodgeList extends StatelessWidget {
   LodgeList({super.key});
 
-  final List<String> sessions = [
+  final List<String> lodges = [
     'Ozo Lodge 1',
     'Ozo Lodge 2',
     'Ozo Lodge 3',
     'Ozo Lodge 4',
-    
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: sessions.length * 351,
+      height: lodges.length * 351,
       child: ListView.builder(
-        itemCount: sessions.length,
+        itemCount: lodges.length,
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return GestureDetector(
-              onTap: () {
-                //AppNavigator.pushAndStackPage(context, page: SingleSessionResult(session: sessions[index], isBackKey: true,
-                //   )
-                //   );
-              },
-              child:
-              SessionContainer(session: sessions[index], context: context));
+          return lodgeContainer(lodge: lodges[index], context: context);
         },
       ),
     );
   }
 
-  Widget SessionContainer({required String session, required context}) {
+  Widget lodgeContainer({required String lodge, required context}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -81,14 +74,16 @@ class LodgeList extends StatelessWidget {
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
                 ),
-
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextStyles.textHeadings(textValue: session, textSize: 18,),
+                    TextStyles.textHeadings(
+                      textValue: lodge,
+                      textSize: 18,
+                    ),
                     const Padding(
                       padding: EdgeInsets.fromLTRB(10.0, 0, 10, 0),
                       child: Row(
@@ -104,7 +99,6 @@ class LodgeList extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(
                 height: 10,
               ),
@@ -148,7 +142,7 @@ class LodgeList extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.people,
-                                color:Colors.green,
+                                color: Colors.green,
                               ),
                               CustomText(
                                 text: '  35',
@@ -162,8 +156,10 @@ class LodgeList extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // AppNavigator.pushAndStackPage(context,
-                        //     page: const SingleCafe());
+                        AppNavigator.pushAndStackPage(context,
+                            page: PropertyDetails(
+                              title: lodge,
+                            ));
                       },
                       child: Container(
                         height: 50,

@@ -16,7 +16,7 @@ class CustomTextFormField extends StatefulWidget {
   final int? maxLines;
   final bool isPasswordField;
   final int? maxLength;
-  final IconData icon;
+  final IconData? icon;
   final Color borderColor;
   final double borderRadius;
   final TextInputType textInputType;
@@ -27,24 +27,24 @@ class CustomTextFormField extends StatefulWidget {
 
   const CustomTextFormField(
       {super.key,
-      this.maxLength,
-      this.maxLines = 1,
-      this.textInputType = TextInputType.text,
-      required this.icon,
-      this.backgroundColor = AppColors.white,
-      this.hintColor = AppColors.grey,
-      this.borderColor = AppColors.grey,
-      this.borderRadius = 10,
-      this.isPasswordField = false,
-      required this.controller,
-      this.validateName,
-      this.validator,
-      this.isMobileNumber = false,
-      this.isobscure = true,
-      this.onChanged,
-      this.onFieldSubmitted,
-      required this.hint,
-      required this.label});
+        this.maxLength,
+        this.maxLines = 1,
+        this.textInputType = TextInputType.text,
+         this.icon,
+        this.backgroundColor = AppColors.white,
+        this.hintColor = AppColors.grey,
+        this.borderColor = AppColors.grey,
+        this.borderRadius = 10,
+        this.isPasswordField = false,
+        required this.controller,
+        this.validateName,
+        this.validator,
+        this.isMobileNumber = false,
+        this.isobscure = true,
+        this.onChanged,
+        this.onFieldSubmitted,
+        required this.hint,
+        required this.label});
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -64,25 +64,19 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomText(
-          text: widget.label,
-          weight: FontWeight.bold,
-          color: AppColors.textColor,
-          size: 15,
+        Text(
+          widget.label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        const AppSpacer(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
             color: widget.backgroundColor,
             border: Border.all(
               color: widget.borderColor,
-              // Choose the color you want for the border
-              width: 1.0, // Choose the width you want for the border
+              width: 1.0,
             ),
-            borderRadius: BorderRadius.circular(
-                widget.borderRadius), // Choose the border radius you want
+            borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
           child: Padding(
             padding: const EdgeInsets.only(left: 5.0),
@@ -90,63 +84,53 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               children: [
                 if (widget.isMobileNumber)
                   const Text(
-                    '+234', // Replace with your label text
-                    style: TextStyle(
-                      //fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
+                    '+234',
+                    style: TextStyle(fontSize: 15, color: Colors.black),
                   ),
-                const AppSpacer(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     controller: widget.controller,
-
-                    style: TextStyle(fontSize: 14, color: widget.hintColor),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black, // Ensures text color is visible.
+                    ),
                     decoration: InputDecoration(
-
-                        prefixIcon: GestureDetector(
-                          onTap: () {
-                            if (widget.isPasswordField) {
-                              _togglePasswordVisibility();
-                            }
-                          },
-                          child: Icon(
-                            widget.icon,
-                            color: widget.borderColor,
-                          ),
+                      prefixIcon: widget.icon == null
+                          ? null
+                          : Icon(
+                        widget.icon,
+                        color: widget.borderColor,
+                      ),
+                      suffixIcon: widget.isPasswordField
+                          ? GestureDetector(
+                        onTap: _togglePasswordVisibility,
+                        child: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: widget.borderColor,
                         ),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            if (widget.isPasswordField) {
-                              _togglePasswordVisibility();
-                            }
-                          },
-                          child: Icon(
-                            widget.isPasswordField
-                                ? (_obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility)
-                                : null,
-                            color: widget.borderColor,
-                          ),
-                        ),
-                        hintText: widget.hint,
-                        hintStyle: TextStyle(
-                            fontSize: 14, color: widget.hintColor.withOpacity(0.5)),
-                        border: InputBorder.none),
+                      )
+                          : null,
+                      hintText: widget.hint,
+                      hintStyle: TextStyle(
+                        fontSize: 14,
+                        color: widget.hintColor.withOpacity(0.5),
+                      ),
+                      border: InputBorder.none,
+                    ),
                     keyboardType: widget.textInputType,
                     validator: widget.validator,
-                    //obscureText: widget.isobscure,
                     maxLines: widget.maxLines,
                     maxLength: widget.maxLength,
-                    obscureText: widget.isPasswordField?_obscureText:false,
+                    obscureText: widget.isPasswordField ? _obscureText : false,
                     onFieldSubmitted: (val) {
-                      widget.onFieldSubmitted!();
+                      if (widget.onFieldSubmitted != null) {
+                        widget.onFieldSubmitted!();
+                      }
                     },
-                    onChanged: (String val) {
-                      widget.onChanged;
-                      //_name = val;
-                    },
+                    onChanged: widget.onChanged,
                   ),
                 ),
               ],
@@ -166,10 +150,10 @@ class CustomTextFormPasswordField extends StatefulWidget {
 
   const CustomTextFormPasswordField(
       {super.key,
-      required this.controller,
-      this.validateName,
-      this.onChanged,
-      required this.label});
+        required this.controller,
+        this.validateName,
+        this.onChanged,
+        required this.label});
 
   @override
   State<CustomTextFormPasswordField> createState() =>
@@ -206,14 +190,14 @@ class FormSelectInput extends StatelessWidget {
 
   const FormSelectInput(
       {Key? key,
-      required this.controller,
-      this.label = '',
-      this.hint = '',
-      this.width = 200,
-      this.height = 35,
-      this.inputType = TextInputType.text,
-      this.maxLines = 1,
-      this.isEnabled = true})
+        required this.controller,
+        this.label = '',
+        this.hint = '',
+        this.width = 200,
+        this.height = 35,
+        this.inputType = TextInputType.text,
+        this.maxLines = 1,
+        this.isEnabled = true})
       : super(key: key);
 
   @override
@@ -262,7 +246,7 @@ class FormSelectInput extends StatelessWidget {
                     ),
                     hintText: hint,
                     hintStyle:
-                        TextStyle(color: Colors.grey.shade400, fontSize: 11)),
+                    TextStyle(color: Colors.grey.shade400, fontSize: 11)),
                 onChanged: (text) {}),
           ),
         ),
@@ -283,13 +267,13 @@ class SelectFormInput extends StatelessWidget {
 
   const SelectFormInput(
       {Key? key,
-      required this.controller,
-      this.label = '',
-      this.hint = '',
-      this.inputType = TextInputType.text,
-      this.maxLines = 1,
-      this.height = 35,
-      this.width = 200})
+        required this.controller,
+        this.label = '',
+        this.hint = '',
+        this.inputType = TextInputType.text,
+        this.maxLines = 1,
+        this.height = 35,
+        this.width = 200})
       : super(key: key);
 
   @override
@@ -331,12 +315,12 @@ class SelectBorderFormInput extends StatelessWidget {
 
   const SelectBorderFormInput(
       {Key? key,
-      required this.controller,
-      this.label = '',
-      this.hint = '',
-      this.width = 120,
-      this.inputType = TextInputType.text,
-      this.maxLines = 1})
+        required this.controller,
+        this.label = '',
+        this.hint = '',
+        this.width = 120,
+        this.inputType = TextInputType.text,
+        this.maxLines = 1})
       : super(key: key);
 
   @override

@@ -34,6 +34,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	 <key>NSPhotoLibraryUsageDescription</key>
+        <string>We need access to your photo library to allow you to select images for your property.</string>
+        <key>NSCameraUsageDescription</key>
+        <string>We need access to your camera to allow you to take photos for your property.</string>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>We need permission to save images to your photo library.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

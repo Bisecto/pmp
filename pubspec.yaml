@@ -65,6 +65,7 @@ dependencies:
   local_auth:
   syncfusion_flutter_pdfviewer: ^26.2.8
   in_app_review: ^2.0.4
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

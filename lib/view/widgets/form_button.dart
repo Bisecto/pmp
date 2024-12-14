@@ -62,7 +62,7 @@ class FormButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if(isIcon)
-            Icon(iconWidget),
+            Icon(iconWidget,color: textColor,),
             if(isIcon)
 
               const AppSpacer(width: 5,),

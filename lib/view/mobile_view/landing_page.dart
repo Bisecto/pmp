@@ -41,7 +41,7 @@ class _LandingPageState extends State<LandingPage> {
 
     views = [
       Dashboard(onPageChanged: _onPageChanged),
-      const AddPropertyTab(),
+       AddPropertyScreen(),
       const ProfileTab()
     ];
     super.initState();

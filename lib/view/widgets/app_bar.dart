@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
 import '../../../res/app_colors.dart';
 import '../../res/app_svg_images.dart';
 import 'app_custom_text.dart';
@@ -28,8 +27,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   backgroundColor: AppColors.lightPurple,
                   child: TextStyles.textHeadings(textValue: 'PMP'),
                 ),
-
-
               ],
             ),
             SvgPicture.asset(
@@ -39,6 +36,36 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class AppAppBar extends StatefulWidget {
+  final String title;
+
+  const AppAppBar({super.key, required this.title});
+
+  @override
+  State<AppAppBar> createState() => _AppAppBarState();
+}
+
+class _AppAppBarState extends State<AppAppBar> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(Icons.arrow_back_ios)),
+          TextStyles.textHeadings(textValue: widget.title),
+          const SizedBox(),
+        ],
       ),
     );
   }
