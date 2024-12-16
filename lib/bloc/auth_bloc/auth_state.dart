@@ -17,16 +17,20 @@ class ErrorState extends AuthState {
   ErrorState(this.error);
 }
 
-
-
 class SuccessState extends AuthState {
   final String msg;
 
-
   SuccessState(
-      this.msg, );
+    this.msg,
+  );
 }
+class ProfileSetUpState extends AuthState {
+  final String msg;
 
+  ProfileSetUpState(
+      this.msg,
+      );
+}
 class ResetPasswordSuccessState extends AuthState {
   final String msg;
 
@@ -46,6 +50,5 @@ class OtpVerificationSuccessState extends AuthState {
 
   //final String userData;
 
-  OtpVerificationSuccessState(this.msg,this.isNewAccount);
+  OtpVerificationSuccessState(this.msg, this.isNewAccount);
 }
-

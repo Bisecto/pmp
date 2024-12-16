@@ -125,6 +125,8 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                       } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
+                      } else if(state is ProfileSetUpState){
+
                       }
                     },
                     builder: (context, state) {

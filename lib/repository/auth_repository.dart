@@ -22,7 +22,7 @@ class AuthRepository {
   Future<http.Response> authPostRequestWithToken(String token,
       Map<String, String> data, String apiUrl) async {
     var headers = {
-      'Authorization': 'JWT $token'
+      'Authorization': 'Bearer $token'
 
     };
     var response = await http.post(
@@ -80,7 +80,7 @@ class AuthRepository {
     AppUtils().debuglog(apiUrl);
       var headers = {
       //  'x-access-token': accessToken,
-        'Authorization': 'JWT $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       };
     final response = await http.get(

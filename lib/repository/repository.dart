@@ -20,7 +20,7 @@ class AppRepository {
   Future<http.Response> postRequestWithToken(String token,
       Map<String, dynamic> data, String apiUrl) async {
     var headers = {
-      'Authorization': 'JWT $token',
+      'Authorization': 'Bearer $token',
       //'Content-Type': 'application/json'
     };
     var response = await http.post(
@@ -49,8 +49,8 @@ class AppRepository {
   Future<http.Response> getRequestWithToken(String token, String apiUrl) async {
     AppUtils().debuglog(apiUrl);
     var headers = {
-      'Authorization': 'JWT $token',
-     'Content-Type': 'application/json'
+      'Authorization': 'Bearer $token',
+    // 'Content-Type': 'application/json'
     };
     AppUtils().debuglog(headers);
     final response = await http.get(

@@ -15,6 +15,16 @@ class SignInEventClick extends AuthEvent {
   SignInEventClick(this.userData, this.password);
 }
 
+class SetUpProfileEventClick extends AuthEvent {
+  final String firstname;
+  final String lastname;
+  final String phoneNumber;
+  final File? profileImage;
+
+  SetUpProfileEventClick(
+      this.firstname, this.lastname, this.phoneNumber, this.profileImage);
+}
+
 class SignUpEventClick extends AuthEvent {
   final String email;
   final String userName;
@@ -80,5 +90,6 @@ class ResetPasswordEventClick extends AuthEvent {
   // final String loginOption;
   // final String accessPin;
 
-  ResetPasswordEventClick(this.userData, this.password, this.confirmPassword, this.token);
+  ResetPasswordEventClick(
+      this.userData, this.password, this.confirmPassword, this.token);
 }

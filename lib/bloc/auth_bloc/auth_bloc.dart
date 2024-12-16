@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import '../../repository/auth_repository.dart';
 import '../../repository/fcm_topics.dart';
+import '../../repository/repository.dart';
 import '../../res/apis.dart';
 import '../../utills/app_utils.dart';
 import '../../utills/shared_preferences.dart';
@@ -20,6 +22,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<SignInEventClick>(signInEventClick);
+    //on<SetUpProfileEventClick>(setUpProfileEventClick);
     on<SignUpEventClick>(signUpEventClick);
     on<InitialEvent>(initialEvent);
     on<RequestResetPasswordEventClick>(requestResetPasswordEventClick);
@@ -34,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<FutureOr<void>> signInEventClick(
       SignInEventClick event, Emitter<AuthState> emit) async {
     emit(LoadingState());
+    AppRepository appRepository=AppRepository();
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
       'username': event.userData,
@@ -56,8 +60,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         await SharedPref.putString(
             "access-token", json.decode(loginResponse.body)['access']);
+        final profileResponse =
+        await appRepository.getRequestWithToken(json.decode(loginResponse.body)['access'], AppApis.profile);
+        AppUtils().debuglog('Response body: ${profileResponse.body}');
+        if (profileResponse.statusCode == 200 || profileResponse.statusCode == 201) {
 
-        emit(SuccessState("Login Successful"));
+          emit(SuccessState("Login Successful"));
+
+        }else if(profileResponse.statusCode==404){
+          emit(ProfileSetUpState("Complete Profile Set up"));
+
+        } else{
+          emit(ErrorState(
+              "There was a problem fetching your profile"));
+          emit(AuthInitial());
+        }
+
       } else if (loginResponse.statusCode == 500 ||
           loginResponse.statusCode == 501) {
         emit(ErrorState(
@@ -329,4 +347,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(12345678);
     }
   }
+
+  // FutureOr<void> setUpProfileEventClick(SetUpProfileEventClick event, Emitter<AuthState> emit) async  {
+  //   emit(LoadingState());
+  //   AuthRepository authRepository = AuthRepository();
+  //   Map<String, String> formData = {
+  //     "email": event.email,
+  //     "username": event.userName,
+  //     "password": event.password,
+  //     "confirm_password": event.confirmPassword
+  //   };
+  //   AppUtils().debuglog(formData);
+  //
+  //   try {
+  //     final registerResponse =
+  //     await authRepository.authPostRequest(formData, AppApis.registerApi);
+  //
+  //     AppUtils().debuglog('Response status: ${registerResponse.statusCode}');
+  //     AppUtils().debuglog('Response body: ${registerResponse.body}');
+  //     AppUtils().debuglog(registerResponse.statusCode);
+  //
+  //     AppUtils().debuglog(registerResponse.body);
+  //     if (registerResponse.statusCode == 200 ||
+  //         registerResponse.statusCode == 201) {
+  //       emit(SuccessState("Sign up Successful"));
+  //     } else if (registerResponse.statusCode == 500 ||
+  //         registerResponse.statusCode == 501) {
+  //       emit(ErrorState(
+  //           "There was a problem signing user in please try again later."));
+  //       emit(AuthInitial());
+  //     } else {
+  //       emit(ErrorState(json.decode(registerResponse.body)['email'][0] ??
+  //           json.decode(registerResponse.body)['username'][0] ??
+  //           json.decode(registerResponse.body)['password'][0]));
+  //       //AppUtils().debuglog(event.password);
+  //       AppUtils().debuglog(json.decode(registerResponse.body));
+  //       emit(AuthInitial());
+  //     }
+  //   } catch (e) {
+  //     AppUtils().debuglog(e);
+  //     emit(ErrorState("There was a problem login you in please try again."));
+  //
+  //     AppUtils().debuglog(e);
+  //     emit(AuthInitial());
+  //     AppUtils().debuglog(12345678);
+  //   }
+  // }
 }
