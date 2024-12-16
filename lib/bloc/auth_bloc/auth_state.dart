@@ -42,9 +42,10 @@ class OtpRequestSuccessState extends AuthState {
 
 class OtpVerificationSuccessState extends AuthState {
   final String msg;
+  final bool isNewAccount;
 
   //final String userData;
 
-  OtpVerificationSuccessState(this.msg);
+  OtpVerificationSuccessState(this.msg,this.isNewAccount);
 }
 

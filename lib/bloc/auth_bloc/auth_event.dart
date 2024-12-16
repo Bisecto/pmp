@@ -30,9 +30,16 @@ class SignUpEventClick extends AuthEvent {
 
 class RequestResetPasswordEventClick extends AuthEvent {
   final String userData;
-  final bool isDeviceChange;
+  final bool isNewAccount;
 
-  RequestResetPasswordEventClick(this.userData, this.isDeviceChange);
+  RequestResetPasswordEventClick(this.userData, this.isNewAccount);
+}
+
+class RequestResendOTPEventClick extends AuthEvent {
+  final String userData;
+  final bool isNewAccount;
+
+  RequestResendOTPEventClick(this.userData, this.isNewAccount);
 }
 
 class FindMyEmailEventClick extends AuthEvent {
@@ -45,11 +52,12 @@ class FindMyEmailEventClick extends AuthEvent {
 class OnVerifyOtpEvent extends AuthEvent {
   final String otp;
   final String userData;
+  final bool isNewAccount;
 
   // final String loginOption;
   // final String accessPin;
 
-  OnVerifyOtpEvent(this.otp, this.userData);
+  OnVerifyOtpEvent(this.otp, this.userData, this.isNewAccount);
 }
 
 class OnVerifyDeviceEvent extends AuthEvent {
@@ -66,9 +74,11 @@ class OnVerifyDeviceEvent extends AuthEvent {
 class ResetPasswordEventClick extends AuthEvent {
   final String userData;
   final String password;
+  final String confirmPassword;
+  final String token;
 
   // final String loginOption;
   // final String accessPin;
 
-  ResetPasswordEventClick(this.userData, this.password);
+  ResetPasswordEventClick(this.userData, this.password, this.confirmPassword, this.token);
 }

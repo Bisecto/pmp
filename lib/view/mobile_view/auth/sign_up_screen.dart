@@ -101,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     AppNavigator.pushAndStackPage(context,
                         page: VerifyOtp(
-                           email: _userNameController.text,
+                           email: _userNameController.text, isNewAccount: true,
                         ));
                   } else if (state is ErrorState) {
                     MSG.warningSnackBar(context, state.error);

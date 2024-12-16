@@ -23,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpEventClick>(signUpEventClick);
     on<InitialEvent>(initialEvent);
     on<RequestResetPasswordEventClick>(requestResetPasswordEventClick);
+    on<RequestResendOTPEventClick>(requestResendOTPEventClick);
     on<OnVerifyOtpEvent>(onVerifyOtpEvent);
     on<ResetPasswordEventClick>(resetPasswordEventClick);
     // on<AuthEvent>((event, emit) {
@@ -95,14 +96,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       //     formData, AppApis.requestPasswordResetOtp)
 
       var resetResponse = await http.post(
-        event.isDeviceChange
-            ? Uri.parse("${AppApis.appBaseUrl}/u-auth/resend-otp/")
-            : Uri.parse('${AppApis.appBaseUrl}/u-auth/request-password-reset/'),
-        body: event.isDeviceChange
-            ? {
-                "email": event.userData,
-              }
-            : {'email': event.userData},
+        Uri.parse(AppApis.requestPasswordResetOtp),
+        body: {'email': event.userData},
       );
 
       AppUtils().debuglog('Response status: ${resetResponse.statusCode}');
@@ -140,11 +135,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       var verifyResponse = await http.post(
-        Uri.parse(AppApis.verifyOTP),
-        body: {
-          'username': event.userData,
-          'verification_code': event.otp.toString()
-        },
+        Uri.parse(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP),
+        body: event.isNewAccount
+            ? {
+                'username': event.userData,
+                'verification_code': event.otp.toString()
+              }
+            : {'email': event.userData, 'reset_token': event.otp.toString()},
       );
       AppUtils().debuglog('Response status: ${verifyResponse.statusCode}');
       AppUtils().debuglog('Response body: ${verifyResponse.body}');
@@ -154,7 +151,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (verifyResponse.statusCode == 200) {
         emit(OtpVerificationSuccessState(
-            json.decode(verifyResponse.body)['message']));
+            json.decode(verifyResponse.body)['message'], event.isNewAccount));
       } else if (verifyResponse.statusCode == 500 ||
           verifyResponse.statusCode == 501) {
         emit(ErrorState(
@@ -189,11 +186,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String jwtToken =
           await SharedPref.getString('Reset-Password-Access-Token');
       var resetPasswordResponse = await http.post(
-        Uri.parse('${AppApis.appBaseUrl}/u-auth/reset-password/'),
-        headers: {
-          'Authorization': 'JWT $jwtToken',
+        Uri.parse(
+            '${AppApis.confirmPasswordResend}?email=${event.userData}&reset_token=${event.token}&new_password=${event.password}&confirm_password=${event.confirmPassword}'),
+        // headers: {
+        //   'Authorization': 'JWT $jwtToken',
+        // },
+        body: {
+          'new_password': event.password,
+          "email": event.userData,
+          'reset_token': event.token,
+          'confirm_password': event.confirmPassword
         },
-        body: {'new_password': event.password},
       );
 
       AppUtils()
@@ -210,7 +213,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await SharedPref.putString("password", event.password);
 
         emit(ResetPasswordSuccessState(
-            json.decode(resetPasswordResponse.body)['success']));
+            json.decode(resetPasswordResponse.body)['message']));
       } else if (resetPasswordResponse.statusCode == 401) {
         emit(AccessTokenExpireState());
       } else if (resetPasswordResponse.statusCode == 500 ||
@@ -275,6 +278,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(ErrorState("There was a problem login you in please try again."));
 
       AppUtils().debuglog(e);
+      emit(AuthInitial());
+      AppUtils().debuglog(12345678);
+    }
+  }
+
+  FutureOr<void> requestResendOTPEventClick(
+      RequestResendOTPEventClick event, Emitter<AuthState> emit) async {
+    emit(LoadingState());
+
+    AppUtils().debuglog(event.userData);
+    String deviceId = await AppUtils.getId();
+
+    try {
+      // final response = await authRepository.authPostRequest(
+      //     formData, AppApis.requestPasswordResetOtp)
+      print(event.isNewAccount
+          ? AppApis.emailVerification
+          : AppApis.requestPasswordResendOtp);
+      var resetResponse = await http.post(
+        Uri.parse(event.isNewAccount
+            ? AppApis.emailVerification
+            : AppApis.requestPasswordResendOtp),
+        body: {'email': event.userData},
+      );
+
+      AppUtils().debuglog('Response status: ${resetResponse.statusCode}');
+      AppUtils().debuglog('Response body: ${resetResponse.body}');
+      AppUtils().debuglog(resetResponse.statusCode);
+
+      AppUtils().debuglog(resetResponse.body);
+      if (resetResponse.statusCode == 200) {
+        emit(OtpRequestSuccessState(
+            json.decode(resetResponse.body)['message'], event.userData));
+      } else if (resetResponse.statusCode == 500 ||
+          resetResponse.statusCode == 501) {
+        emit(ErrorState("Error Occurred please try again later."));
+        emit(AuthInitial());
+      } else {
+        emit(ErrorState(json.decode(resetResponse.body)['error']));
+        //AppUtils().debuglog(event.password);
+        AppUtils().debuglog(json.decode(resetResponse.body));
+        emit(AuthInitial());
+      }
+    } catch (e) {
+      AppUtils().debuglog(e);
+      emit(ErrorState("Error Requesting password reset"));
+
       emit(AuthInitial());
       AppUtils().debuglog(12345678);
     }

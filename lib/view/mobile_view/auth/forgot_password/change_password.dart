@@ -18,7 +18,9 @@ import '../sign_in_page.dart';
 
 class ChangePassword extends StatefulWidget {
   String email;
-   ChangePassword({super.key,required this.email});
+  String token;
+
+  ChangePassword({super.key, required this.email,required this.token});
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();
@@ -48,12 +50,11 @@ class _ChangePasswordState extends State<ChangePassword> {
             listener: (context, state) {
               if (state is ResetPasswordSuccessState) {
                 MSG.snackBar(context, state.msg);
-                AppNavigator.pushAndReplacePage(
-                    context,
-                    page: Congrats());
+                AppNavigator.pushAndReplacePage(context, page: Congrats());
                 //AppNavigator.pushAndReplacePage(context, page: VerifyOtp());
-              }else if(state is AccessTokenExpireState){
-                AppNavigator.pushAndRemovePreviousPages(context, page: SignInPage());
+              } else if (state is AccessTokenExpireState) {
+                AppNavigator.pushAndRemovePreviousPages(context,
+                    page: SignInPage());
               } else if (state is ErrorState) {
                 MSG.warningSnackBar(context, state.error);
               }
@@ -77,20 +78,22 @@ class _ChangePasswordState extends State<ChangePassword> {
                               height: 20,
                             ),
 
-                             CustomText(
+                            CustomText(
                               text: "Reset your password",
                               weight: FontWeight.bold,
                               color: theme.isDark
                                   ? AppColors.white
-                                  : AppColors.darkCardBackgroundColor,                              size: 20,
+                                  : AppColors.darkCardBackgroundColor,
+                              size: 20,
                             ),
-                             CustomText(
+                            CustomText(
                               text:
                                   "You can now proceed to create a new password",
                               weight: FontWeight.w400,
                               color: theme.isDark
                                   ? AppColors.white
-                                  : AppColors.darkCardBackgroundColor,                              maxLines: 3,
+                                  : AppColors.darkCardBackgroundColor,
+                              maxLines: 3,
                               textAlign: TextAlign.center,
                               size: 14,
                             ),
@@ -124,7 +127,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                                       hint: 'Enter new password',
                                       icon: Icons.lock_outline,
                                     ),
-                                    SizedBox(height: 10,),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
                                     CustomTextFormField(
                                       label: 'Confirm New Password',
                                       isPasswordField: true,
@@ -135,10 +140,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                                       hintColor: !theme.isDark
                                           ? AppColors.darkCardBackgroundColor
                                           : AppColors.grey,
-                                      validator:  (val) => val!!=_passwordController.text
+                                      validator: (val) => val! !=
+                                              _passwordController.text
                                           ? "Confirm password does not match"
                                           : null,
-
                                       controller: _confirmPasswordController,
                                       hint: 'Confirm password',
                                       icon: Icons.lock_outline,
@@ -146,7 +151,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                                     FormButton(
                                       onPressed: () async {
                                         if (_formKey.currentState!.validate()) {
-                                          authBloc.add(ResetPasswordEventClick(widget.email, _passwordController.text));
+                                          authBloc.add(ResetPasswordEventClick(
+                                              widget.email,
+                                              _passwordController.text,
+                                              _confirmPasswordController.text,widget.token));
                                           // // String? notificationToken =
                                           // //     await FirebaseMessaging.instance.getToken();
                                           //
@@ -175,10 +183,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                   );
 
                 case LoadingState:
-                  return Center(
-              child: AppLoadingPage("Changing password..."));
+                  return Center(child: AppLoadingPage("Changing password..."));
                 default:
-                  return  Center(
+                  return Center(
                     child: AppLoadingPage("Changing password..."),
                   );
               }

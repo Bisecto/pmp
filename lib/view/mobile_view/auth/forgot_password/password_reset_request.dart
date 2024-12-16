@@ -56,6 +56,7 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
               AppNavigator.pushAndReplacePage(context,
                   page: VerifyOtp(
                     email: _emailController.text,
+                    isNewAccount: false,
                   ));
             } else if (state is AccessTokenExpireState) {
               AppNavigator.pushAndRemovePreviousPages(context,

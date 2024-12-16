@@ -21,8 +21,9 @@ import 'change_password.dart';
 
 class VerifyOtp extends StatefulWidget {
   String email;
+  bool isNewAccount;
 
-  VerifyOtp({super.key, required this.email});
+  VerifyOtp({super.key, required this.email, required this.isNewAccount});
 
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
@@ -64,8 +65,16 @@ class _VerifyOtpState extends State<VerifyOtp> {
                 AppNavigator.pushAndRemovePreviousPages(context,
                     page: SignInPage());
               } else if (state is OtpVerificationSuccessState) {
-                AppNavigator.pushAndRemovePreviousPages(context,
-                    page: const SignInPage());
+                if (state.isNewAccount) {
+                  AppNavigator.pushAndRemovePreviousPages(context,
+                      page: const SignInPage());
+                } else {
+                  AppNavigator.pushAndRemovePreviousPages(context,
+                      page: ChangePassword(
+                        email: widget.email,
+                        token: addedPin,
+                      ));
+                }
               } else if (state is ErrorState) {
                 setState(() {
                   isCompleted = false;
@@ -162,7 +171,9 @@ class _VerifyOtpState extends State<VerifyOtp> {
                               onPressed: () {
                                 if (isCompleted) {
                                   authBloc.add(OnVerifyOtpEvent(
-                                      addedPin, widget.email.toLowerCase()));
+                                      addedPin,
+                                      widget.email.toLowerCase(),
+                                      widget.isNewAccount));
                                 } else {
                                   MSG.warningSnackBar(
                                       context, "OTP field not complete");
@@ -188,8 +199,8 @@ class _VerifyOtpState extends State<VerifyOtp> {
                             TextStyles.richTexts(
                                 onPress1: () {
                                   if (_start == 0) {
-                                    authBloc.add(RequestResetPasswordEventClick(
-                                        widget.email, false));
+                                    authBloc.add(RequestResendOTPEventClick(
+                                        widget.email, widget.isNewAccount));
 
                                     setState(() {
                                       _start = 59;

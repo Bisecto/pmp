@@ -52,9 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
           Center(
               child: Image.asset(
             AppImages.logo,
-            height: 150,
-            width: 150,
+            height: 200,
+            width: 200,
           )),
+          const CustomText(text: ''),
+
           // Align(
           //   alignment: Alignment.bottomCenter,
           //   child: Column(
