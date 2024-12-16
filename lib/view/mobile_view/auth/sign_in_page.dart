@@ -264,24 +264,24 @@ class _SignInPageState extends State<SignInPage> {
                                                 ),
                                                 FormButton(
                                                   onPressed: () async {
-                                                    AppNavigator
-                                                        .pushAndRemovePreviousPages(
-                                                            context,
-                                                            page: LandingPage(
-                                                              selectedIndex: 0,
-                                                            ));
-                                                    // if (_formKey.currentState!
-                                                    //     .validate()) {
-                                                    //
-                                                    // authBloc.add(
-                                                    //     SignInEventClick(
-                                                    //         _emailController
-                                                    //             .text
-                                                    //             .toLowerCase()
-                                                    //             .trim(),
-                                                    //         _passwordController
-                                                    //             .text));
-                                                    //  }
+                                                    // AppNavigator
+                                                    //     .pushAndRemovePreviousPages(
+                                                    //         context,
+                                                    //         page: LandingPage(
+                                                    //           selectedIndex: 0,
+                                                    //         ));
+                                                    if (_formKey.currentState!
+                                                        .validate()) {
+
+                                                    authBloc.add(
+                                                        SignInEventClick(
+                                                            _emailController
+                                                                .text
+                                                                .toLowerCase()
+                                                                .trim(),
+                                                            _passwordController
+                                                                .text));
+                                                     }
                                                   },
                                                   text: 'Login',
                                                   borderColor:

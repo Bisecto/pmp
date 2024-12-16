@@ -15,12 +15,27 @@ class SignInEventClick extends AuthEvent {
   SignInEventClick(this.userData, this.password);
 }
 
+class SignUpEventClick extends AuthEvent {
+  final String email;
+  final String userName;
+  final String password;
+  final String confirmPassword;
+
+  // final String loginOption;
+  // final String accessPin;
+
+  SignUpEventClick(
+      this.email, this.password, this.userName, this.confirmPassword);
+}
+
 class RequestResetPasswordEventClick extends AuthEvent {
   final String userData;
   final bool isDeviceChange;
 
   RequestResetPasswordEventClick(this.userData, this.isDeviceChange);
-}class FindMyEmailEventClick extends AuthEvent {
+}
+
+class FindMyEmailEventClick extends AuthEvent {
   final String regNo;
   final BuildContext context;
 

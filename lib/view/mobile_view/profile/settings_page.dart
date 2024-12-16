@@ -5,20 +5,20 @@ import '../../../utills/app_navigator.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 
-class ProfileTab extends StatefulWidget {
-  const ProfileTab({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State<ProfileTab> createState() => _ProfileTabState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Personalization'),
+        title: const Text('Settings'),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -41,11 +41,9 @@ class _ProfileTabState extends State<ProfileTab> {
                         // AppNavigator.pushAndStackPage(context,
                         //     page: ProfilePage());
                       },
-                      child: _buildSettingsOption('Profile')),
-                  _buildSettingsOption('Settings'),
-                  _buildSettingsOption('Contact Us'),
-                  _buildSettingsOption('About PMP'),
-                  _buildSettingsOption('Support'),
+                      child: _buildSettingsOption('Change Password')),
+                  _buildSettingsOption('Notification'),
+
                 ],
               ),
             ),

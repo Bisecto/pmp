@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pim/view/mobile_view/auth/forgot_password/verify_otp.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/repository/auth_repository.dart';
 import 'package:pim/view/mobile_view/auth/verify_user.dart';
@@ -36,6 +37,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _userNameController = TextEditingController();
 
   final _confirmPasswordController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -97,9 +99,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   if (state is SuccessState) {
                     MSG.snackBar(context, state.msg);
 
-                    AppNavigator.pushAndRemovePreviousPages(context,
-                        page: LandingPage(
-                          selectedIndex: 0,
+                    AppNavigator.pushAndStackPage(context,
+                        page: VerifyOtp(
+                           email: _userNameController.text,
                         ));
                   } else if (state is ErrorState) {
                     MSG.warningSnackBar(context, state.error);
@@ -166,7 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               hint: 'Enter your username',
                                               label: 'Username',
                                               borderColor: Colors.black54,
-                                              controller: _emailController,
+                                              controller: _userNameController,
                                               backgroundColor: theme.isDark
                                                   ? AppColors
                                                       .darkCardBackgroundColor
@@ -177,6 +179,23 @@ class _SignUpPageState extends State<SignUpPage> {
                                                   : AppColors.grey,
                                               validator: AppValidator
                                                   .validateTextfield,
+                                              icon: Icons.person_2_outlined,
+                                            ),
+                                            CustomTextFormField(
+                                              hint: 'Enter your Email',
+                                              label: 'Email',
+                                              borderColor: Colors.black54,
+                                              controller: _emailController,
+                                              backgroundColor: theme.isDark
+                                                  ? AppColors
+                                                      .darkCardBackgroundColor
+                                                  : AppColors.white,
+                                              hintColor: !theme.isDark
+                                                  ? AppColors
+                                                      .darkCardBackgroundColor
+                                                  : AppColors.grey,
+                                              validator:
+                                                  AppValidator.validateEmail,
                                               icon: Icons.person_2_outlined,
                                             ),
                                             const SizedBox(
@@ -258,29 +277,33 @@ class _SignUpPageState extends State<SignUpPage> {
                                             // ),
                                             FormButton(
                                               onPressed: () async {
-                                                AppNavigator.pushAndStackPage(
-                                                    context,
-                                                    page: VerifyUser(
-                                                        email: _emailController
-                                                            .text,
-                                                        password:
-                                                            _passwordController
-                                                                .text, isSignUp: true,));
+                                                // AppNavigator.pushAndStackPage(
+                                                //     context,
+                                                //     page: VerifyUser(
+                                                //       email:
+                                                //           _emailController.text,
+                                                //       password:
+                                                //           _passwordController
+                                                //               .text,
+                                                //       isSignUp: true,
+                                                //     ));
                                                 // AppNavigator
                                                 //     .pushAndRemovePreviousPages(
                                                 //         context,
                                                 //         page: LandingPage(
                                                 //           selectedIndex: 0,
                                                 //         ));
-                                                // if (_formKey.currentState!
-                                                //     .validate()) {
-                                                //   authBloc.add(SignInEventClick(
-                                                //       _emailController.text
-                                                //           .toLowerCase()
-                                                //           .trim(),
-                                                //       _passwordController
-                                                //           .text));
-                                                // }
+                                                if (_formKey.currentState!
+                                                    .validate()) {
+                                                  authBloc.add(SignUpEventClick(
+                                                      _emailController.text
+                                                          .toLowerCase()
+                                                          .trim(),
+                                                      _passwordController.text,
+                                                      _userNameController.text,
+                                                      _confirmPasswordController
+                                                          .text));
+                                                }
                                               },
                                               text: 'Create account',
                                               borderColor:

@@ -20,6 +20,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<SignInEventClick>(signInEventClick);
+    on<SignUpEventClick>(signUpEventClick);
     on<InitialEvent>(initialEvent);
     on<RequestResetPasswordEventClick>(requestResetPasswordEventClick);
     on<OnVerifyOtpEvent>(onVerifyOtpEvent);
@@ -39,15 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     };
     AppUtils().debuglog(formData);
 
-    // Map<String, String> data = {
-    //   'email': 'bursar11@gmail.com',
-    //   'password': 'bursar11',
-    // };
     try {
-      // var response =
-      //     await authRepository.authPostRequest(data, AppApis.loginCreateToken);
       final loginResponse =
-          await authRepository.authPostRequest(formData, AppApis.loginStudent);
+          await authRepository.authPostRequest(formData, AppApis.loginApi);
 
       AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
       AppUtils().debuglog('Response body: ${loginResponse.body}');
@@ -68,7 +63,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "There was a problem logging user in please try again later."));
         emit(AuthInitial());
       } else {
-        emit(ErrorState(json.decode(loginResponse.body)['error']));
+        emit(
+            ErrorState(json.decode(loginResponse.body)['non_field_errors'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(loginResponse.body));
         emit(AuthInitial());
@@ -90,7 +86,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<FutureOr<void>> requestResetPasswordEventClick(
       RequestResetPasswordEventClick event, Emitter<AuthState> emit) async {
     emit(LoadingState());
-
 
     AppUtils().debuglog(event.userData);
     String deviceId = await AppUtils.getId();
@@ -162,8 +157,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       var verifyResponse = await http.post(
-        Uri.parse('${AppApis.appBaseUrl}/u-auth/verify-otp/'),
-        body: {'email': event.userData, 'otp': event.otp.toString()},
+        Uri.parse(AppApis.verifyOTP),
+        body: {
+          'username': event.userData,
+          'verification_code': event.otp.toString()
+        },
       );
       AppUtils().debuglog('Response status: ${verifyResponse.statusCode}');
       AppUtils().debuglog('Response body: ${verifyResponse.body}');
@@ -172,12 +170,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(verifyResponse.body);
 
       if (verifyResponse.statusCode == 200) {
-        AppUtils().debuglog(json.decode(verifyResponse.body)['access']);
-
-        await SharedPref.putString("Reset-Password-Access-Token",
-            json.decode(verifyResponse.body)['access']);
-        AppUtils().debuglog(await SharedPref.getString('access-token'));
-
         emit(OtpVerificationSuccessState(
             json.decode(verifyResponse.body)['message']));
       } else if (verifyResponse.statusCode == 500 ||
@@ -253,6 +245,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(e);
       emit(ErrorState("Error Resetting password"));
 
+      emit(AuthInitial());
+      AppUtils().debuglog(12345678);
+    }
+  }
+
+  FutureOr<void> signUpEventClick(
+      SignUpEventClick event, Emitter<AuthState> emit) async {
+    emit(LoadingState());
+    AuthRepository authRepository = AuthRepository();
+    Map<String, String> formData = {
+      "email": event.email,
+      "username": event.userName,
+      "password": event.password,
+      "confirm_password": event.confirmPassword
+    };
+    AppUtils().debuglog(formData);
+
+    try {
+      final registerResponse =
+          await authRepository.authPostRequest(formData, AppApis.registerApi);
+
+      AppUtils().debuglog('Response status: ${registerResponse.statusCode}');
+      AppUtils().debuglog('Response body: ${registerResponse.body}');
+      AppUtils().debuglog(registerResponse.statusCode);
+
+      AppUtils().debuglog(registerResponse.body);
+      if (registerResponse.statusCode == 200 ||
+          registerResponse.statusCode == 201) {
+        emit(SuccessState("Sign up Successful"));
+      } else if (registerResponse.statusCode == 500 ||
+          registerResponse.statusCode == 501) {
+        emit(ErrorState(
+            "There was a problem signing user in please try again later."));
+        emit(AuthInitial());
+      } else {
+        emit(ErrorState(json.decode(registerResponse.body)['email'][0] ??
+            json.decode(registerResponse.body)['username'][0] ??
+            json.decode(registerResponse.body)['password'][0]));
+        //AppUtils().debuglog(event.password);
+        AppUtils().debuglog(json.decode(registerResponse.body));
+        emit(AuthInitial());
+      }
+    } catch (e) {
+      AppUtils().debuglog(e);
+      emit(ErrorState("There was a problem login you in please try again."));
+
+      AppUtils().debuglog(e);
       emit(AuthInitial());
       AppUtils().debuglog(12345678);
     }

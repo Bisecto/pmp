@@ -60,14 +60,12 @@ class _VerifyOtpState extends State<VerifyOtp> {
                   isCompleted = false;
                 });
                 //AppNavigator.pushAndReplacePage(context, page: VerifyOtp());
-              } else if(state is AccessTokenExpireState){
-                AppNavigator.pushAndRemovePreviousPages(context, page: SignInPage());
-              }else if (state is OtpVerificationSuccessState) {
-                MSG.snackBar(context, state.msg);
-                AppNavigator.pushAndReplacePage(context,
-                    page: ChangePassword(
-                      email: widget.email,
-                    ));
+              } else if (state is AccessTokenExpireState) {
+                AppNavigator.pushAndRemovePreviousPages(context,
+                    page: SignInPage());
+              } else if (state is OtpVerificationSuccessState) {
+                AppNavigator.pushAndRemovePreviousPages(context,
+                    page: const SignInPage());
               } else if (state is ErrorState) {
                 setState(() {
                   isCompleted = false;
@@ -94,7 +92,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                               height: 20,
                             ),
 
-                             CustomText(
+                            CustomText(
                               text: "Please check your mail",
                               weight: FontWeight.bold,
                               color: theme.isDark
@@ -104,9 +102,9 @@ class _VerifyOtpState extends State<VerifyOtp> {
                               textAlign: TextAlign.center,
                               size: 20,
                             ),
-                             CustomText(
+                            CustomText(
                               text:
-                                  "We sent an otp to your school mail please enter the pin to reset your password",
+                                  "We sent an otp to your email please enter the pin to reset your password",
                               weight: FontWeight.w400,
                               color: theme.isDark
                                   ? AppColors.grey
@@ -132,9 +130,11 @@ class _VerifyOtpState extends State<VerifyOtp> {
                               width: MediaQuery.of(context).size.width,
                               fieldWidth: 50,
                               controller: otpFieldController,
-                              style:  TextStyle(fontSize: 17,color: !theme.isDark
-                                  ? AppColors.white
-                                  : AppColors.darkCardBackgroundColor,
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: !theme.isDark
+                                    ? AppColors.white
+                                    : AppColors.darkCardBackgroundColor,
                               ),
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldStyle: FieldStyle.box,
@@ -189,7 +189,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                                 onPress1: () {
                                   if (_start == 0) {
                                     authBloc.add(RequestResetPasswordEventClick(
-                                        widget.email,false));
+                                        widget.email, false));
 
                                     setState(() {
                                       _start = 59;
@@ -211,7 +211,6 @@ class _VerifyOtpState extends State<VerifyOtp> {
                                 color: theme.isDark
                                     ? AppColors.white
                                     : AppColors.darkCardBackgroundColor,
-
                                 text3: '  00:$_start s',
                                 text4: '')
                           ],
