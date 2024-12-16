@@ -93,31 +93,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       // final response = await authRepository.authPostRequest(
       //     formData, AppApis.requestPasswordResetOtp)
-      AppUtils().debuglog(event.isDeviceChange
-          ? Uri.parse("${AppApis.appBaseUrl}/u-auth/resend-otp/")
-          : Uri.parse('${AppApis.appBaseUrl}/u-auth/request-password-reset/'));
-      AppUtils().debuglog(event.isDeviceChange
-          ? {
-              "usename": event.userData,
-              'device_id':
-                  event.userData.toLowerCase() == 'cprecious038@gmail.com' ||
-                          event.userData == '2019514900'
-                      ? '79477BA3-2FAC-4D76-B508-8D871AF7E62F'
-                      : deviceId
-            }
-          : {'email': event.userData});
+
       var resetResponse = await http.post(
         event.isDeviceChange
             ? Uri.parse("${AppApis.appBaseUrl}/u-auth/resend-otp/")
             : Uri.parse('${AppApis.appBaseUrl}/u-auth/request-password-reset/'),
         body: event.isDeviceChange
             ? {
-                "usename": event.userData,
-                'device_id':
-                    event.userData.toLowerCase() == 'cprecious038@gmail.com' ||
-                            event.userData == '2019514900'
-                        ? '79477BA3-2FAC-4D76-B508-8D871AF7E62F'
-                        : deviceId
+                "email": event.userData,
               }
             : {'email': event.userData},
       );

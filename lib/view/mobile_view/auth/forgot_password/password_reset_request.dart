@@ -59,7 +59,7 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                   ));
             } else if (state is AccessTokenExpireState) {
               AppNavigator.pushAndRemovePreviousPages(context,
-                  page: SignInPage());
+                  page: const SignInPage());
             } else if (state is ErrorState) {
               MSG.warningSnackBar(context, state.error);
             }
@@ -70,7 +70,7 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
               //   return const Center(
               //     child: CircularProgressIndicator(),
               //   );
-              case AuthInitial || ErrorState:
+              case const (AuthInitial) || const (ErrorState):
                 return SafeArea(
                     child: SingleChildScrollView(
                   child: Padding(
@@ -122,23 +122,23 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                                   validator: AppValidator.validateEmail,
                                   icon: Icons.person_2_outlined,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 FormButton(
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      AppNavigator.pushAndReplacePage(context,
-                                          page: VerifyOtp(
-                                            email: _emailController.text,
-                                          ));
+                                      // AppNavigator.pushAndReplacePage(context,
+                                      //     page: VerifyOtp(
+                                      //       email: _emailController.text,
+                                      //     ));
 
-                                      // authBloc.add(
-                                      //     RequestResetPasswordEventClick(
-                                      //         _emailController.text
-                                      //             .toLowerCase()
-                                      //             .trim(),
-                                      //         false));
+                                      authBloc.add(
+                                          RequestResetPasswordEventClick(
+                                              _emailController.text
+                                                  .toLowerCase()
+                                                  .trim(),
+                                              false));
                                     }
                                   },
                                   text: 'Continue',
@@ -181,8 +181,8 @@ class _PasswordResetRequestState extends State<PasswordResetRequest> {
                   ),
                 ));
 
-              case LoadingState:
-                return Center(
+              case const (LoadingState):
+                return const Center(
                   child: AppLoadingPage("Requesting OTP..."),
                 );
               default:

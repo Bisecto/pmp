@@ -5,9 +5,12 @@ class AppApis {
   ///Authentication Endpoints
   static String registerApi = "$appBaseUrl/api/register/";
   static String verifyOTP = "$appBaseUrl/api/verify_email/";
+  static String validateOTP = "$appBaseUrl/api/password-reset/validate/";
+  static String resendOTP = "$appBaseUrl/api/password-reset/resend-request/";
+  static String confirmPasswordResend = "$appBaseUrl/api/password-reset/confirm/";
 
   static String requestPasswordResetOtp =
-      "$appBaseUrl/u-auth/request-password-reset/";
+      "$appBaseUrl/api/password-reset/request/";
   static String resetPassword = "$appBaseUrl/u-auth/reset-password/";
   static String loginApi = "$appBaseUrl/api/login/";
 
