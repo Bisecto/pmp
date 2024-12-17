@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pim/view/mobile_view/auth/set_up_profile.dart';
 import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/repository/auth_repository.dart';
@@ -125,8 +126,9 @@ class _SignInPageState extends State<SignInPage> {
                             ));
                       } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
-                      } else if(state is ProfileSetUpState){
-
+                      } else if (state is ProfileSetUpState) {
+                        AppNavigator.pushAndStackPage(context,
+                            page: const SetUpProfile());
                       }
                     },
                     builder: (context, state) {
@@ -274,16 +276,15 @@ class _SignInPageState extends State<SignInPage> {
                                                     //         ));
                                                     if (_formKey.currentState!
                                                         .validate()) {
-
-                                                    authBloc.add(
-                                                        SignInEventClick(
-                                                            _emailController
-                                                                .text
-                                                                .toLowerCase()
-                                                                .trim(),
-                                                            _passwordController
-                                                                .text));
-                                                     }
+                                                      authBloc.add(
+                                                          SignInEventClick(
+                                                              _emailController
+                                                                  .text
+                                                                  .toLowerCase()
+                                                                  .trim(),
+                                                              _passwordController
+                                                                  .text));
+                                                    }
                                                   },
                                                   text: 'Login',
                                                   borderColor:
@@ -302,10 +303,10 @@ class _SignInPageState extends State<SignInPage> {
                                       ],
                                     ),
                                   ),
-                                   Row(
-                                    mainAxisAlignment:MainAxisAlignment.center,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      CustomText(
+                                      const CustomText(
                                         text: "Don't have an account yet? ",
                                       ),
                                       GestureDetector(
@@ -313,7 +314,7 @@ class _SignInPageState extends State<SignInPage> {
                                           AppNavigator.pushAndStackPage(context,
                                               page: const SignUpPage());
                                         },
-                                        child: CustomText(
+                                        child: const CustomText(
                                           text: "Create Account",
                                           color: AppColors.blue,
                                         ),

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
 import 'package:http/http.dart' as http;
@@ -22,7 +23,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<SignInEventClick>(signInEventClick);
-    //on<SetUpProfileEventClick>(setUpProfileEventClick);
+    on<SetUpProfileEventClick>(setUpProfileEventClick);
     on<SignUpEventClick>(signUpEventClick);
     on<InitialEvent>(initialEvent);
     on<RequestResetPasswordEventClick>(requestResetPasswordEventClick);
@@ -37,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<FutureOr<void>> signInEventClick(
       SignInEventClick event, Emitter<AuthState> emit) async {
     emit(LoadingState());
-    AppRepository appRepository=AppRepository();
+    AppRepository appRepository = AppRepository();
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
       'username': event.userData,
@@ -60,22 +61,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         await SharedPref.putString(
             "access-token", json.decode(loginResponse.body)['access']);
-        final profileResponse =
-        await appRepository.getRequestWithToken(json.decode(loginResponse.body)['access'], AppApis.profile);
+        final profileResponse = await appRepository.getRequestWithToken(
+            json.decode(loginResponse.body)['access'], AppApis.profile);
         AppUtils().debuglog('Response body: ${profileResponse.body}');
-        if (profileResponse.statusCode == 200 || profileResponse.statusCode == 201) {
-
+        if (profileResponse.statusCode == 200 ||
+            profileResponse.statusCode == 201) {
           emit(SuccessState("Login Successful"));
-
-        }else if(profileResponse.statusCode==404){
+        } else if (profileResponse.statusCode == 404) {
           emit(ProfileSetUpState("Complete Profile Set up"));
-
-        } else{
-          emit(ErrorState(
-              "There was a problem fetching your profile"));
+        } else {
+          emit(ErrorState("There was a problem fetching your profile"));
           emit(AuthInitial());
         }
-
       } else if (loginResponse.statusCode == 500 ||
           loginResponse.statusCode == 501) {
         emit(ErrorState(
@@ -201,8 +198,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //   'password': 'bursar11',
     // };
     try {
-      String jwtToken =
-          await SharedPref.getString('Reset-Password-Access-Token');
       var resetPasswordResponse = await http.post(
         Uri.parse(
             '${AppApis.confirmPasswordResend}?email=${event.userData}&reset_token=${event.token}&new_password=${event.password}&confirm_password=${event.confirmPassword}'),
@@ -348,49 +343,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // FutureOr<void> setUpProfileEventClick(SetUpProfileEventClick event, Emitter<AuthState> emit) async  {
-  //   emit(LoadingState());
-  //   AuthRepository authRepository = AuthRepository();
-  //   Map<String, String> formData = {
-  //     "email": event.email,
-  //     "username": event.userName,
-  //     "password": event.password,
-  //     "confirm_password": event.confirmPassword
-  //   };
-  //   AppUtils().debuglog(formData);
-  //
-  //   try {
-  //     final registerResponse =
-  //     await authRepository.authPostRequest(formData, AppApis.registerApi);
-  //
-  //     AppUtils().debuglog('Response status: ${registerResponse.statusCode}');
-  //     AppUtils().debuglog('Response body: ${registerResponse.body}');
-  //     AppUtils().debuglog(registerResponse.statusCode);
-  //
-  //     AppUtils().debuglog(registerResponse.body);
-  //     if (registerResponse.statusCode == 200 ||
-  //         registerResponse.statusCode == 201) {
-  //       emit(SuccessState("Sign up Successful"));
-  //     } else if (registerResponse.statusCode == 500 ||
-  //         registerResponse.statusCode == 501) {
-  //       emit(ErrorState(
-  //           "There was a problem signing user in please try again later."));
-  //       emit(AuthInitial());
-  //     } else {
-  //       emit(ErrorState(json.decode(registerResponse.body)['email'][0] ??
-  //           json.decode(registerResponse.body)['username'][0] ??
-  //           json.decode(registerResponse.body)['password'][0]));
-  //       //AppUtils().debuglog(event.password);
-  //       AppUtils().debuglog(json.decode(registerResponse.body));
-  //       emit(AuthInitial());
-  //     }
-  //   } catch (e) {
-  //     AppUtils().debuglog(e);
-  //     emit(ErrorState("There was a problem login you in please try again."));
-  //
-  //     AppUtils().debuglog(e);
-  //     emit(AuthInitial());
-  //     AppUtils().debuglog(12345678);
-  //   }
-  // }
+  FutureOr<void> setUpProfileEventClick(
+      SetUpProfileEventClick event, Emitter<AuthState> emit) async {
+    emit(LoadingState());
+    AppRepository appRepository = AppRepository();
+    Map<String, String> formData = {
+      'mobile_phone': event.phoneNumber,
+      'first_name': event.firstname,
+      'last_name': event.lastname
+    };
+    AppUtils().debuglog(formData);
+    String accessToken = await SharedPref.getString('access-token');
+    try {
+      final profileResponse =
+          await appRepository.appPostRequestWithSingleImages(
+              formData, AppApis.profile, event.profileImage,accessToken);
+
+      AppUtils().debuglog('Response status: ${profileResponse.statusCode}');
+      AppUtils().debuglog('Response body: ${profileResponse.body}');
+      AppUtils().debuglog(profileResponse.statusCode);
+
+      if (profileResponse.statusCode == 200 ||
+          profileResponse.statusCode == 201) {
+        emit(SuccessState("Profile Updated Successful"));
+      } else if (profileResponse.statusCode == 500 ||
+          profileResponse.statusCode == 501) {
+        emit(ErrorState(
+            "There was a problem completing profile set up."));
+        emit(AuthInitial());
+      } else {
+        emit(ErrorState(json.decode(profileResponse.body)['mobile_phone'][0] ??
+            json.decode(profileResponse.body)['first_name'][0] ??
+            json.decode(profileResponse.body)['last_name'][0]??
+            json.decode(profileResponse.body)['profile_pic'][0]));
+        //AppUtils().debuglog(event.password);
+        AppUtils().debuglog(json.decode(profileResponse.body));
+        emit(AuthInitial());
+      }
+    } catch (e) {
+      AppUtils().debuglog(e);
+      emit(ErrorState("There was a problem completing profile set up."));
+
+      AppUtils().debuglog(e);
+      emit(AuthInitial());
+      AppUtils().debuglog(12345678);
+    }
+  }
 }

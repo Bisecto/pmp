@@ -19,7 +19,7 @@ class SetUpProfileEventClick extends AuthEvent {
   final String firstname;
   final String lastname;
   final String phoneNumber;
-  final File? profileImage;
+  final XFile? profileImage;
 
   SetUpProfileEventClick(
       this.firstname, this.lastname, this.phoneNumber, this.profileImage);

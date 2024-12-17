@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,22 @@ class _SetUpProfileState extends State<SetUpProfile> {
   void initState() {
     super.initState();
     authBloc.add(InitialEvent());
+  }
+
+  final ImagePicker imagePicker = ImagePicker();
+  List<XFile>? imageFileList = [];
+
+  void selectSingleImage() async {
+    final XFile? selectedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (selectedImage != null) {
+      imageFileList = [
+        selectedImage
+      ]; // Replace the list with the newly selected image
+      print("Selected Image Path: ${selectedImage.path}");
+      setState(() {});
+    }
   }
 
   @override
@@ -126,6 +143,55 @@ class _SetUpProfileState extends State<SetUpProfile> {
                               const SizedBox(
                                 height: 20,
                               ),
+                              // GestureDetector(
+                              //   onTap: selectSingleImage,
+                              //   child: Container(
+                              //     height: 250,
+                              //     decoration: BoxDecoration(
+                              //       color: Colors.grey.withOpacity(0.2),
+                              //       borderRadius: BorderRadius.circular(10),
+                              //     ),
+                              //     child: Column(
+                              //       mainAxisAlignment: MainAxisAlignment.center,
+                              //       children: [
+                              //         const Icon(Icons.save_alt_rounded),
+                              //         const SizedBox(height: 10),
+                              //         Center(
+                              //           child: TextStyles.richTexts(
+                              //             text1: 'Click to upload',
+                              //             text2: ' or drag and drop',
+                              //             color: Colors.purple,
+                              //             color2: AppColors.black,
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ),
+                              // ),
+                              // const SizedBox(height: 16),
+                              // Add spacing
+                              //if (imageFileList!.isNotEmpty)
+                              GestureDetector(
+                                onTap: selectSingleImage,
+
+                                child: CircleAvatar(
+                                  backgroundColor: AppColors.mainAppColor,
+                                  radius: 50,
+                                  backgroundImage: imageFileList!.isNotEmpty
+                                      ? FileImage(File(imageFileList![0].path))
+                                      : const AssetImage(AppImages.addProfile),
+                                ),
+                              ),
+                              // SizedBox(
+                              //   height: 250, // Fixed height for image display
+                              //   child: imageFileList?.isEmpty ?? true
+                              //       ? const Center(child: Text("No Image Selected"))
+                              //       : Image.file(
+                              //     File(imageFileList![0].path),
+                              //     fit: BoxFit.cover,
+                              //   ),
+                              // ),
+                              const SizedBox(height: 16),
                               Form(
                                   key: _formKey,
                                   child: Column(
@@ -175,7 +241,7 @@ class _SetUpProfileState extends State<SetUpProfile> {
                                             ? AppColors.darkCardBackgroundColor
                                             : AppColors.grey,
                                         validator:
-                                        AppValidator.validateTextfield,
+                                            AppValidator.validateTextfield,
                                         icon: Icons.person_2_outlined,
                                       ),
                                       const SizedBox(
@@ -222,14 +288,21 @@ class _SetUpProfileState extends State<SetUpProfile> {
                                           //         ));
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            authBloc.add(SetUpProfileEventClick(
-                                                _firstNameController.text
-                                                    .toLowerCase()
-                                                    .trim(),
-                                                _lastNameController.text,_phoneNumberController.text,null));
+                                            if(imageFileList!.isNotEmpty){
+                                              authBloc.add(SetUpProfileEventClick(
+                                                  _firstNameController.text
+                                                      .toLowerCase()
+                                                      .trim(),
+                                                  _lastNameController.text,
+                                                  _phoneNumberController.text,
+                                                  imageFileList![0]));
+                                            }else{
+                                              MSG.infoSnackBar(context, 'Please select a profile image');
+                                            }
+
                                           }
                                         },
-                                        text: 'Login',
+                                        text: 'Complete',
                                         borderColor: AppColors.mainAppColor,
                                         bgColor: AppColors.mainAppColor,
                                         textColor: AppColors.white,
@@ -244,24 +317,24 @@ class _SetUpProfileState extends State<SetUpProfile> {
                             ],
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomText(
-                              text: "Don't have an account yet? ",
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                AppNavigator.pushAndStackPage(context,
-                                    page: const SignUpPage());
-                              },
-                              child: CustomText(
-                                text: "Create Account",
-                                color: AppColors.blue,
-                              ),
-                            )
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     CustomText(
+                        //       text: "Don't have an account yet? ",
+                        //     ),
+                        //     GestureDetector(
+                        //       onTap: () {
+                        //         AppNavigator.pushAndStackPage(context,
+                        //             page: const SignUpPage());
+                        //       },
+                        //       child: CustomText(
+                        //         text: "Create Account",
+                        //         color: AppColors.blue,
+                        //       ),
+                        //     )
+                        //   ],
+                        // ),
                         const SizedBox(
                           height: 50,
                         ),
