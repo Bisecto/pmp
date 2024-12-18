@@ -5,8 +5,10 @@ import 'package:bloc/bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:pim/model/properties_model.dart';
+import 'package:pim/model/property_model.dart';
 import 'package:pim/res/apis.dart';
 
+import '../../model/property_model.dart';
 import '../../repository/repository.dart';
 import '../../utills/app_utils.dart';
 import '../../utills/shared_preferences.dart';
@@ -17,8 +19,10 @@ part 'property_state.dart';
 
 class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   PropertyBloc() : super(PropertyInitial()) {
+    on<GetSinglePropertyEvent>(getSinglePropertyEvent);
     on<GetPropertyEvent>(getPropertyEvent);
     on<AddPropertyEvent>(addPropertyEvent);
+    on<AddOccupantEvent>(addOccupantEvent);
     // on<PropertyEvent>((event, emit) {
     //   // TODO: implement event handler
     // });
@@ -114,4 +118,78 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       print(e);
     }
   }
+
+  FutureOr<void> getSinglePropertyEvent(
+      GetSinglePropertyEvent event, Emitter<PropertyState> emit) async {
+    emit(
+        PropertyLoadingState()); // Emit loading state at the start of the event
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    //try {
+    var singlePropertyResponse = await appRepository.getRequestWithToken(
+        accessToken, AppApis.singlePropertyApi+event.propertyId);
+    // var res = await appRepository.appGetRequest(
+    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+    //   accessToken: accessToken,
+    // );
+    //print(res.body);
+    print(" status Code ${singlePropertyResponse.statusCode}");
+    print(" Data ${singlePropertyResponse.body}");
+    print(json.decode(singlePropertyResponse.body));
+    if (singlePropertyResponse.statusCode == 200 ||
+        singlePropertyResponse.statusCode == 201) {
+      Property property =
+          Property.fromJson(json.decode(singlePropertyResponse.body));
+
+      print(property);
+      emit(
+          SinglePropertySuccessState(property)); // Emit success state with data
+    } else {
+      emit(PropertyErrorState(AppUtils.convertString(
+          json.decode(singlePropertyResponse.body)['message'])));
+      print(json.decode(singlePropertyResponse.body));
+    }
+    // } catch (e) {
+    //   emit(PropertyErrorState("An error occurred while fetching categories."));
+    //   print(e);
+    // }
+  }
+
+  FutureOr<void> addOccupantEvent(AddOccupantEvent event, Emitter<PropertyState> emit) async {
+      emit(PropertyLoadingState());
+
+      AppRepository appRepository = AppRepository();
+      String accessToken = await SharedPref.getString('access-token');
+      try {
+        //Map<String, String> formData = json.decode(event.occupant);
+        var addPropertyResponse =
+        await appRepository.appPostRequestWithSingleImages(
+          event.formData,
+          '${AppApis.addOccupantApi+event.propertyId}/',
+          event.image,
+          accessToken,
+        );
+
+        print(" status Code ${addPropertyResponse.statusCode}");
+        print(" Data ${addPropertyResponse.body}");
+        print(json.decode(addPropertyResponse.body));
+        if (addPropertyResponse.statusCode == 200 ||
+            addPropertyResponse.statusCode == 201) {
+
+          print(addPropertyResponse);
+          emit(AddPropertySuccessState()); // Emit success state with data
+        } else {
+          emit(PropertyErrorState(AppUtils.convertString(
+              json.decode(addPropertyResponse.body)['message'])));
+          print(json.decode(addPropertyResponse.body));
+          emit(PropertyInitial());
+        }
+      } catch (e) {
+        emit(PropertyErrorState("An error occurred while fetching categories."));
+        emit(PropertyInitial());
+        print(e);
+      }
+    }
+
 }

@@ -4,8 +4,8 @@ part of 'property_bloc.dart';
 sealed class PropertyState {}
 
 final class PropertyInitial extends PropertyState {}
-class PropertyLoadingState extends PropertyState {}
 
+class PropertyLoadingState extends PropertyState {}
 
 class PropertyErrorState extends PropertyState {
   final String error;
@@ -17,7 +17,14 @@ class PropertySuccessState extends PropertyState {
   final PropertiesModel propertiesModel;
 
   PropertySuccessState(this.propertiesModel);
-}class AddPropertySuccessState extends PropertyState {
+}
 
+class SinglePropertySuccessState extends PropertyState {
+  final Property property;
+
+  SinglePropertySuccessState(this.property);
+}
+
+class AddPropertySuccessState extends PropertyState {
   AddPropertySuccessState();
 }

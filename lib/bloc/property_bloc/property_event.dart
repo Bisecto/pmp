@@ -7,6 +7,20 @@ class GetPropertyEvent extends PropertyEvent {
   GetPropertyEvent();
 }
 
+class GetSinglePropertyEvent extends PropertyEvent {
+  final String propertyId;
+
+  GetSinglePropertyEvent(this.propertyId);
+}
+
+class AddOccupantEvent extends PropertyEvent {
+  final Map<String, String> formData;
+  final XFile image;
+  final String propertyId;
+
+  AddOccupantEvent(this.formData, this.image, this.propertyId);
+}
+
 class AddPropertyEvent extends PropertyEvent {
   final String propertyName;
   final String propertyType;
@@ -34,5 +48,6 @@ class AddPropertyEvent extends PropertyEvent {
       this.priceType,
       this.price,
       this.priceRangeStart,
-      this.priceRangeStop, this.occupiedRooms);
+      this.priceRangeStop,
+      this.occupiedRooms);
 }

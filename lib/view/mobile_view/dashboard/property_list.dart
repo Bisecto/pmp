@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pim/model/property_model.dart';
+import 'package:pim/model/user_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
 
@@ -11,8 +12,9 @@ import '../../widgets/app_custom_text.dart';
 
 class LodgeList extends StatelessWidget {
   List<Property> properties;
+  final UserModel userModel;
 
-  LodgeList({super.key, required this.properties});
+  LodgeList({super.key, required this.properties, required this.userModel});
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +164,7 @@ class LodgeList extends StatelessWidget {
                         AppNavigator.pushAndStackPage(context,
                             page: PropertyDetails(
                               property: property,
+                              userModel: userModel,
                             ));
                       },
                       child: Container(

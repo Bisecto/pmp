@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pim/res/apis.dart';
 import 'package:pim/res/app_colors.dart';
 import 'package:pim/view/widgets/form_button.dart';
 
+import '../../../../model/property_model.dart';
 import '../../../../res/app_images.dart';
 import '../../../../res/app_svg_images.dart';
 import '../../../../utills/app_utils.dart';
@@ -10,9 +12,9 @@ import '../../../widgets/app_bar.dart';
 import '../../../widgets/app_custom_text.dart';
 
 class ViewOccupant extends StatefulWidget {
-  final String occupantName;
+  final Occupant occupant;
 
-  const ViewOccupant({super.key, required this.occupantName});
+  const ViewOccupant({super.key, required this.occupant});
 
   @override
   State<ViewOccupant> createState() => _ViewOccupantState();
@@ -29,7 +31,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                AppAppBar(title: widget.occupantName),
+                AppAppBar(title: widget.occupant.name!),
                 const SizedBox(
                   height: 10,
                 ),
@@ -67,11 +69,11 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 const SizedBox(
                   height: 15,
                 ),
-                profileContainer(context: context),
+                profileContainer(widget.occupant,context: context),
                 const SizedBox(
                   height: 15,
                 ),
-                moreDetailsContainer(context: context)
+                moreDetailsContainer(widget.occupant,context: context)
 
               ],
             ),
@@ -80,7 +82,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
       ),
     );
   }
-  Widget profileContainer({required context}) {
+  Widget profileContainer(Occupant  occupant,{required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
@@ -108,9 +110,9 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   //     offset: const Offset(0, 4),
                   //   ),
                   // ],
-                  image:  const DecorationImage(
-                      image: AssetImage(
-                        AppImages.occupant,
+                  image:   DecorationImage(
+                      image: NetworkImage(
+                        AppApis.appBaseUrl+occupant.profilePic!,
                       ),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
@@ -119,11 +121,11 @@ class _ViewOccupantState extends State<ViewOccupant> {
               const SizedBox(
                 height: 10,
               ),
-              const Row(
+               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomText(
-                    text: "Okpara Mark Eze",
+                    text: occupant.name,
                     color: AppColors.black,
                     size: 16,
                     weight: FontWeight.bold,
@@ -140,7 +142,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
               const SizedBox(
                 height: 10,
               ),
-              const Row(
+               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
@@ -152,7 +154,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' Married  ',
+                        text: ' ${occupant.relationship}  ',
                         size: 13,
                         maxLines: 3,
                       ),
@@ -167,7 +169,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  Employed',
+                        text: '  ${occupant.occupationStatus}',
                         size: 13,
                         maxLines: 3,
                       ),
@@ -182,7 +184,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
       ),
     );
   }
-  Widget moreDetailsContainer({required context}) {
+  Widget moreDetailsContainer(Occupant  occupant,{required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
@@ -193,7 +195,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
 
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Center(
+        child:  Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -210,7 +212,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' B12  ',
+                        text: ' ${occupant.roomNumber}  ',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -245,7 +247,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' 03-04-1970  ',
+                        text: ' ${AppUtils.formateSimpleDate(dateTime:occupant.dob.toString())}  ',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -260,7 +262,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  Male',
+                        text: '  ${occupant.gender}',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -280,7 +282,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' Aguata  ',
+                        text: ' ${occupant.localGovernment}  ',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -295,7 +297,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  Anambra',
+                        text: '  ${occupant.state}',
                         size: 14,
                         maxLines: 3,
                       ),

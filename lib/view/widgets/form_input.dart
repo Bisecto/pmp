@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../../res/app_colors.dart';
 import 'app_custom_text.dart';
@@ -10,6 +11,7 @@ class CustomTextFormField extends StatefulWidget {
   final bool isMobileNumber;
   final ValueChanged<String>? onChanged;
   final Function? onFieldSubmitted;
+  final bool? readOnly;
   final String? Function(String?)? validateName;
   final String hint;
   final String label;
@@ -29,6 +31,7 @@ class CustomTextFormField extends StatefulWidget {
       {super.key,
         this.maxLength,
         this.maxLines = 1,
+        this.readOnly = false,
         this.textInputType = TextInputType.text,
          this.icon,
         this.backgroundColor = AppColors.white,
@@ -90,11 +93,27 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
+                    readOnly: widget.readOnly!,
                     controller: widget.controller,
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.black, // Ensures text color is visible.
                     ),
+                    onTap: () async {
+                      if (widget.readOnly!) {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (pickedDate != null) {
+                          String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+                          widget.controller!.text = formattedDate;
+                        }
+                      }
+                    },
                     decoration: InputDecoration(
                       prefixIcon: widget.icon == null
                           ? null

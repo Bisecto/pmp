@@ -189,6 +189,7 @@ class _DashboardState extends State<Dashboard> {
                             LodgeList(
                               properties: propertySuccessState
                                   .propertiesModel.properties,
+                              userModel: widget.userModel,
                             ),
                           ],
                         ),

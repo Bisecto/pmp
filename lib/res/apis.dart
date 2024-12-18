@@ -23,6 +23,8 @@ class AppApis {
 
 
   static String propertiesListApi = "$appBaseUrl/api/list-of-properties/";
+  static String singlePropertyApi = "$appBaseUrl/api/property/detail/";
   static String addPropertyApi = "$appBaseUrl/api/add-property/";
+  static String addOccupantApi = "$appBaseUrl/api/add-occupant/";
 
 }
