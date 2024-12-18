@@ -122,7 +122,7 @@ class _SignInPageState extends State<SignInPage> {
 
                         AppNavigator.pushAndRemovePreviousPages(context,
                             page: LandingPage(
-                              selectedIndex: 0,
+                              selectedIndex: 0, userModel: state.userModel!,
                             ));
                       } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
@@ -274,16 +274,18 @@ class _SignInPageState extends State<SignInPage> {
                                                     //         page: LandingPage(
                                                     //           selectedIndex: 0,
                                                     //         ));
-                                                    if (_formKey.currentState!
+                                                    if (!_formKey.currentState!
                                                         .validate()) {
                                                       authBloc.add(
                                                           SignInEventClick(
-                                                              _emailController
-                                                                  .text
-                                                                  .toLowerCase()
-                                                                  .trim(),
-                                                              _passwordController
-                                                                  .text));
+                                                            'bisect','Qwerty123@'
+                                                              // _emailController
+                                                              //     .text
+                                                              //     .toLowerCase()
+                                                              //     .trim(),
+                                                              // _passwordController
+                                                              //     .text
+                                                          ));
                                                     }
                                                   },
                                                   text: 'Login',

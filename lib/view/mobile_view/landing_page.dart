@@ -1,20 +1,20 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pim/model/user_model.dart';
 import 'package:pim/view/mobile_view/profile/profile_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/res/app_colors.dart';
-import 'package:pim/utills/app_utils.dart';
-import '../../main.dart';
 import '../../utills/custom_theme.dart';
 import 'add_property/add_property_tab.dart';
 import 'dashboard/dashboard.dart';
 
 class LandingPage extends StatefulWidget {
   int selectedIndex;
+  UserModel userModel;
 
-  LandingPage({super.key, required this.selectedIndex});
+  LandingPage(
+      {super.key, required this.selectedIndex, required this.userModel});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -40,8 +40,11 @@ class _LandingPageState extends State<LandingPage> {
     //topicInitialization();
 
     views = [
-      Dashboard(onPageChanged: _onPageChanged),
-       AddPropertyScreen(),
+      Dashboard(
+        onPageChanged: _onPageChanged,
+        userModel: widget.userModel,
+      ),
+      AddPropertyScreen(userModel: widget.userModel,),
       const ProfileTab()
     ];
     super.initState();

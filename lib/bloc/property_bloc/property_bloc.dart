@@ -1,0 +1,117 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:bloc/bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:meta/meta.dart';
+import 'package:pim/model/properties_model.dart';
+import 'package:pim/res/apis.dart';
+
+import '../../repository/repository.dart';
+import '../../utills/app_utils.dart';
+import '../../utills/shared_preferences.dart';
+
+part 'property_event.dart';
+
+part 'property_state.dart';
+
+class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
+  PropertyBloc() : super(PropertyInitial()) {
+    on<GetPropertyEvent>(getPropertyEvent);
+    on<AddPropertyEvent>(addPropertyEvent);
+    // on<PropertyEvent>((event, emit) {
+    //   // TODO: implement event handler
+    // });
+  }
+
+  FutureOr<void> getPropertyEvent(
+      GetPropertyEvent event, Emitter<PropertyState> emit) async {
+    emit(
+        PropertyLoadingState()); // Emit loading state at the start of the event
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    //try {
+    var listPropertyResponse = await appRepository.getRequestWithToken(
+        accessToken, AppApis.propertiesListApi);
+    // var res = await appRepository.appGetRequest(
+    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+    //   accessToken: accessToken,
+    // );
+    //print(res.body);
+    print(" status Code ${listPropertyResponse.statusCode}");
+    print(" Data ${listPropertyResponse.body}");
+    print(json.decode(listPropertyResponse.body));
+    if (listPropertyResponse.statusCode == 200 ||
+        listPropertyResponse.statusCode == 201) {
+      PropertiesModel propertiesModel =
+          PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
+
+      //updateData(customerProfile);
+      print(propertiesModel);
+      emit(PropertySuccessState(
+          propertiesModel)); // Emit success state with data
+    } else {
+      emit(PropertyErrorState(AppUtils.convertString(
+          json.decode(listPropertyResponse.body)['message'])));
+      print(json.decode(listPropertyResponse.body));
+    }
+    // } catch (e) {
+    //   emit(PropertyErrorState("An error occurred while fetching categories."));
+    //   print(e);
+    // }
+  }
+
+  FutureOr<void> addPropertyEvent(
+      AddPropertyEvent event, Emitter<PropertyState> emit) async {
+    emit(PropertyLoadingState());
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    try {
+      Map<String, String> formData = {
+        'property_name': event.propertyName,
+        'property_type': event.propertyType,
+        'available_flats_rooms': event.availableFlatsRooms,
+        'occupied_flats_rooms': event.occupiedRooms,
+        'address': event.address,
+        'city': event.city,
+        'description': event.description,
+        'location': event.location,
+        'price_type': event.priceType,
+        'price_range_stop': event.priceRangeStop!,
+        'price_range_start': event.priceRangeStart!,
+        'price': event.price.toString(),
+      };
+      var addPropertyResponse =
+          await appRepository.appPostRequestWithMultipleImages(
+        formData,
+        AppApis.addPropertyApi,
+        event.propertyImages,
+        accessToken,
+      );
+
+      print(" status Code ${addPropertyResponse.statusCode}");
+      print(" Data ${addPropertyResponse.body}");
+      print(json.decode(addPropertyResponse.body));
+      if (addPropertyResponse.statusCode == 200 ||
+          addPropertyResponse.statusCode == 201) {
+        // PropertiesModel propertiesModel =
+        //     PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
+
+        //updateData(customerProfile);
+        print(addPropertyResponse);
+        emit(AddPropertySuccessState()); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.convertString(
+            json.decode(addPropertyResponse.body)['message'])));
+        print(json.decode(addPropertyResponse.body));
+        emit(PropertyInitial());
+      }
+    } catch (e) {
+      emit(PropertyErrorState("An error occurred while fetching categories."));
+      emit(PropertyInitial());
+      print(e);
+    }
+  }
+}

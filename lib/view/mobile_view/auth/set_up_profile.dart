@@ -83,8 +83,9 @@ class _SetUpProfileState extends State<SetUpProfile> {
               MSG.snackBar(context, state.msg);
 
               AppNavigator.pushAndRemovePreviousPages(context,
+
                   page: LandingPage(
-                    selectedIndex: 0,
+                    selectedIndex: 0, userModel: state.userModel!,
                   ));
             } else if (state is ErrorState) {
               MSG.warningSnackBar(context, state.error);

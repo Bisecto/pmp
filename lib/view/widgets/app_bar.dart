@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/app_colors.dart';
+import '../../model/user_model.dart';
 import '../../res/app_svg_images.dart';
 import 'app_custom_text.dart';
 
 class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({super.key});
+  UserModel userModel;
+
+  CustomAppBar({super.key, required this.userModel});
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -25,7 +28,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               children: [
                 CircleAvatar(
                   backgroundColor: AppColors.lightPurple,
-                  child: TextStyles.textHeadings(textValue: 'PMP'),
+                  backgroundImage: NetworkImage(widget.userModel.profilePic),
+                  //child: TextStyles.textHeadings(textValue: widget.),
                 ),
               ],
             ),

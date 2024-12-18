@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../../model/user_model.dart';
 import '../../repository/auth_repository.dart';
 import '../../repository/fcm_topics.dart';
 import '../../repository/repository.dart';
@@ -66,7 +67,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AppUtils().debuglog('Response body: ${profileResponse.body}');
         if (profileResponse.statusCode == 200 ||
             profileResponse.statusCode == 201) {
-          emit(SuccessState("Login Successful"));
+          UserModel userModel =
+          UserModel.fromJson(json.decode(profileResponse.body));
+          emit(SuccessState("Login Successful",userModel));
         } else if (profileResponse.statusCode == 404) {
           emit(ProfileSetUpState("Complete Profile Set up"));
         } else {
@@ -272,7 +275,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(registerResponse.body);
       if (registerResponse.statusCode == 200 ||
           registerResponse.statusCode == 201) {
-        emit(SuccessState("Sign up Successful"));
+        emit(SuccessState("Sign up Successful",null));
       } else if (registerResponse.statusCode == 500 ||
           registerResponse.statusCode == 501) {
         emit(ErrorState(
@@ -357,7 +360,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final profileResponse =
           await appRepository.appPostRequestWithSingleImages(
-              formData, AppApis.profile, event.profileImage,accessToken);
+              formData, AppApis.profile, event.profileImage, accessToken);
 
       AppUtils().debuglog('Response status: ${profileResponse.statusCode}');
       AppUtils().debuglog('Response body: ${profileResponse.body}');
@@ -365,16 +368,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (profileResponse.statusCode == 200 ||
           profileResponse.statusCode == 201) {
-        emit(SuccessState("Profile Updated Successful"));
+        UserModel userModel =
+            UserModel.fromJson(json.decode(profileResponse.body));
+        emit(SuccessState("Profile Updated Successful",userModel));
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
-        emit(ErrorState(
-            "There was a problem completing profile set up."));
+        emit(ErrorState("There was a problem completing profile set up."));
         emit(AuthInitial());
       } else {
         emit(ErrorState(json.decode(profileResponse.body)['mobile_phone'][0] ??
             json.decode(profileResponse.body)['first_name'][0] ??
-            json.decode(profileResponse.body)['last_name'][0]??
+            json.decode(profileResponse.body)['last_name'][0] ??
             json.decode(profileResponse.body)['profile_pic'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(profileResponse.body));

@@ -19,9 +19,9 @@ class ErrorState extends AuthState {
 
 class SuccessState extends AuthState {
   final String msg;
-
+  final UserModel? userModel;
   SuccessState(
-    this.msg,
+    this.msg, this.userModel,
   );
 }
 class ProfileSetUpState extends AuthState {

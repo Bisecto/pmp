@@ -7,14 +7,16 @@ import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:pim/view/widgets/form_button.dart';
 
+import '../../../../model/property_model.dart';
+import '../../../../res/apis.dart';
 import '../../../../res/app_colors.dart';
 import '../../../../utills/app_utils.dart';
 import 'occupant_list.dart';
 
 class PropertyDetails extends StatefulWidget {
-  final String title;
+  final Property property;
 
-  const PropertyDetails({super.key, required this.title});
+  const PropertyDetails({super.key, required this.property});
 
   @override
   State<PropertyDetails> createState() => _PropertyDetailsState();
@@ -31,7 +33,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                AppAppBar(title: widget.title),
+                AppAppBar(title: widget.property.propertyName),
                 const SizedBox(
                   height: 10,
                 ),
@@ -58,7 +60,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 const SizedBox(
                   height: 15,
                 ),
-                lodgeContainer(lodge: widget.title, context: context),
+                lodgeContainer(property: widget.property, context: context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -76,9 +78,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           decoration: BoxDecoration(
                               color: AppColors.green,
                               borderRadius: BorderRadius.circular(5)),
-                          child: const Center(
+                          child: Center(
                               child: CustomText(
-                            text: "Fully Booked",
+                            text: widget.property.availableFlatsRooms == 0
+                                ? "Fully Booked"
+                                : "Not Fully Booked",
                             color: AppColors.white,
                             weight: FontWeight.bold,
                           )),
@@ -99,9 +103,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           decoration: BoxDecoration(
                               color: AppColors.white,
                               borderRadius: BorderRadius.circular(5)),
-                          child: const Center(
+                          child: Center(
                               child: CustomText(
-                            text: "0",
+                            text: "${widget.property.availableFlatsRooms}",
                             color: AppColors.black,
                             weight: FontWeight.bold,
                           )),
@@ -124,10 +128,13 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     Row(
                       children: [
                         SvgPicture.asset(AppSvgImages.download),
-                        const SizedBox(width: 10,),
+                        const SizedBox(
+                          width: 10,
+                        ),
                         GestureDetector(
-                          onTap: (){
-                            AppNavigator.pushAndStackPage(context, page: AddOccupantScreen());
+                          onTap: () {
+                            AppNavigator.pushAndStackPage(context,
+                                page: AddOccupantScreen());
                           },
                           child: Container(
                             height: 45,
@@ -138,7 +145,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_box,color: AppColors.white,),
+                                Icon(
+                                  Icons.add_box,
+                                  color: AppColors.white,
+                                ),
                                 CustomText(
                                   text: " Add occupant",
                                   color: AppColors.white,
@@ -148,7 +158,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             ),
                           ),
                         )
-
                       ],
                     )
                   ],
@@ -165,7 +174,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     );
   }
 
-  Widget lodgeContainer({required String lodge, required context}) {
+  Widget lodgeContainer({required Property property, required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
@@ -193,9 +202,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   //     offset: const Offset(0, 4),
                   //   ),
                   // ],
-                  image: const DecorationImage(
+                  image: DecorationImage(
                       image: NetworkImage(
-                        "https://images.crowdspring.com/blog/wp-content/uploads/2017/08/23163415/pexels-binyamin-mellish-106399.jpg",
+                        AppApis.appBaseUrl + property.firstImage,
                       ),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
@@ -219,7 +228,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       ],
                     ),
                     TextStyles.textHeadings(
-                      textValue: "NGN 200,000",
+                      textValue: "NGN ${property.price}",
                       textSize: 18,
                     ),
                   ],

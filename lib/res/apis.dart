@@ -20,4 +20,9 @@ class AppApis {
       "$appBaseUrl/api/resend-verification-token/";
   static String resetPassword = "$appBaseUrl/u-auth/reset-password/";
   static String loginApi = "$appBaseUrl/api/login/";
+
+
+  static String propertiesListApi = "$appBaseUrl/api/list-of-properties/";
+  static String addPropertyApi = "$appBaseUrl/api/add-property/";
+
 }

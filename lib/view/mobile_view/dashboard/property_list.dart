@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pim/model/property_model.dart';
+import 'package:pim/res/apis.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
 
 import '../../../../res/app_colors.dart';
@@ -8,31 +10,32 @@ import '../../../utills/app_utils.dart';
 import '../../widgets/app_custom_text.dart';
 
 class LodgeList extends StatelessWidget {
-  LodgeList({super.key});
+  List<Property> properties;
 
-  final List<String> lodges = [
-    'Ozo Lodge 1',
-    'Ozo Lodge 2',
-    'Ozo Lodge 3',
-    'Ozo Lodge 4',
-  ];
+  LodgeList({super.key, required this.properties});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: lodges.length * 351,
-      child: ListView.builder(
-        itemCount: lodges.length,
-        padding: EdgeInsets.zero,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return lodgeContainer(lodge: lodges[index], context: context);
-        },
-      ),
-    );
+    return properties.isNotEmpty
+        ? Container(
+            height: properties.length * 351,
+            child: ListView.builder(
+              itemCount: properties.length,
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return lodgeContainer(
+                    property: properties[index], context: context);
+              },
+            ),
+          )
+        : Container(
+            child: const CustomText(
+                text: "No properties has been uploaded yet", size: 14),
+          );
   }
 
-  Widget lodgeContainer({required String lodge, required context}) {
+  Widget lodgeContainer({required Property property, required context}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -67,9 +70,9 @@ class LodgeList extends StatelessWidget {
                   //     offset: const Offset(0, 4),
                   //   ),
                   // ],
-                  image: const DecorationImage(
+                  image: DecorationImage(
                       image: NetworkImage(
-                        "https://images.crowdspring.com/blog/wp-content/uploads/2017/08/23163415/pexels-binyamin-mellish-106399.jpg",
+                        AppApis.appBaseUrl + property.firstImage,
                       ),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
@@ -81,18 +84,18 @@ class LodgeList extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextStyles.textHeadings(
-                      textValue: lodge,
+                      textValue: property.propertyName,
                       textSize: 18,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(10.0, 0, 10, 0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.location_on_outlined,
                             color: AppColors.red,
                           ),
-                          CustomText(text: 'Dublin,ireland', size: 14),
+                          CustomText(text: property.location, size: 14),
                         ],
                       ),
                     ),
@@ -123,16 +126,16 @@ class LodgeList extends StatelessWidget {
 
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.cabin_rounded,
                                 color: Colors.purple,
                               ),
                               CustomText(
-                                text: ' 19  ',
+                                text: ' ${property.availableFlatsRooms}  ',
                                 size: 14,
                                 maxLines: 3,
                               ),
@@ -140,12 +143,12 @@ class LodgeList extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.people,
                                 color: Colors.green,
                               ),
                               CustomText(
-                                text: '  35',
+                                text: '  ${property.occupiedFlatsRooms}',
                                 size: 14,
                                 maxLines: 3,
                               ),
@@ -158,7 +161,7 @@ class LodgeList extends StatelessWidget {
                       onTap: () {
                         AppNavigator.pushAndStackPage(context,
                             page: PropertyDetails(
-                              title: lodge,
+                              property: property,
                             ));
                       },
                       child: Container(

@@ -66,7 +66,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: const TextStyle( fontSize: 15),
         ),
         const SizedBox(height: 10),
         Container(

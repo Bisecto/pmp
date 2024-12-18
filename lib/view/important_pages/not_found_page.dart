@@ -20,7 +20,7 @@ class AppLoadingPage extends StatelessWidget {
         child: Container(
           // The background color
           color: !theme.isDark
-              ? AppColors.white
+              ? Colors.transparent
               : AppColors.darkBackgroundColor,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
@@ -31,7 +31,7 @@ class AppLoadingPage extends StatelessWidget {
                 // The loading indicator
                 Container(
                   color: !theme.isDark
-                      ? AppColors.white
+                      ? Colors.transparent
                       : AppColors.darkBackgroundColor,
                   height: 70,
                   child: Center(

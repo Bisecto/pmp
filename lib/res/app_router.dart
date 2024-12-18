@@ -25,7 +25,7 @@ class AppRouter {
   static const String noInternetScreen = "/no-internet";
 
   ///LANDING PAGE LandingPage
-  static const String landingPage = "/landing-page";
+ // static const String landingPage = "/landing-page";
 
   Route onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -35,11 +35,11 @@ class AppRouter {
       //   return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
       case signInPage:
         return MaterialPageRoute(builder: (_) => const SignInPage());
-      case landingPage:
-        return MaterialPageRoute(
-            builder: (_) => LandingPage(
-                  selectedIndex: 0,
-                ));
+      // case landingPage:
+      //   return MaterialPageRoute(
+      //       builder: (_) => LandingPage(
+      //             selectedIndex: 0,userModel: null,
+      //           ));
       default:
         return MaterialPageRoute(builder: (_) => const AppLoadingPage('Loading'));
     }
