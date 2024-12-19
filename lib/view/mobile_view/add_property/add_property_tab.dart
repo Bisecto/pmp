@@ -21,7 +21,14 @@ import '../landing_page.dart';
 
 class AddPropertyScreen extends StatefulWidget {
   UserModel userModel;
-   AddPropertyScreen({super.key,required this.userModel});
+  bool isEdit;
+  Property property;
+
+  AddPropertyScreen(
+      {super.key,
+      required this.userModel,
+      required this.isEdit,
+      required this.property});
 
   @override
   _AddPropertyScreenState createState() => _AddPropertyScreenState();
@@ -42,12 +49,42 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final TextEditingController occupiedRoomsController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   PropertyBloc propertyBloc = PropertyBloc();
-  String selectedPropertyType = '';
-  String selectedState = '';
-  String selectedPriceType = 'Static';
+  final TextEditingController selectedPropertyType =
+      TextEditingController(text: '');
+  final TextEditingController selectedState = TextEditingController(text: '');
+  final TextEditingController selectedPriceType =
+      TextEditingController(text: 'Static');
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
-  Property? property;
+
+  //Property? property;
+  void handleUpdate() async {
+    setState(() {
+      propertyNameController.text = widget.property.propertyName;
+      selectedPropertyType.text = widget.property.propertyType;
+      selectedState.text = widget.property.location;
+      addressController.text = widget.property.address;
+      townController.text = widget.property.city;
+      selectedPriceType.text = widget.property.priceType;
+      priceController.text = widget.property.price;
+      fromPriceController.text = widget.property.priceRangeStart;
+      toPriceController.text = widget.property.priceRangeStop;
+      availableRoomsController.text =
+          widget.property.availableFlatsRooms.toString();
+      occupiedRoomsController.text =
+          widget.property.occupiedFlatsRooms.toString();
+      descriptionController.text = widget.property.description.toString();
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    print(widget.property.propertyName);
+    print(widget.property.propertyType);
+    handleUpdate();
+    super.initState();
+  }
 
   void selectImages() async {
     final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
@@ -79,7 +116,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const CustomText(text: 'Add Property'),
+          title: CustomText(
+              text: widget.isEdit ? 'Update Property' : 'Add Property'),
           backgroundColor: Colors.white,
         ),
         body: BlocConsumer<PropertyBloc, PropertyState>(
@@ -89,9 +127,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             listener: (context, state) {
               if (state is AddPropertySuccessState) {
                 setState(() {
-                  selectedPropertyType = '';
-                  selectedState = '';
-                  selectedPriceType = 'Static';
+                  selectedPropertyType.text = '';
+                  selectedState.text = '';
+                  selectedPriceType.text = 'Static';
                   imageFileList!.clear();
                   propertyNameController.text = '';
                   addressController.text = '';
@@ -216,7 +254,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   DropDown(
                                     label: 'Property Type',
                                     hint: "Select Property type",
-                                    selectedValue: selectedPropertyType,
+                                    initialValue: selectedPropertyType.text,
+                                    selectedValue: selectedPropertyType.text,
                                     items: const [
                                       'Student Hostel',
                                       'Apartment/Flat',
@@ -227,7 +266,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     ],
                                     onChanged: (value) {
                                       setState(() {
-                                        selectedPropertyType = value;
+                                        selectedPropertyType.text = value;
                                       });
                                     },
                                   ),
@@ -286,7 +325,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   DropDown(
                                     label: 'State',
                                     hint: "Select state",
-                                    selectedValue: selectedState,
+                                    selectedValue: selectedState.text,
+                                    initialValue: selectedState.text,
                                     items: const [
                                       "Abia",
                                       "Adamawa",
@@ -328,7 +368,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     ],
                                     onChanged: (value) {
                                       setState(() {
-                                        selectedState = value;
+                                        selectedState.text = value;
                                       });
                                     },
                                   ),
@@ -352,15 +392,16 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 label: 'Price Type',
                                 hint: "Select price Type",
                                 initialValue: 'Static',
-                                selectedValue: selectedPriceType,
+                                selectedValue: selectedPriceType.text,
                                 items: const ['Static', 'Dynamic'],
                                 onChanged: (value) {
                                   setState(() {
-                                    selectedPriceType = value;
+                                    selectedPriceType.text = value;
                                   });
                                 },
                               ),
-                              if (selectedPriceType.toLowerCase() == 'dynamic')
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'dynamic')
                                 Row(
                                   children: [
                                     // 'From' Input Field
@@ -401,7 +442,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     ),
                                   ],
                                 ),
-                              if (selectedPriceType.toLowerCase() == 'static')
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'static')
                                 CustomTextFormField(
                                   controller: priceController,
                                   hint: 'Enter price',
@@ -483,12 +525,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 height: 20,
                               ),
                               _overviewRow(
-                                  'Property Type', selectedPropertyType),
+                                  'Property Type', selectedPropertyType.text),
                               _overviewRow(
                                   'Property Name', propertyNameController.text),
                               _overviewRow('Address', addressController.text),
                               _overviewRow('Town', townController.text),
-                              _overviewRow('State', selectedState),
+                              _overviewRow('State', selectedState.text),
                               _overviewRow('Price', priceController.text),
                               _overviewRow('Available Rooms',
                                   availableRoomsController.text),
@@ -651,29 +693,30 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   void _saveProperty() {
     if (imageFileList!.isNotEmpty) {
-      if (selectedPropertyType.isNotEmpty) {
+      if (selectedPropertyType.text.isNotEmpty) {
         if (propertyNameController.text.isNotEmpty) {
           if (addressController.text.isNotEmpty) {
             if (townController.text.isNotEmpty) {
-              if (selectedState.isNotEmpty) {
-                if (selectedPriceType.toLowerCase() == 'static') {
+              if (selectedState.text.isNotEmpty) {
+                if (selectedPriceType.text.toLowerCase() == 'static') {
                   if (priceController.text.isNotEmpty) {
                     if (availableRoomsController.text.isNotEmpty) {
                       if (occupiedRoomsController.text.isNotEmpty) {
                         if (descriptionController.text.isNotEmpty) {
                           propertyBloc.add(AddPropertyEvent(
                               propertyNameController.text,
-                              selectedPropertyType,
+                              selectedPropertyType.text,
                               availableRoomsController.text,
                               addressController.text,
                               townController.text,
                               descriptionController.text,
-                              selectedState,
+                              selectedState.text,
                               imageFileList!,
-                              selectedPriceType,
+                              selectedPriceType.text,
                               priceController.text,
                               fromPriceController.text,
-                              toPriceController.text,occupiedRoomsController.text));
+                              toPriceController.text,
+                              occupiedRoomsController.text));
                         } else {
                           MSG.warningSnackBar(
                               context, 'Property description field is empty');
@@ -697,17 +740,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                           if (descriptionController.text.isNotEmpty) {
                             propertyBloc.add(AddPropertyEvent(
                                 propertyNameController.text,
-                                selectedPropertyType,
+                                selectedPropertyType.text,
                                 availableRoomsController.text,
                                 addressController.text,
                                 townController.text,
                                 descriptionController.text,
-                                selectedState,
+                                selectedState.text,
                                 imageFileList!,
-                                selectedPriceType,
+                                selectedPriceType.text,
                                 priceController.text,
                                 fromPriceController.text,
-                                toPriceController.text,occupiedRoomsController.text));
+                                toPriceController.text,
+                                occupiedRoomsController.text));
                           } else {
                             MSG.warningSnackBar(
                                 context, 'Property description field is empty');
@@ -743,7 +787,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         MSG.warningSnackBar(context, 'Please Select property type');
       }
     } else {
-      MSG.warningSnackBar(context, 'Property image is needed to complete upload');
+      MSG.warningSnackBar(
+          context, 'Property image is needed to complete upload');
     }
   }
 }

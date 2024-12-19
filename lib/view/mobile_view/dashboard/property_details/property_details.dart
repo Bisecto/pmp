@@ -6,6 +6,7 @@ import 'package:pim/model/user_model.dart';
 import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
+import 'package:pim/view/mobile_view/add_property/add_property_tab.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:pim/view/widgets/form_button.dart';
@@ -22,7 +23,8 @@ class PropertyDetails extends StatefulWidget {
   final Property property;
   final UserModel userModel;
 
-  const PropertyDetails({super.key, required this.property, required this.userModel});
+  const PropertyDetails(
+      {super.key, required this.property, required this.userModel});
 
   @override
   State<PropertyDetails> createState() => _PropertyDetailsState();
@@ -74,12 +76,15 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              AppAppBar(title: singlePropertySuccessState.property.propertyName),
+                              AppAppBar(
+                                  title: singlePropertySuccessState
+                                      .property.propertyName),
                               const SizedBox(
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const CustomText(
                                     text: "Property Details",
@@ -88,7 +93,20 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   ),
                                   Row(
                                     children: [
-                                      SvgPicture.asset(AppSvgImages.edit),
+                                      GestureDetector(
+                                          onTap: () {
+                                            AppNavigator.pushAndStackPage(
+                                                context,
+                                                page: AddPropertyScreen(
+                                                  userModel: widget.userModel,
+                                                  isEdit: true,
+                                                  property:
+                                                      singlePropertySuccessState
+                                                          .property,
+                                                ));
+                                          },
+                                          child: SvgPicture.asset(
+                                              AppSvgImages.edit)),
                                       //const Icon(Icons.edit),
                                       const SizedBox(
                                         width: 10,
@@ -101,12 +119,16 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               const SizedBox(
                                 height: 15,
                               ),
-                              lodgeContainer(property: singlePropertySuccessState.property, context: context),
+                              lodgeContainer(
+                                  property: singlePropertySuccessState.property,
+                                  context: context),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const CustomText(
                                         text: "Status",
@@ -115,21 +137,27 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       ),
                                       Container(
                                         height: 45,
-                                        width: AppUtils.deviceScreenSize(context).width / 2.5,
+                                        width:
+                                            AppUtils.deviceScreenSize(context)
+                                                    .width /
+                                                2.5,
                                         decoration: BoxDecoration(
                                             color: AppColors.green,
-                                            borderRadius: BorderRadius.circular(5)),
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
                                         child: Center(
                                             child: CustomText(
-                                              text: singlePropertySuccessState.property.status,
-                                              color: AppColors.white,
-                                              weight: FontWeight.bold,
-                                            )),
+                                          text: singlePropertySuccessState
+                                              .property.status,
+                                          color: AppColors.white,
+                                          weight: FontWeight.bold,
+                                        )),
                                       )
                                     ],
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const CustomText(
                                         text: "Available rooms",
@@ -138,16 +166,21 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       ),
                                       Container(
                                         height: 45,
-                                        width: AppUtils.deviceScreenSize(context).width / 2.5,
+                                        width:
+                                            AppUtils.deviceScreenSize(context)
+                                                    .width /
+                                                2.5,
                                         decoration: BoxDecoration(
                                             color: AppColors.white,
-                                            borderRadius: BorderRadius.circular(5)),
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
                                         child: Center(
                                             child: CustomText(
-                                              text: "${singlePropertySuccessState.property.availableFlatsRooms}",
-                                              color: AppColors.black,
-                                              weight: FontWeight.bold,
-                                            )),
+                                          text:
+                                              "${singlePropertySuccessState.property.availableFlatsRooms}",
+                                          color: AppColors.black,
+                                          weight: FontWeight.bold,
+                                        )),
                                       )
                                     ],
                                   ),
@@ -157,7 +190,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 height: 20,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const CustomText(
                                     text: "Occupants",
@@ -173,16 +207,24 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       GestureDetector(
                                         onTap: () {
                                           AppNavigator.pushAndStackPage(context,
-                                              page: AddOccupantScreen(userModel: widget.userModel, property: widget.property,));
+                                              page: AddOccupantScreen(
+                                                userModel: widget.userModel,
+                                                property: widget.property,
+                                              ));
                                         },
                                         child: Container(
                                           height: 45,
-                                          width: AppUtils.deviceScreenSize(context).width / 3,
+                                          width:
+                                              AppUtils.deviceScreenSize(context)
+                                                      .width /
+                                                  3,
                                           decoration: BoxDecoration(
                                               color: AppColors.blue,
-                                              borderRadius: BorderRadius.circular(5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
                                           child: const Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               Icon(
                                                 Icons.add_box,
@@ -204,10 +246,17 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              if(singlePropertySuccessState.property.occupants.isEmpty)
-                                const CustomText(text: "No tenant has been added yet",),
-                              if(singlePropertySuccessState.property.occupants.isNotEmpty)
-                              OccupantList(occupants: singlePropertySuccessState.property.occupants,)
+                              if (singlePropertySuccessState
+                                  .property.occupants.isEmpty)
+                                const CustomText(
+                                  text: "No tenant has been added yet",
+                                ),
+                              if (singlePropertySuccessState
+                                  .property.occupants.isNotEmpty)
+                                OccupantList(
+                                  occupants: singlePropertySuccessState
+                                      .property.occupants,
+                                )
                             ],
                           ),
                         ),

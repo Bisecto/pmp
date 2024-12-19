@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/view/mobile_view/profile/profile_tab.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +45,28 @@ class _LandingPageState extends State<LandingPage> {
         onPageChanged: _onPageChanged,
         userModel: widget.userModel,
       ),
-      AddPropertyScreen(userModel: widget.userModel,),
+      AddPropertyScreen(
+        userModel: widget.userModel,
+        isEdit: false,
+        property: Property(
+            id: 0,
+            propertyName: '',
+            address: '',
+            location: '',
+            city: '',
+            description: '',
+            propertyType: '',
+            price: '',
+            priceType: '',
+            priceRangeStart: '',
+            priceRangeStop: '',
+            availableFlatsRooms: 0,
+            occupiedFlatsRooms: '',
+            status: '',
+            occupants: [],
+            firstImage: '',
+            images: []),
+      ),
       const ProfileTab()
     ];
     super.initState();

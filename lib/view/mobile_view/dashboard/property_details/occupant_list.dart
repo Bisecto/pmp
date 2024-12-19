@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../res/app_colors.dart';
 import '../../../../utills/app_utils.dart';
 import '../../../widgets/app_custom_text.dart';
+import 'countdown_function.dart';
 
 class OccupantList extends StatefulWidget {
   OccupantList({super.key, required this.occupants});
@@ -54,9 +55,9 @@ class _OccupantListState extends State<OccupantList> {
 
   Widget occupantContainer({required Occupant occupant, required context}) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(0),
       child: Container(
-        height: 120,
+        height: 130,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -81,11 +82,14 @@ class _OccupantListState extends State<OccupantList> {
                   children: [
                     Row(
                       children: [
-                        Image.network(
-                          AppApis.appBaseUrl + occupant.profilePic,
-                          height: 50,
-                          width: 50,
+                        CircleAvatar(
+
+                          backgroundImage: NetworkImage(
+                            occupant.profilePic,
+                          ),
+                          //radius: 20,
                         ),
+                        // Image.network(),
                         TextStyles.textHeadings(
                           textValue: "  ${occupant.name}",
                           textSize: 18,
@@ -96,20 +100,24 @@ class _OccupantListState extends State<OccupantList> {
                       children: [
                         GestureDetector(
                             onTap: () {
-                              _makePhoneCall(occupant.mobileNumber);
+
+                               _makePhoneCall(occupant.mobileNumber);
                             },
-                            child: SvgPicture.asset(AppSvgImages.phone)),
+                            child: SvgPicture.asset(
+                              AppSvgImages.phone,
+                              height: 25,
+                              width: 25,
+                            )),
                         const SizedBox(
                           width: 10,
                         ),
-                        SvgPicture.asset(AppSvgImages.message),
+
                         GestureDetector(
                           onTap: () {
                             _sendSMS(occupant.mobileNumber, '');
                           },
-                          child: const SizedBox(
-                            width: 10,
-                          ),
+                          child: SvgPicture.asset(AppSvgImages.message,
+                              height: 25, width: 25),
                         ),
                         //const Icon(Icons.more_vert)
                       ],
@@ -117,44 +125,38 @@ class _OccupantListState extends State<OccupantList> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const CustomText(
-                          text: "Room Number:",
-                          color: AppColors.black,
-                          weight: FontWeight.bold,
-                        ),
-                        CustomText(
-                          text: ' ${occupant.roomNumber}  ',
-                          size: 14,
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const CustomText(
-                          text: "Rent Due In:",
-                          color: AppColors.black,
-                          weight: FontWeight.bold,
-                        ),
-                        Container(
-                          width: AppUtils.deviceScreenSize(context).width/2.5,
-                          child: CustomText(
-                            text:
-                                '  ${getCountdownText(occupant.rentDueDate.toString())}',
+              Container(
+                width: AppUtils.deviceScreenSize(context).width,
+                height: 60,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const CustomText(
+                            text: "Room Number:",
+                            color: AppColors.black,
+                            weight: FontWeight.bold,
+                          ),
+                          CustomText(
+                            text: ' ${occupant.roomNumber}  ',
                             size: 14,
                             maxLines: 3,
                           ),
+                        ],
+                      ),
+                      Container(
+                        width: AppUtils.deviceScreenSize(context).width / 2,
+                        //height: 100,
+                        child: CountdownWidget(
+                          targetDate:
+                              DateTime.parse(occupant.rentDueDate.toString()),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               )
             ],
@@ -173,7 +175,8 @@ class _OccupantListState extends State<OccupantList> {
     if (difference.isNegative) {
       return "Countdown has expired!";
     } else {
-      return "${difference.inDays} days, ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left";
+      return "${difference.inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
+          ;
     }
   }
 
@@ -192,13 +195,12 @@ class _OccupantListState extends State<OccupantList> {
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri.parse(phoneNumber);
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
+    final Uri url = Uri.parse('tel:$phoneNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     } else {
       throw 'Could not launch $phoneNumber';
     }
   }
-
   String countdownText = "";
 }
