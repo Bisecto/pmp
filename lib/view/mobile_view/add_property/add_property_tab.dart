@@ -1,10 +1,13 @@
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
 import 'package:pim/model/property_model.dart';
+import 'package:pim/res/apis.dart';
 import 'package:pim/view/widgets/drop_down.dart';
 import 'package:provider/provider.dart';
 
@@ -59,7 +62,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   //Property? property;
   void handleUpdate() async {
-    setState(() {
+    setState(() async {
       propertyNameController.text = widget.property.propertyName;
       selectedPropertyType.text = widget.property.propertyType;
       selectedState.text = widget.property.location;
@@ -74,6 +77,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       occupiedRoomsController.text =
           widget.property.occupiedFlatsRooms.toString();
       descriptionController.text = widget.property.description.toString();
+      print(widget.property.images);
+      for (String imageUrl in widget.property.images) {
+        print(imageUrl);
+        try {
+          File imageFile = await downloadImage(AppApis.appBaseUrl+imageUrl);
+          setState(() {
+            imageFileList!.add(XFile(imageFile.path));
+          });
+        } catch (e) {
+          print('Error downloading image: $e');
+        }
+      }
     });
   }
 
@@ -90,23 +105,33 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
 
     if (selectedImages != null && selectedImages.isNotEmpty) {
-      // Combine the existing and newly selected images
-      int totalImages = (imageFileList?.length ?? 0) + selectedImages.length;
+      int totalImages = imageFileList!.length + selectedImages.length;
 
       if (totalImages > 4) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('You can only select up to 4 images.')),
         );
-        // Add only the remaining allowed images to the list
-        int remainingSlots = 4 - (imageFileList?.length ?? 0);
-        imageFileList!.addAll(selectedImages.take(remainingSlots));
+        int remainingSlots = 4 - imageFileList!.length;
+        imageFileList!.addAll(
+            selectedImages.take(remainingSlots).map((xFile) => XFile(xFile.path)));
       } else {
-        // Add all selected images if within the limit
-        imageFileList!.addAll(selectedImages);
+        imageFileList!
+            .addAll(selectedImages.map((xFile) => XFile(xFile.path)));
       }
 
-      print("Image List Length: ${imageFileList!.length}");
       setState(() {});
+    }
+  }
+
+  Future<File> downloadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/${imageUrl.split('/').last}';
+      final file = File(filePath);
+      return file.writeAsBytes(response.bodyBytes);
+    } else {
+      throw Exception('Failed to download image');
     }
   }
 
@@ -173,7 +198,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                         });
                       } else {
                         // Final step: Save property
-                        _saveProperty();
+                        if(widget.isEdit){
+                          _updateProduct();
+                        }else{
+                        _saveProperty();}
                       }
                     },
                     onStepCancel: () {
@@ -227,27 +255,36 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   if (imageFileList!.isNotEmpty)
                                     SizedBox(
                                       height: 100,
-                                      // Set an appropriate height for the GridView
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: GridView.builder(
-                                          itemCount: imageFileList!.length,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          gridDelegate:
-                                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 4,
-                                          ),
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Image.file(
-                                              File(imageFileList![index].path),
-                                              fit: BoxFit.cover,
-                                            );
-                                          },
+                                      child: GridView.builder(
+                                        itemCount: imageFileList!.length,
+                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 4,
                                         ),
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return Stack(
+                                            children: [
+                                              Image.file(
+                                                File(imageFileList![index].path),
+                                                fit: BoxFit.cover,
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: IconButton(
+                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      imageFileList!.removeAt(index);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       ),
                                     ),
+
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -555,9 +592,405 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     ],
                   );
                 default:
-                  return const Column(
-                    children: [
-                      AppLoadingPage("Uploading property..."),
+                  return Stepper(
+                    type: StepperType.horizontal,
+                    currentStep: _currentStep,
+                    onStepTapped: (int step) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    },
+                    onStepContinue: () {
+                      if (_currentStep < 2) {
+                        setState(() {
+                          _currentStep += 1;
+                        });
+                      } else {
+                        // Final step: Save property
+                        if(widget.isEdit){
+                          _updateProduct();
+                        }else{
+                          _saveProperty();}
+                      }
+                    },
+                    onStepCancel: () {
+                      if (_currentStep > 0) {
+                        setState(() {
+                          _currentStep -= 1;
+                        });
+                      }
+                    },
+                    steps: <Step>[
+                      Step(
+                          title: const CustomText(
+                            text: 'Property Details',
+                            size: 12,
+                          ),
+                          content: Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: selectImages,
+                                    child: Container(
+                                      height: 250,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          borderRadius:
+                                          BorderRadius.circular(10)),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.save_alt_rounded),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Center(
+                                            child: TextStyles.richTexts(
+                                                text1:
+                                                '    Click to select images   ',
+                                                text2:
+                                                '\n(only 4 images are allowed)',
+                                                color: Colors.purple,
+                                                size: 13,
+                                                color2: AppColors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (imageFileList!.isNotEmpty)
+                                    SizedBox(
+                                      height: 100,
+                                      child: GridView.builder(
+                                        itemCount: imageFileList!.length,
+                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 4,
+                                        ),
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return Stack(
+                                            children: [
+                                              Image.file(
+                                                File(imageFileList![index].path),
+                                                fit: BoxFit.cover,
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: IconButton(
+                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      imageFileList!.removeAt(index);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  DropDown(
+                                    label: 'Property Type',
+                                    hint: "Select Property type",
+                                    initialValue: selectedPropertyType.text,
+                                    selectedValue: selectedPropertyType.text,
+                                    items: const [
+                                      'Student Hostel',
+                                      'Apartment/Flat',
+                                      'Bungalow',
+                                      'Duplex',
+                                      'Shop',
+                                      'Offices'
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedPropertyType.text = value;
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomTextFormField(
+                                    controller: propertyNameController,
+                                    hint: 'Enter property name',
+                                    label: 'Property Name',
+                                    borderRadius: 10,
+                                    borderColor: Colors.grey,
+                                    backgroundColor: theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.white,
+                                    hintColor: !theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.grey,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomTextFormField(
+                                    controller: addressController,
+                                    hint: 'Enter address',
+                                    maxLines: 3,
+                                    label: 'Address',
+                                    borderColor: Colors.grey,
+                                    backgroundColor: theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.white,
+                                    hintColor: !theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.grey,
+                                    borderRadius: 10,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomTextFormField(
+                                    controller: townController,
+                                    hint: 'Enter town',
+                                    label: 'Town',
+                                    borderColor: Colors.grey,
+                                    backgroundColor: theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.white,
+                                    hintColor: !theme.isDark
+                                        ? AppColors.darkCardBackgroundColor
+                                        : AppColors.grey,
+                                    borderRadius: 10,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  DropDown(
+                                    label: 'State',
+                                    hint: "Select state",
+                                    selectedValue: selectedState.text,
+                                    initialValue: selectedState.text,
+                                    items: const [
+                                      "Abia",
+                                      "Adamawa",
+                                      "Akwa Ibom",
+                                      "Anambra",
+                                      "Bauchi",
+                                      "Bayelsa",
+                                      "Benue",
+                                      "Borno",
+                                      "Cross River",
+                                      "Delta",
+                                      "Ebonyi",
+                                      "Edo",
+                                      "Ekiti",
+                                      "Enugu",
+                                      "FCT - Abuja",
+                                      "Gombe",
+                                      "Imo",
+                                      "Jigawa",
+                                      "Kaduna",
+                                      "Kano",
+                                      "Katsina",
+                                      "Kebbi",
+                                      "Kogi",
+                                      "Kwara",
+                                      "Lagos",
+                                      "Nasarawa",
+                                      "Niger",
+                                      "Ogun",
+                                      "Ondo",
+                                      "Osun",
+                                      "Oyo",
+                                      "Plateau",
+                                      "Rivers",
+                                      "Sokoto",
+                                      "Taraba",
+                                      "Yobe",
+                                      "Zamfara"
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedState.text = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          isActive: _currentStep >= 0,
+                          stepStyle: StepStyle(
+                              color: _currentStep >= 0
+                                  ? AppColors.mainAppColor
+                                  : null)),
+                      Step(
+                          title: const CustomText(
+                            text: 'Rent Information',
+                            size: 12,
+                          ),
+                          content: Column(
+                            children: [
+                              DropDown(
+                                label: 'Price Type',
+                                hint: "Select price Type",
+                                initialValue: 'Static',
+                                selectedValue: selectedPriceType.text,
+                                items: const ['Static', 'Dynamic'],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedPriceType.text = value;
+                                  });
+                                },
+                              ),
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'dynamic')
+                                Row(
+                                  children: [
+                                    // 'From' Input Field
+                                    Expanded(
+                                      child: CustomTextFormField(
+                                        controller: fromPriceController,
+                                        hint: 'From',
+                                        label: 'From',
+                                        textInputType: TextInputType.number,
+                                        borderColor: Colors.grey,
+                                        backgroundColor: theme.isDark
+                                            ? AppColors.darkCardBackgroundColor
+                                            : AppColors.white,
+                                        hintColor: !theme.isDark
+                                            ? AppColors.darkCardBackgroundColor
+                                            : AppColors.grey,
+                                        borderRadius: 10,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    // Add spacing between fields
+                                    // 'To' Input Field
+                                    Expanded(
+                                      child: CustomTextFormField(
+                                        controller: toPriceController,
+                                        hint: 'To',
+                                        label: 'To',
+                                        textInputType: TextInputType.number,
+                                        borderColor: Colors.grey,
+                                        backgroundColor: theme.isDark
+                                            ? AppColors.darkCardBackgroundColor
+                                            : AppColors.white,
+                                        hintColor: !theme.isDark
+                                            ? AppColors.darkCardBackgroundColor
+                                            : AppColors.grey,
+                                        borderRadius: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'static')
+                                CustomTextFormField(
+                                  controller: priceController,
+                                  hint: 'Enter price',
+                                  label: 'Price',
+                                  textInputType: TextInputType.number,
+                                  borderColor: Colors.grey,
+                                  backgroundColor: theme.isDark
+                                      ? AppColors.darkCardBackgroundColor
+                                      : AppColors.white,
+                                  hintColor: !theme.isDark
+                                      ? AppColors.darkCardBackgroundColor
+                                      : AppColors.grey,
+                                  borderRadius: 10,
+                                ),
+                              CustomTextFormField(
+                                controller: availableRoomsController,
+                                hint: 'Enter number of available rooms',
+                                label: 'Number of Available Rooms',
+                                textInputType: TextInputType.number,
+                                borderColor: Colors.grey,
+                                borderRadius: 10,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                              ),
+                              CustomTextFormField(
+                                controller: occupiedRoomsController,
+                                hint: 'Enter number of occupied rooms',
+                                label: 'Number of Occupied Rooms',
+                                textInputType: TextInputType.number,
+                                borderColor: Colors.grey,
+                                borderRadius: 10,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                              ),
+                              CustomTextFormField(
+                                controller: descriptionController,
+                                hint: 'Write about this property',
+                                label: 'Description',
+                                maxLines: 3,
+                                borderColor: Colors.grey,
+                                borderRadius: 10,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                              ),
+                            ],
+                          ),
+                          isActive: _currentStep >= 1,
+                          stepStyle: StepStyle(
+                              color: _currentStep >= 1
+                                  ? AppColors.mainAppColor
+                                  : null)),
+                      Step(
+                          title: const CustomText(
+                            text: 'Overview',
+                            size: 12,
+                          ),
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              lodgeContainer(
+                                  lodge: propertyNameController.text,
+                                  context: context),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              _overviewRow(
+                                  'Property Type', selectedPropertyType.text),
+                              _overviewRow(
+                                  'Property Name', propertyNameController.text),
+                              _overviewRow('Address', addressController.text),
+                              _overviewRow('Town', townController.text),
+                              _overviewRow('State', selectedState.text),
+                              _overviewRow('Price', priceController.text),
+                              _overviewRow('Available Rooms',
+                                  availableRoomsController.text),
+                              _overviewRow('Occupied Rooms',
+                                  occupiedRoomsController.text),
+                              _overviewRow(
+                                  'Description', descriptionController.text),
+                            ],
+                          ),
+                          isActive: _currentStep >= 2,
+                          stepStyle: StepStyle(
+                              color: _currentStep >= 2
+                                  ? AppColors.mainAppColor
+                                  : null)),
                     ],
                   );
               }
@@ -752,6 +1185,106 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 fromPriceController.text,
                                 toPriceController.text,
                                 occupiedRoomsController.text));
+                          } else {
+                            MSG.warningSnackBar(
+                                context, 'Property description field is empty');
+                          }
+                        } else {
+                          MSG.warningSnackBar(
+                              context, 'Occupied room field is empty');
+                        }
+                      } else {
+                        MSG.warningSnackBar(
+                            context, 'Available room field is empty');
+                      }
+                    } else {
+                      MSG.warningSnackBar(context, 'To price field is empty');
+                    }
+                  } else {
+                    MSG.warningSnackBar(context, 'From price field is empty');
+                  }
+                }
+              } else {
+                MSG.warningSnackBar(context, 'Select a valid state');
+              }
+            } else {
+              MSG.warningSnackBar(context, 'Town field field is empty');
+            }
+          } else {
+            MSG.warningSnackBar(context, 'Address field is empty');
+          }
+        } else {
+          MSG.warningSnackBar(context, 'Property Name field is empty');
+        }
+      } else {
+        MSG.warningSnackBar(context, 'Please Select property type');
+      }
+    } else {
+      MSG.warningSnackBar(
+          context, 'Property image is needed to complete upload');
+    }
+  }
+  void _updateProduct() {
+    if (imageFileList!.isNotEmpty) {
+      if (selectedPropertyType.text.isNotEmpty) {
+        if (propertyNameController.text.isNotEmpty) {
+          if (addressController.text.isNotEmpty) {
+            if (townController.text.isNotEmpty) {
+              if (selectedState.text.isNotEmpty) {
+                if (selectedPriceType.text.toLowerCase() == 'static') {
+                  if (priceController.text.isNotEmpty) {
+                    if (availableRoomsController.text.isNotEmpty) {
+                      if (occupiedRoomsController.text.isNotEmpty) {
+                        if (descriptionController.text.isNotEmpty) {
+                          propertyBloc.add(UpdatePropertyEvent(
+                              propertyNameController.text,
+                              selectedPropertyType.text,
+                              availableRoomsController.text,
+                              addressController.text,
+                              townController.text,
+                              descriptionController.text,
+                              selectedState.text,
+                              imageFileList!,
+                              selectedPriceType.text,
+                              priceController.text,
+                              fromPriceController.text,
+                              toPriceController.text,
+                              occupiedRoomsController.text,widget.property.id.toString()));
+                        } else {
+                          MSG.warningSnackBar(
+                              context, 'Property description field is empty');
+                        }
+                      } else {
+                        MSG.warningSnackBar(
+                            context, 'Occupied room field is empty');
+                      }
+                    } else {
+                      MSG.warningSnackBar(
+                          context, 'Available room field is empty');
+                    }
+                  } else {
+                    MSG.warningSnackBar(context, 'Price field is empty');
+                  }
+                } else {
+                  if (fromPriceController.text.isNotEmpty) {
+                    if (toPriceController.text.isNotEmpty) {
+                      if (availableRoomsController.text.isNotEmpty) {
+                        if (occupiedRoomsController.text.isNotEmpty) {
+                          if (descriptionController.text.isNotEmpty) {
+                            propertyBloc.add(UpdatePropertyEvent(
+                                propertyNameController.text,
+                                selectedPropertyType.text,
+                                availableRoomsController.text,
+                                addressController.text,
+                                townController.text,
+                                descriptionController.text,
+                                selectedState.text,
+                                imageFileList!,
+                                selectedPriceType.text,
+                                priceController.text,
+                                fromPriceController.text,
+                                toPriceController.text,
+                                occupiedRoomsController.text,widget.property.id.toString()));
                           } else {
                             MSG.warningSnackBar(
                                 context, 'Property description field is empty');

@@ -22,6 +22,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<GetSinglePropertyEvent>(getSinglePropertyEvent);
     on<GetPropertyEvent>(getPropertyEvent);
     on<AddPropertyEvent>(addPropertyEvent);
+    on<UpdatePropertyEvent>(updatePropertyEvent);
     on<AddOccupantEvent>(addOccupantEvent);
     // on<PropertyEvent>((event, emit) {
     //   // TODO: implement event handler
@@ -192,4 +193,56 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       }
     }
 
+
+  FutureOr<void> updatePropertyEvent(UpdatePropertyEvent event, Emitter<PropertyState> emit) async {
+    emit(PropertyLoadingState());
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    try {
+      Map<String, String> formData = {
+        'property_name': event.propertyName,
+        'property_type': event.propertyType,
+        'available_flats_rooms': event.availableFlatsRooms,
+        'occupied_flats_rooms': event.occupiedRooms,
+        'address': event.address,
+        'city': event.city,
+        'description': event.description,
+        'location': event.location,
+        'price_type': event.priceType,
+        'price_range_stop': event.priceRangeStop!,
+        'price_range_start': event.priceRangeStart!,
+        'price': event.price.toString(),
+      };
+      var addPropertyResponse =
+      await appRepository.appPutRequestWithMultipleImages(
+        formData,
+        '${AppApis.updatePropertyApi}${event.propertyId}/',
+        event.propertyImages,
+        accessToken,
+      );
+
+      print(" status Code ${addPropertyResponse.statusCode}");
+      print(" Data ${addPropertyResponse.body}");
+      print(json.decode(addPropertyResponse.body));
+      if (addPropertyResponse.statusCode == 200 ||
+          addPropertyResponse.statusCode == 201) {
+        // PropertiesModel propertiesModel =
+        //     PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
+
+        //updateData(customerProfile);
+        print(addPropertyResponse);
+        emit(AddPropertySuccessState()); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.convertString(
+            json.decode(addPropertyResponse.body)['message'])));
+        print(json.decode(addPropertyResponse.body));
+        emit(PropertyInitial());
+      }
+    } catch (e) {
+      emit(PropertyErrorState("An error occurred while fetching categories."));
+      emit(PropertyInitial());
+      print(e);
+    }
+  }
 }

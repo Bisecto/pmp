@@ -77,6 +77,61 @@ class AppRepository {
     return response;
   }
 
+  Future<http.Response> appPutRequestWithMultipleImages(
+    Map<String, dynamic> data,
+    String apiUrl,
+    List<XFile> images, // Accept a list of images
+    String token,
+  ) async {
+    // Initialize headers
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    // Create a multipart request
+    var request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
+    request.headers.addAll(headers);
+
+    // Add form data fields to the request
+    data.forEach((key, value) {
+      request.fields[key] = value.toString();
+    });
+
+    // Add multiple images to the request
+    for (var i = 0; i < images.length; i++) {
+      final image = images[i];
+      // Detect MIME type of each image
+      String? mimeType = lookupMimeType(image.path);
+
+      if (mimeType == null) {
+        print("Unable to detect MIME type for ${image.path}.");
+        return http.Response('Unable to detect MIME type', 400);
+      }
+
+      // Split MIME type into type and subtype
+      var mimeTypeData = mimeType.split('/');
+
+      // Add image file to the request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'images[$i]', // Use array syntax for multiple files
+          image.path,
+          // contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
+        ),
+      );
+    }
+
+    // Send the request
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    // Log response details
+    AppUtils().debuglog('Response Status Code: ${response.statusCode}');
+    AppUtils().debuglog('Response Body: ${response.body}');
+
+    return response;
+  }
+
   Future<http.Response> appPostRequestWithSingleImages(
       Map<String, dynamic> data,
       String apiUrl,
