@@ -294,7 +294,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       // var deletePropertyResponse = await appRepository.getRequestWithToken(
       //     accessToken, AppApis.singlePropertyApi+event.propertyId);
       var singlePropertyResponse = await appRepository.deleteRequestWithToken(
-          accessToken, AppApis.singlePropertyApi+event.propertyId);
+          accessToken, '${AppApis.singlePropertyApi}${event.propertyId}/');
       // var res = await appRepository.appGetRequest(
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
@@ -304,7 +304,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
-          singlePropertyResponse.statusCode == 201) {
+          singlePropertyResponse.statusCode == 204) {
 
         //print(property);
         emit(

@@ -131,7 +131,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(ErrorState("Error Occurred please try again later."));
         emit(AuthInitial());
       } else {
-        emit(ErrorState(json.decode(resetResponse.body)['error']));
+        emit(ErrorState(json.decode(resetResponse.body)['error'] ??
+            json.decode(resetResponse.body)['email'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(resetResponse.body));
         emit(AuthInitial());
@@ -183,7 +184,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "There was a problem verifying otp please try again later."));
         emit(AuthInitial());
       } else {
-        emit(ErrorState(json.decode(verifyResponse.body)['error']));
+        emit(ErrorState(json.decode(verifyResponse.body)['error'] ??
+            json.decode(verifyResponse.body)['username'][0] ??
+            json.decode(verifyResponse.body)['verification_code'][0] ??
+            json.decode(verifyResponse.body)['reset_token'][0] ??
+            json.decode(verifyResponse.body)['email'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(verifyResponse.body));
         emit(AuthInitial());
@@ -237,15 +242,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         emit(ResetPasswordSuccessState(
             json.decode(resetPasswordResponse.body)['message']));
-      } else if (resetPasswordResponse.statusCode == 401) {
-        emit(AccessTokenExpireState());
       } else if (resetPasswordResponse.statusCode == 500 ||
           resetPasswordResponse.statusCode == 501) {
         emit(ErrorState(
             "There was a problem resting password please try again later."));
         emit(AuthInitial());
       } else {
-        emit(ErrorState(json.decode(resetPasswordResponse.body)['detail']));
+        emit(ErrorState(json.decode(resetPasswordResponse.body)['detail'] ??
+            json.decode(resetPasswordResponse.body)['new_password'][0] ??
+            json.decode(resetPasswordResponse.body)['email'][0] ??
+            json.decode(resetPasswordResponse.body)['reset_token'][0] ??
+            json.decode(resetPasswordResponse.body)['confirm_password'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(resetPasswordResponse.body));
         emit(AuthInitial());
@@ -291,6 +298,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(ErrorState(json.decode(registerResponse.body)['email'][0] ??
             json.decode(registerResponse.body)['username'][0] ??
+            json.decode(registerResponse.body)['confirm_password'][0] ??
             json.decode(registerResponse.body)['password'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(registerResponse.body));

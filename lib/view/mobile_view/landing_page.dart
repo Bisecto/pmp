@@ -67,7 +67,9 @@ class _LandingPageState extends State<LandingPage> {
             firstImage: '',
             images: []),
       ),
-      const ProfileTab()
+      ProfileTab(
+        userModel: widget.userModel,
+      )
     ];
     super.initState();
   }

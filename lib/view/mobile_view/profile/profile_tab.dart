@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:pim/view/mobile_view/auth/sign_in_page.dart';
+import 'package:pim/view/mobile_view/profile/profile_page.dart';
 
+import '../../../model/user_model.dart';
 import '../../../res/app_colors.dart';
 import '../../../utills/app_navigator.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 
 class ProfileTab extends StatefulWidget {
-  const ProfileTab({super.key});
+  final UserModel userModel;
+
+   ProfileTab({super.key, required this.userModel});
 
   @override
   State<ProfileTab> createState() => _ProfileTabState();
@@ -38,8 +43,8 @@ class _ProfileTabState extends State<ProfileTab> {
                 children: [
                   InkWell(
                       onTap: () {
-                        // AppNavigator.pushAndStackPage(context,
-                        //     page: ProfilePage());
+                        AppNavigator.pushAndStackPage(context,
+                            page:  ProfilePage(userModel: widget.userModel,));
                       },
                       child: _buildSettingsOption('Profile')),
                   _buildSettingsOption('Settings'),
@@ -53,7 +58,9 @@ class _ProfileTabState extends State<ProfileTab> {
             const SizedBox(height: 30),
 
             FormButton(
-              onPressed: () {},
+              onPressed: () {
+                AppNavigator.pushAndRemovePreviousPages(context, page: const SignInPage());
+              },
               text: "Logout",
               bgColor: AppColors.mainAppColor.withOpacity(0.9),
               textColor: AppColors.white,

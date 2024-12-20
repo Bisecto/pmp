@@ -141,7 +141,7 @@ class _DashboardState extends State<Dashboard> {
                                       text: TextSpan(
                                         children: [
                                           const TextSpan(
-                                            text: 'Rooms: ',
+                                            text: 'Occupied Rooms: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,

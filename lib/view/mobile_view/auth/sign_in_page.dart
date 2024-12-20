@@ -278,13 +278,13 @@ class _SignInPageState extends State<SignInPage> {
                                                         .validate()) {
                                                       authBloc.add(
                                                           SignInEventClick(
-                                                            'Bisect','Qwerty123@'
-                                                              // _emailController
-                                                              //     .text
-                                                              //     .toLowerCase()
-                                                              //     .trim(),
-                                                              // _passwordController
-                                                              //     .text
+                                                            //'Bisect','Qwerty123@'
+                                                              _emailController
+                                                                  .text
+                                                                  .toLowerCase()
+                                                                  .trim(),
+                                                              _passwordController
+                                                                  .text
                                                           ));
                                                     }
                                                   },

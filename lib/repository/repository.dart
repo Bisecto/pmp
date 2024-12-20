@@ -285,6 +285,7 @@ class AppRepository {
   }
   Future<http.Response> deleteRequestWithToken(String token, String apiUrl) async {
     AppUtils().debuglog(apiUrl);
+    print(apiUrl);
     var headers = {
       'Authorization': 'Bearer $token',
       // 'Content-Type': 'application/json'
