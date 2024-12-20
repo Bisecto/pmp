@@ -23,6 +23,9 @@ class SinglePropertySuccessState extends PropertyState {
   final Property property;
 
   SinglePropertySuccessState(this.property);
+}class DeletePropertySuccessState extends PropertyState {
+
+  DeletePropertySuccessState();
 }
 
 class AddPropertySuccessState extends PropertyState {

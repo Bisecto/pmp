@@ -9,13 +9,17 @@ import 'package:pim/view/mobile_view/dashboard/property_details/property_details
 import 'package:pim/view/mobile_view/dashboard/property_details/view_occupant.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../model/user_model.dart';
 import '../../../../res/app_colors.dart';
 import '../../../../utills/app_utils.dart';
 import '../../../widgets/app_custom_text.dart';
 import 'countdown_function.dart';
 
 class OccupantList extends StatefulWidget {
-  OccupantList({super.key, required this.occupants});
+  final Property property;
+  final UserModel userModel;
+
+  OccupantList({super.key, required this.occupants, required this.property, required this.userModel});
 
   final List<Occupant> occupants;
 
@@ -43,7 +47,9 @@ class _OccupantListState extends State<OccupantList> {
           return GestureDetector(
             onTap: () {
               AppNavigator.pushAndStackPage(context,
-                  page: ViewOccupant(occupant: widget.occupants[index]));
+                  page: ViewOccupant(occupant: widget.occupants[index],
+                    property: widget.property,
+                    userModel: widget.userModel,));
             },
             child: occupantContainer(
                 occupant: widget.occupants[index], context: context),
@@ -55,7 +61,7 @@ class _OccupantListState extends State<OccupantList> {
 
   Widget occupantContainer({required Occupant occupant, required context}) {
     return Padding(
-      padding: const EdgeInsets.all(0),
+      padding: const EdgeInsets.all(10),
       child: Container(
         height: 130,
         padding: const EdgeInsets.all(0),
@@ -100,8 +106,7 @@ class _OccupantListState extends State<OccupantList> {
                       children: [
                         GestureDetector(
                             onTap: () {
-
-                               _makePhoneCall(occupant.mobileNumber);
+                              _makePhoneCall(occupant.mobileNumber);
                             },
                             child: SvgPicture.asset(
                               AppSvgImages.phone,
@@ -126,7 +131,9 @@ class _OccupantListState extends State<OccupantList> {
                 ),
               ),
               Container(
-                width: AppUtils.deviceScreenSize(context).width,
+                width: AppUtils
+                    .deviceScreenSize(context)
+                    .width,
                 height: 60,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
@@ -148,11 +155,13 @@ class _OccupantListState extends State<OccupantList> {
                         ],
                       ),
                       Container(
-                        width: AppUtils.deviceScreenSize(context).width / 2,
+                        width: AppUtils
+                            .deviceScreenSize(context)
+                            .width / 2.3,
                         //height: 100,
                         child: CountdownWidget(
                           targetDate:
-                              DateTime.parse(occupant.rentDueDate.toString()),
+                          DateTime.parse(occupant.rentDueDate.toString()),
                         ),
                       ),
                     ],
@@ -175,7 +184,8 @@ class _OccupantListState extends State<OccupantList> {
     if (difference.isNegative) {
       return "Countdown has expired!";
     } else {
-      return "${difference.inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
+      return "${difference
+          .inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
           ;
     }
   }
@@ -202,5 +212,6 @@ class _OccupantListState extends State<OccupantList> {
       throw 'Could not launch $phoneNumber';
     }
   }
+
   String countdownText = "";
 }

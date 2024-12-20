@@ -49,7 +49,7 @@ class AppLoadingPage extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                       fontSize: 15),
                   child: Text(
-                    title,
+                    'Loading...',//title,
                     softWrap: true,
 
                     textAlign: TextAlign.center,

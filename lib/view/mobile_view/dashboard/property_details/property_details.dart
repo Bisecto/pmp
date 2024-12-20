@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
@@ -7,13 +10,18 @@ import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
 import 'package:pim/view/mobile_view/add_property/add_property_tab.dart';
+import 'package:pim/view/mobile_view/landing_page.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:pim/view/widgets/form_button.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../../../../model/property_model.dart';
 import '../../../../res/apis.dart';
 import '../../../../res/app_colors.dart';
+import '../../../../res/app_images.dart';
 import '../../../../utills/app_utils.dart';
 import '../../../important_pages/dialog_box.dart';
 import '../../../important_pages/not_found_page.dart';
@@ -40,6 +48,216 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     super.initState();
   }
 
+  Future<Uint8List> generatePdf(Property prop) async {
+    final pdf = pw.Document();
+    final ByteData logoBytes = await rootBundle.load(AppImages.logo);
+    final Uint8List logoImage = logoBytes.buffer.asUint8List();
+    final ByteData companyLogoBytes =
+        await rootBundle.load(AppImages.companyLogo);
+    final Uint8List companyImage = companyLogoBytes.buffer.asUint8List();
+    // Load student image
+    final http.Response response =
+        await http.get(Uri.parse(AppApis.appBaseUrl+prop.firstImage));
+    final tableHeaders = [
+      'Name',
+      'State',
+      'Room No.',
+      'Rent Paid',
+      'Rent Due Date',
+      'Employment Status'
+    ];
+
+    ///studentImage);
+    ///response.statusCode);
+    Uint8List studentImageBytes;
+    studentImageBytes = response.bodyBytes;
+    pdf.addPage(
+      pw.Page(
+        //pageFormat: Pd,
+        build: (pw.Context context) {
+          return pw.Container(
+              //padding: pw.EdgeInsets.all(32),
+              child: pw.Column(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(logoImage,prop),
+                    //pw.Divider(),
+                    pw.SizedBox(height: 10),
+                    _buildTitle('Generated Property details'),
+                    pw.SizedBox(height: 10),
+                    _buildPropertyInfo(
+                      studentImageBytes,prop
+                    ),
+                    pw.Divider(),
+
+                    // Table Header
+                    pw.Container(
+                      padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                      color: PdfColors.blueGrey,
+                      child: pw.Row(
+                        children: tableHeaders
+                            .map((header) => pw.Expanded(
+                                  child: pw.Text(
+                                    header,
+                                    style: pw.TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: pw.FontWeight.bold,
+                                      color: PdfColors.white,
+                                    ),
+                                    textAlign: pw.TextAlign.center,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+
+                    ...prop.occupants.map((occupant) {
+                      print(occupant);
+                      return pw.Container(
+                        padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                        decoration: const pw.BoxDecoration(
+                          border: pw.Border(
+                            bottom: pw.BorderSide(color: PdfColors.grey300),
+                          ),
+                        ),
+                        child: pw.Row(
+                          children: [
+                            pw.Expanded(
+                                child: pw.Text(occupant.name,
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                            pw.Expanded(
+                                child: pw.Text(occupant.state,
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                            pw.Expanded(
+                                child: pw.Text('${occupant.roomNumber}',
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                            pw.Expanded(
+                                child: pw.Text(occupant.rentPaid,
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                            pw.Expanded(
+                                child: pw.Text(occupant.rentDueDate,
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                            pw.Expanded(
+                                child: pw.Text(occupant.occupationStatus,
+                                    style: const pw.TextStyle(fontSize: 10),
+                                    textAlign: pw.TextAlign.center)),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+
+                    pw.SizedBox(height: 20),
+
+                    //_buildFooter('Thank you for your payment.'),
+                  ],
+                ),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(""),
+                    pw.Row(
+                      children: [
+                        pw.Text("Powered by"),
+                        pw.Image(
+                            pw.MemoryImage(
+                              companyImage,
+                            ),
+                            width: 100,
+                            height: 100),
+                      ],
+                    ),
+                  ],
+                ),
+              ]));
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  pw.Widget _buildHeader(logoImage,Property prop) {
+    return pw.Container(
+      //padding: pw.EdgeInsets.all(16),
+      // padding: pw.EdgeInsets.all(16),
+      //color: PdfColors.redAccent,
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Image(pw.MemoryImage(logoImage), width: 70),
+          pw.Text(prop.propertyName.toUpperCase(),
+              style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.black)),
+          pw.SizedBox()
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildTitle(String text) {
+    return pw.Text(
+      text,
+      style: pw.TextStyle(
+          fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+    );
+  }
+
+  pw.Widget _buildPropertyInfo(Uint8List studentImage,Property prop) {
+    return pw.Row(
+      children: [
+        pw.Image(pw.MemoryImage(studentImage),
+            width: 100, height: 100, fit: pw.BoxFit.cover),
+        pw.SizedBox(width: 5),
+        pw.Expanded(
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow('Property Name', prop.propertyName),
+              _buildInfoRow('Property Type', prop.propertyType),
+              _buildInfoRow('Property Address', prop.address),
+              _buildInfoRow('Property State', prop.location),
+              _buildInfoRow(
+                  'Total Flats',
+                  (prop.occupiedFlatsRooms +
+                          prop.availableFlatsRooms)
+                      .toString()),
+              _buildInfoRow('Available Flats',
+                  prop.availableFlatsRooms.toString()),
+              _buildInfoRow('Occupied Flats',
+                  prop.occupiedFlatsRooms.toString()),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildInfoRow(String title, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+      child: pw.Row(
+        children: [
+          pw.Text('$title: ',
+              style: _infoTextStyle.copyWith(fontWeight: pw.FontWeight.bold)),
+          pw.Expanded(child: pw.Text(value, style: _infoTextStyle)),
+        ],
+      ),
+    );
+  }
+
+  pw.TextStyle get _infoTextStyle =>
+      const pw.TextStyle(fontSize: 12, color: PdfColors.black);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +273,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
                   // AppNavigator.pushAndRemovePreviousPages(context,
                   //     page: LandingPage(studentProfile: state.studentProfile));
+                } else if (state is DeletePropertySuccessState) {
+                  MSG.snackBar(context, "Property has beedn deleted");
+                  AppNavigator.pushAndRemovePreviousPages(context,
+                      page: LandingPage(
+                          selectedIndex: 0, userModel: widget.userModel));
                 } else if (state is PropertyErrorState) {
                   MSG.warningSnackBar(context, state.error);
                 }
@@ -111,7 +334,16 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      SvgPicture.asset(AppSvgImages.delete),
+                                      GestureDetector(
+                                          onTap: () {
+                                            propertyBloc.add(
+                                                DeletePropertyEvent(
+                                                    singlePropertySuccessState
+                                                        .property.id
+                                                        .toString()));
+                                          },
+                                          child: SvgPicture.asset(
+                                              AppSvgImages.delete)),
                                     ],
                                   ),
                                 ],
@@ -200,7 +432,22 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   ),
                                   Row(
                                     children: [
-                                      SvgPicture.asset(AppSvgImages.download),
+                                      GestureDetector(
+                                          onTap: () async {
+                                            final pdfData = await generatePdf(singlePropertySuccessState.property);
+                                            await Printing.layoutPdf(
+                                                onLayout: (PdfPageFormat
+                                                        format) async =>
+                                                    pdfData,
+                                                dynamicLayout: false,
+                                                name:
+                                                    "${widget.property.propertyName}PROPERTY_INFO");
+                                          },
+                                          child: SvgPicture.asset(
+                                            AppSvgImages.download,
+                                            height: 30,
+                                            width: 30,
+                                          )),
                                       const SizedBox(
                                         width: 10,
                                       ),
@@ -210,6 +457,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                               page: AddOccupantScreen(
                                                 userModel: widget.userModel,
                                                 property: widget.property,
+                                                isEdit: false,
+                                                occupant: null,
                                               ));
                                         },
                                         child: Container(
@@ -256,6 +505,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 OccupantList(
                                   occupants: singlePropertySuccessState
                                       .property.occupants,
+                                  property: singlePropertySuccessState.property,
+                                  userModel: widget.userModel,
                                 )
                             ],
                           ),

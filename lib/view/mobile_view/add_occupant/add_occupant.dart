@@ -20,13 +20,23 @@ import '../../important_pages/not_found_page.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_input.dart';
 import '../landing_page.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class AddOccupantScreen extends StatefulWidget {
   final UserModel userModel;
   final Property property;
+  final Occupant? occupant;
+  final bool isEdit;
 
   const AddOccupantScreen(
-      {super.key, required this.userModel, required this.property});
+      {super.key,
+      required this.userModel,
+      required this.property,
+      required this.occupant,
+      required this.isEdit});
 
   @override
   _AddOccupantScreenState createState() => _AddOccupantScreenState();
@@ -59,6 +69,56 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   List<XFile>? imageFileList = [];
   PropertyBloc propertyBloc = PropertyBloc();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    handleUpdate();
+    super.initState();
+  }
+
+  void handleUpdate() async {
+    setState(() async {
+      cautionFeeController.text = widget.occupant!.meshBillPaid;
+      occupantNameController.text = widget.occupant!.name;
+      occupantPhoneNumberController.text =
+          widget.occupant!.mobileNumber.replaceAll('+234', '');
+      dobController.text = widget.occupant!.dob;
+      rentCommencementController.text = widget.occupant!.rentCommencementDate;
+      rentExpirationController.text = widget.occupant!.rentDueDate;
+      lgaController.text = widget.occupant!.localGovernment;
+      amtPaidController.text = widget.occupant!.rentPaid;
+      roomNumberController.text = widget.occupant!.roomNumber.toString();
+      selectedGender = widget.occupant!.gender;
+      selectedState = widget.occupant!.state;
+      selectedEmploymentStatus = widget.occupant!.occupationStatus;
+      selectedMaritalStatus = widget.occupant!.relationship;
+      selectedPaymnetDueTimeline = widget.occupant!.rentDueDate;
+      print(widget.occupant!.profilePic);
+      // for (String imageUrl in widget.occupant!) {
+      try {
+        File imageFile = await downloadImage(widget.occupant!.profilePic);
+        setState(() {
+          imageFileList!.add(XFile(imageFile.path));
+        });
+      } catch (e) {
+        print('Error downloading image: $e');
+      }
+      // }
+    });
+  }
+
+  Future<File> downloadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/${imageUrl.split('/').last}';
+      final file = File(filePath);
+      return file.writeAsBytes(response.bodyBytes);
+    } else {
+      throw Exception('Failed to download image');
+    }
+  }
+
   void selectSingleImage() async {
     final XFile? selectedImage =
         await imagePicker.pickImage(source: ImageSource.gallery);
@@ -78,7 +138,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const CustomText(text: 'Add Occupant'),
+          title:  CustomText(text:widget.isEdit?'Edit Occupant': 'Add Occupant'),
           backgroundColor: Colors.white,
         ),
         body: BlocConsumer<PropertyBloc, PropertyState>(
@@ -193,10 +253,10 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: occupantPhoneNumberController,
-                                hint: 'Enter phone number',
+                                hint: '8123457146',
                                 label: 'Mobile Phone Number',
                                 borderColor: Colors.grey,
-                                isMobileNumber:true,
+                                isMobileNumber: true,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.white,
@@ -225,6 +285,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               DropDown(
                                 label: 'Gender',
                                 hint: "Status",
+                                initialValue: selectedGender,
                                 selectedValue: selectedGender,
                                 items: const ['Male', 'Female', 'Others'],
                                 onChanged: (value) {
@@ -237,6 +298,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               DropDown(
                                 label: 'Relationship Status Type',
                                 hint: "Status",
+                                initialValue: selectedMaritalStatus,
                                 selectedValue: selectedMaritalStatus,
                                 items: const ['Married', 'Single', 'Others'],
                                 onChanged: (value) {
@@ -249,6 +311,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               DropDown(
                                 label: 'Employment Status Type',
                                 hint: "Status",
+                                initialValue: selectedEmploymentStatus,
                                 selectedValue: selectedEmploymentStatus,
                                 items: const [
                                   'Employed',
@@ -266,6 +329,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'State',
                                 hint: "Select state",
                                 selectedValue: selectedState,
+                                initialValue: selectedState,
                                 items: const [
                                   "Abia",
                                   "Adamawa",
@@ -344,6 +408,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Rent Due Timeline',
                                 hint: "Select Rent Due Timeline",
                                 selectedValue: selectedPaymnetDueTimeline,
+                                initialValue: selectedPaymnetDueTimeline,
                                 items: const ['Monthly', 'Quarterly', "Yearly"],
                                 onChanged: (value) {
                                   setState(() {
@@ -356,6 +421,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Rent Payment Status',
                                 hint: "Select Rent Payment Status",
                                 selectedValue: selectedPaymnetStatus,
+                                initialValue: selectedPaymnetStatus,
                                 items: const ['Paid', 'Unpaid'],
                                 onChanged: (value) {
                                   setState(() {
@@ -549,11 +615,11 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                   height: 250, // Fixed height for image display
                                   child: imageFileList?.isEmpty ?? true
                                       ? const Center(
-                                      child: Text("No Image Selected"))
+                                          child: Text("No Image Selected"))
                                       : Image.file(
-                                    File(imageFileList![0].path),
-                                    fit: BoxFit.cover,
-                                  ),
+                                          File(imageFileList![0].path),
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                               const SizedBox(height: 16), // Add spacing
                               CustomTextFormField(
@@ -1205,10 +1271,18 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'mesh_bill_paid': cautionFeeController.text,
         'relationship': selectedMaritalStatus,
         'occupation_status': selectedEmploymentStatus,
+        'rent_timeline': selectedPaymnetDueTimeline.toLowerCase(),
+        'payment_status': selectedPaymnetStatus,
         'gender': selectedGender,
       };
-      propertyBloc.add(AddOccupantEvent(
-          formData, imageFileList![0], widget.property.id.toString()));
+      print(formData);
+      if (widget.isEdit) {
+        propertyBloc.add(UpdateOccupantEvent(
+            formData, imageFileList![0], widget.property.id.toString(),widget.occupant!.id.toString()));
+      } else {
+        propertyBloc.add(AddOccupantEvent(
+            formData, imageFileList![0], widget.property.id.toString()));
+      }
     }
   }
 }

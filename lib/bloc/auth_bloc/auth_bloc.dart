@@ -42,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AppRepository appRepository = AppRepository();
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
-      'username': event.userData,
+      'username': event.userData.toLowerCase(),
       'password': event.password,
     };
     AppUtils().debuglog(formData);
@@ -68,8 +68,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (profileResponse.statusCode == 200 ||
             profileResponse.statusCode == 201) {
           UserModel userModel =
-          UserModel.fromJson(json.decode(profileResponse.body));
-          emit(SuccessState("Login Successful",userModel));
+              UserModel.fromJson(json.decode(profileResponse.body));
+          emit(SuccessState("Login Successful", userModel));
         } else if (profileResponse.statusCode == 404) {
           emit(ProfileSetUpState("Complete Profile Set up"));
         } else {
@@ -152,11 +152,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //AppUtils().debuglog(formData);
 
     try {
+      print(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP);
+      print(event.isNewAccount
+          ? {
+              'username': event.userData.toLowerCase(),
+              'verification_code': event.otp.toString()
+            }
+          : {'email': event.userData, 'reset_token': event.otp.toString()});
       var verifyResponse = await http.post(
         Uri.parse(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP),
         body: event.isNewAccount
             ? {
-                'username': event.userData,
+                'username': event.userData.toLowerCase(),
                 'verification_code': event.otp.toString()
               }
             : {'email': event.userData, 'reset_token': event.otp.toString()},
@@ -209,7 +216,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // },
         body: {
           'new_password': event.password,
-          "email": event.userData,
+          "email": event.userData.toLowerCase(),
           'reset_token': event.token,
           'confirm_password': event.confirmPassword
         },
@@ -257,8 +264,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(LoadingState());
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
-      "email": event.email,
-      "username": event.userName,
+      "email": event.email.toLowerCase(),
+      "username": event.userName.toLowerCase(),
       "password": event.password,
       "confirm_password": event.confirmPassword
     };
@@ -275,7 +282,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(registerResponse.body);
       if (registerResponse.statusCode == 200 ||
           registerResponse.statusCode == 201) {
-        emit(SuccessState("Sign up Successful",null));
+        emit(SuccessState("Sign up Successful", null));
       } else if (registerResponse.statusCode == 500 ||
           registerResponse.statusCode == 501) {
         emit(ErrorState(
@@ -352,8 +359,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AppRepository appRepository = AppRepository();
     Map<String, String> formData = {
       'mobile_phone': event.phoneNumber,
-      'first_name': event.firstname,
-      'last_name': event.lastname
+      'first_name': event.firstname.toLowerCase(),
+      'last_name': event.lastname.toLowerCase()
     };
     AppUtils().debuglog(formData);
     String accessToken = await SharedPref.getString('access-token');
@@ -370,7 +377,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        emit(SuccessState("Profile Updated Successful",userModel));
+        emit(SuccessState("Profile Updated Successful", userModel));
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
         emit(ErrorState("There was a problem completing profile set up."));

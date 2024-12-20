@@ -11,6 +11,10 @@ class GetSinglePropertyEvent extends PropertyEvent {
   final String propertyId;
 
   GetSinglePropertyEvent(this.propertyId);
+}class DeletePropertyEvent extends PropertyEvent {
+  final String propertyId;
+
+  DeletePropertyEvent(this.propertyId);
 }
 
 class AddOccupantEvent extends PropertyEvent {
@@ -19,6 +23,14 @@ class AddOccupantEvent extends PropertyEvent {
   final String propertyId;
 
   AddOccupantEvent(this.formData, this.image, this.propertyId);
+}
+class UpdateOccupantEvent extends PropertyEvent {
+  final Map<String, String> formData;
+  final XFile image;
+  final String propertyId;
+  final String occupantId;
+
+  UpdateOccupantEvent(this.formData, this.image, this.propertyId,this.occupantId);
 }
 
 class AddPropertyEvent extends PropertyEvent {

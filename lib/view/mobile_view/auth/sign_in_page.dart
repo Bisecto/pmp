@@ -278,7 +278,7 @@ class _SignInPageState extends State<SignInPage> {
                                                         .validate()) {
                                                       authBloc.add(
                                                           SignInEventClick(
-                                                            'bisect','Qwerty123@'
+                                                            'Bisect','Qwerty123@'
                                                               // _emailController
                                                               //     .text
                                                               //     .toLowerCase()
