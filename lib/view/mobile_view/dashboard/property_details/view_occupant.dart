@@ -269,7 +269,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
 
   pw.Widget _buildInfoRow(String title, String value) {
     return pw.Padding(
-      padding: pw.EdgeInsets.symmetric(vertical: 2),
+      padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
         children: [
           pw.Text('$title: ',
@@ -285,10 +285,10 @@ class _ViewOccupantState extends State<ViewOccupant> {
       border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
       children: [
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.redAccent),
+          decoration: const pw.BoxDecoration(color: PdfColors.redAccent),
           children: rows.map((row) {
             return pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: const pw.EdgeInsets.all(8),
               child: pw.Text(row[0],
                   style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold,
@@ -300,8 +300,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
         pw.TableRow(
           children: rows.map((row) {
             return pw.Padding(
-              padding: pw.EdgeInsets.all(8),
-              child: pw.Text(row[1], style: pw.TextStyle(fontSize: 8)),
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(row[1], style: const pw.TextStyle(fontSize: 8)),
             );
           }).toList(),
         ),
@@ -314,10 +314,10 @@ class _ViewOccupantState extends State<ViewOccupant> {
       border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
       children: [
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.redAccent),
+          decoration: const pw.BoxDecoration(color: PdfColors.redAccent),
           children: rows.map((row) {
             return pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: const pw.EdgeInsets.all(8),
               child: pw.Text(row[0],
                   style: pw.TextStyle(
                       fontSize: 9,
@@ -329,9 +329,9 @@ class _ViewOccupantState extends State<ViewOccupant> {
         pw.TableRow(
           children: rows.map((row) {
             return pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: const pw.EdgeInsets.all(8),
               child: pw.Text(row[1].replaceAll('₦', 'NGN'),
-                  style: pw.TextStyle(fontSize: 8)),
+                  style: const pw.TextStyle(fontSize: 8)),
             );
           }).toList(),
         ),
@@ -348,7 +348,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
   }
 
   pw.TextStyle get _infoTextStyle =>
-      pw.TextStyle(fontSize: 12, color: PdfColors.black);
+      const pw.TextStyle(fontSize: 12, color: PdfColors.black);
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +475,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                     size: 16,
                     weight: FontWeight.bold,
                   ),
-                  CustomText(
+                  const CustomText(
                     text: '✅ Active  ',
                     size: 14,
                     weight: FontWeight.bold,
@@ -490,7 +490,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 children: [
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "Marital status:",
                         color: AppColors.black,
                         size: 13,
@@ -505,7 +505,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   ),
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "Employment Status:",
                         color: AppColors.black,
                         size: 13,
@@ -546,7 +546,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 children: [
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "Room Number:",
                         color: AppColors.black,
                         size: 14,
@@ -561,14 +561,14 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   ),
                   Row(
                     children: [
-                      CustomText(
-                        text: "Rent Due In:",
+                      const CustomText(
+                        text: "Rent Due Date:",
                         color: AppColors.black,
                         size: 14,
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  2nd Jan,2025.',
+                        text: '  ${AppUtils.formateSimpleDate(dateTime: occupant.rentDueDate.toString())}.',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -581,7 +581,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 children: [
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "DOB:",
                         color: AppColors.black,
                         size: 14,
@@ -597,7 +597,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   ),
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "Gender:",
                         color: AppColors.black,
                         size: 14,
@@ -617,7 +617,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 children: [
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "LGA:",
                         color: AppColors.black,
                         size: 14,
@@ -632,7 +632,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   ),
                   Row(
                     children: [
-                      CustomText(
+                      const CustomText(
                         text: "State:",
                         color: AppColors.black,
                         size: 14,
