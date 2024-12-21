@@ -102,7 +102,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
             style: TextStyle(
                 fontStyle: FontStyle.normal,
                 color: AppColors.black,
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w600),
           ),
           TextSpan(

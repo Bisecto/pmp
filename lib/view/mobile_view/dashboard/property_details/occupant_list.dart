@@ -63,7 +63,7 @@ class _OccupantListState extends State<OccupantList> {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Container(
-        height: 130,
+        height: 135,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -134,7 +134,7 @@ class _OccupantListState extends State<OccupantList> {
                 width: AppUtils
                     .deviceScreenSize(context)
                     .width,
-                height: 60,
+                height: 75,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
                   child: Row(
@@ -146,6 +146,7 @@ class _OccupantListState extends State<OccupantList> {
                             text: "Room Number:",
                             color: AppColors.black,
                             weight: FontWeight.w600,
+                            size: 14,
                           ),
                           CustomText(
                             text: ' ${occupant.roomNumber}  ',
@@ -157,7 +158,7 @@ class _OccupantListState extends State<OccupantList> {
                       Container(
                         width: AppUtils
                             .deviceScreenSize(context)
-                            .width / 2.3,
+                            .width / 3,
                         //height: 100,
                         child: CountdownWidget(
                           targetDate:
