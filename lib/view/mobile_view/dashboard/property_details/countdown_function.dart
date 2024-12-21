@@ -25,8 +25,8 @@ class Countdown {
     DateTime now = DateTime.now();
 
     if (targetDate.isBefore(now)) {
-      onUpdate("Countdown has expired!");
-      _timer.cancel(); // Stop the timer if the countdown has expired
+      onUpdate("Rent has expired!");
+      //_timer.cancel();
       return;
     }
 
@@ -103,7 +103,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
                 fontStyle: FontStyle.normal,
                 color: AppColors.black,
                 fontSize: 14,
-                fontWeight: FontWeight.bold),
+                fontWeight: FontWeight.w600),
           ),
           TextSpan(
             text: _countdownText,
@@ -112,7 +112,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
                 fontStyle: FontStyle.normal,
                 color: AppColors.red,
                 fontSize: 12,
-                fontWeight: FontWeight.bold),
+                fontWeight: FontWeight.w600),
           ),
         ]));
 

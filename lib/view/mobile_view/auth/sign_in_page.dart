@@ -274,15 +274,13 @@ class _SignInPageState extends State<SignInPage> {
                                                     //         page: LandingPage(
                                                     //           selectedIndex: 0,
                                                     //         ));
-                                                    if (!_formKey.currentState!
+                                                    if (_formKey.currentState!
                                                         .validate()) {
                                                       authBloc.add(
                                                           SignInEventClick(
                                                             //'Bisect','Qwerty123@'
                                                               _emailController
-                                                                  .text
-                                                                  .toLowerCase()
-                                                                  .trim(),
+                                                                  .text,
                                                               _passwordController
                                                                   .text
                                                           ));

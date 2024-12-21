@@ -53,7 +53,7 @@ class Property {
         occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
         status: json["status"] ?? '',
     occupants: List<Occupant>.from(json["occupants"]?.map((x) => Occupant.fromJson(x)) ?? []),
-        firstImage: json["first_image"],
+        firstImage: json["first_image"]??'',
         images: List<String>.from(json["images"] ?? [].map((x) => x)),
       );
 

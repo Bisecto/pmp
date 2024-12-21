@@ -42,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AppRepository appRepository = AppRepository();
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
-      'username': event.userData.toLowerCase(),
+      'username': event.userData,
       'password': event.password,
     };
     AppUtils().debuglog(formData);
@@ -156,7 +156,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       print(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP);
       print(event.isNewAccount
           ? {
-              'username': event.userData.toLowerCase(),
+              'username': event.userData,
               'verification_code': event.otp.toString()
             }
           : {'email': event.userData, 'reset_token': event.otp.toString()});
@@ -164,7 +164,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         Uri.parse(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP),
         body: event.isNewAccount
             ? {
-                'username': event.userData.toLowerCase(),
+                'username': event.userData,
                 'verification_code': event.otp.toString()
               }
             : {'email': event.userData, 'reset_token': event.otp.toString()},
@@ -221,7 +221,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // },
         body: {
           'new_password': event.password,
-          "email": event.userData.toLowerCase(),
+          "email": event.userData,
           'reset_token': event.token,
           'confirm_password': event.confirmPassword
         },
@@ -271,8 +271,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(LoadingState());
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
-      "email": event.email.toLowerCase(),
-      "username": event.userName.toLowerCase(),
+      "email": event.email,
+      "username": event.userName,
       "password": event.password,
       "confirm_password": event.confirmPassword
     };
@@ -367,8 +367,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AppRepository appRepository = AppRepository();
     Map<String, String> formData = {
       'mobile_phone': event.phoneNumber,
-      'first_name': event.firstname.toLowerCase(),
-      'last_name': event.lastname.toLowerCase()
+      'first_name': event.firstname,
+      'last_name': event.lastname
     };
     AppUtils().debuglog(formData);
     String accessToken = await SharedPref.getString('access-token');

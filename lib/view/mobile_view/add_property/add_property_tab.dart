@@ -81,7 +81,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       for (String imageUrl in widget.property.images) {
         print(imageUrl);
         try {
-          File imageFile = await downloadImage(AppApis.appBaseUrl+imageUrl);
+          File imageFile = await downloadImage(AppApis.appBaseUrl + imageUrl);
           setState(() {
             imageFileList!.add(XFile(imageFile.path));
           });
@@ -97,7 +97,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     // TODO: implement initState
     print(widget.property.propertyName);
     print(widget.property.propertyType);
-    handleUpdate();
+    if (widget.isEdit) {
+      handleUpdate();
+    }
     super.initState();
   }
 
@@ -112,11 +114,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           const SnackBar(content: Text('You can only select up to 4 images.')),
         );
         int remainingSlots = 4 - imageFileList!.length;
-        imageFileList!.addAll(
-            selectedImages.take(remainingSlots).map((xFile) => XFile(xFile.path)));
+        imageFileList!.addAll(selectedImages
+            .take(remainingSlots)
+            .map((xFile) => XFile(xFile.path)));
       } else {
-        imageFileList!
-            .addAll(selectedImages.map((xFile) => XFile(xFile.path)));
+        imageFileList!.addAll(selectedImages.map((xFile) => XFile(xFile.path)));
       }
 
       setState(() {});
@@ -198,10 +200,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                         });
                       } else {
                         // Final step: Save property
-                        if(widget.isEdit){
+                        if (widget.isEdit) {
                           _updateProduct();
-                        }else{
-                        _saveProperty();}
+                        } else {
+                          _saveProperty();
+                        }
                       }
                     },
                     onStepCancel: () {
@@ -257,24 +260,29 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                       height: 100,
                                       child: GridView.builder(
                                         itemCount: imageFileList!.length,
-                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 4,
                                         ),
-                                        itemBuilder: (BuildContext context, int index) {
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           return Stack(
                                             children: [
                                               Image.file(
-                                                File(imageFileList![index].path),
+                                                File(
+                                                    imageFileList![index].path),
                                                 fit: BoxFit.cover,
                                               ),
                                               Positioned(
                                                 top: 0,
                                                 right: 0,
                                                 child: IconButton(
-                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                  icon: Icon(Icons.delete,
+                                                      color: Colors.red),
                                                   onPressed: () {
                                                     setState(() {
-                                                      imageFileList!.removeAt(index);
+                                                      imageFileList!
+                                                          .removeAt(index);
                                                     });
                                                   },
                                                 ),
@@ -284,7 +292,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                         },
                                       ),
                                     ),
-
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -607,10 +614,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                         });
                       } else {
                         // Final step: Save property
-                        if(widget.isEdit){
+                        if (widget.isEdit) {
                           _updateProduct();
-                        }else{
-                          _saveProperty();}
+                        } else {
+                          _saveProperty();
+                        }
                       }
                     },
                     onStepCancel: () {
@@ -638,10 +646,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                       decoration: BoxDecoration(
                                           color: Colors.grey.withOpacity(0.2),
                                           borderRadius:
-                                          BorderRadius.circular(10)),
+                                              BorderRadius.circular(10)),
                                       child: Column(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           const Icon(Icons.save_alt_rounded),
                                           const SizedBox(
@@ -650,9 +658,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                           Center(
                                             child: TextStyles.richTexts(
                                                 text1:
-                                                '    Click to select images   ',
+                                                    '    Click to select images   ',
                                                 text2:
-                                                '\n(only 4 images are allowed)',
+                                                    '\n(only 4 images are allowed)',
                                                 color: Colors.purple,
                                                 size: 13,
                                                 color2: AppColors.black),
@@ -666,24 +674,29 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                       height: 100,
                                       child: GridView.builder(
                                         itemCount: imageFileList!.length,
-                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: 4,
                                         ),
-                                        itemBuilder: (BuildContext context, int index) {
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           return Stack(
                                             children: [
                                               Image.file(
-                                                File(imageFileList![index].path),
+                                                File(
+                                                    imageFileList![index].path),
                                                 fit: BoxFit.cover,
                                               ),
                                               Positioned(
                                                 top: 0,
                                                 right: 0,
                                                 child: IconButton(
-                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                  icon: Icon(Icons.delete,
+                                                      color: Colors.red),
                                                   onPressed: () {
                                                     setState(() {
-                                                      imageFileList!.removeAt(index);
+                                                      imageFileList!
+                                                          .removeAt(index);
                                                     });
                                                   },
                                                 ),
@@ -693,7 +706,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                         },
                                       ),
                                     ),
-
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -1224,6 +1236,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           context, 'Property image is needed to complete upload');
     }
   }
+
   void _updateProduct() {
     if (imageFileList!.isNotEmpty) {
       if (selectedPropertyType.text.isNotEmpty) {
@@ -1249,7 +1262,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               priceController.text,
                               fromPriceController.text,
                               toPriceController.text,
-                              occupiedRoomsController.text,widget.property.id.toString()));
+                              occupiedRoomsController.text,
+                              widget.property.id.toString()));
                         } else {
                           MSG.warningSnackBar(
                               context, 'Property description field is empty');
@@ -1284,7 +1298,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 priceController.text,
                                 fromPriceController.text,
                                 toPriceController.text,
-                                occupiedRoomsController.text,widget.property.id.toString()));
+                                occupiedRoomsController.text,
+                                widget.property.id.toString()));
                           } else {
                             MSG.warningSnackBar(
                                 context, 'Property description field is empty');

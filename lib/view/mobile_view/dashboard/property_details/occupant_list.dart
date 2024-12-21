@@ -45,7 +45,7 @@ class _OccupantListState extends State<OccupantList> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {
+            onTap: () {print(widget.occupants[index].rentDueDate.toString());
               AppNavigator.pushAndStackPage(context,
                   page: ViewOccupant(occupant: widget.occupants[index],
                     property: widget.property,
@@ -97,8 +97,8 @@ class _OccupantListState extends State<OccupantList> {
                         ),
                         // Image.network(),
                         TextStyles.textHeadings(
-                          textValue: "  ${occupant.name}",
-                          textSize: 18,
+                          textValue: "  ${occupant.name.split(' ')[0]} ${occupant.name.split(' ')[1]}",
+                          textSize: 14,
                         ),
                       ],
                     ),
@@ -145,7 +145,7 @@ class _OccupantListState extends State<OccupantList> {
                           const CustomText(
                             text: "Room Number:",
                             color: AppColors.black,
-                            weight: FontWeight.bold,
+                            weight: FontWeight.w600,
                           ),
                           CustomText(
                             text: ' ${occupant.roomNumber}  ',
