@@ -220,204 +220,215 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                             text: 'Property Details',
                             size: 12,
                           ),
-                          content: Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  GestureDetector(
-                                    onTap: selectImages,
-                                    child: Container(
-                                      height: 250,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(Icons.save_alt_rounded),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Center(
-                                            child: TextStyles.richTexts(
-                                                text1:
-                                                    '    Click to select images   ',
-                                                text2:
-                                                    '\n(only 4 images are allowed)',
-                                                color: Colors.purple,
-                                                size: 13,
-                                                color2: AppColors.black),
-                                          ),
-                                        ],
-                                      ),
+                          content: SizedBox(
+                            height: AppUtils.deviceScreenSize(context).height,//-500,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    physics: NeverScrollableScrollPhysics(
+
                                     ),
-                                  ),
-                                  if (imageFileList!.isNotEmpty)
-                                    SizedBox(
-                                      height: 100,
-                                      child: GridView.builder(
-                                        itemCount: imageFileList!.length,
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 4,
-                                        ),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return Stack(
-                                            children: [
-                                              Image.file(
-                                                File(
-                                                    imageFileList![index].path),
-                                                fit: BoxFit.cover,
-                                              ),
-                                              Positioned(
-                                                top: 0,
-                                                right: 0,
-                                                child: IconButton(
-                                                  icon: Icon(Icons.delete,
-                                                      color: Colors.red),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      imageFileList!
-                                                          .removeAt(index);
-                                                    });
-                                                  },
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: selectImages,
+                                          child: Container(
+                                            height: 250,
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey.withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(Icons.save_alt_rounded),
+                                                const SizedBox(
+                                                  height: 10,
                                                 ),
+                                                Center(
+                                                  child: TextStyles.richTexts(
+                                                      text1:
+                                                          '    Click to select images   ',
+                                                      text2:
+                                                          '\n(only 4 images are allowed)',
+                                                      color: Colors.purple,
+                                                      size: 13,
+                                                      color2: AppColors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        if (imageFileList!.isNotEmpty)
+                                          SizedBox(
+                                            height: 100,
+                                            child: GridView.builder(
+                                              itemCount: imageFileList!.length,
+                                              gridDelegate:
+                                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 4,
                                               ),
-                                            ],
-                                          );
-                                        },
-                                      ),
+                                              itemBuilder:
+                                                  (BuildContext context, int index) {
+                                                return Stack(
+                                                  children: [
+                                                    Image.file(
+                                                      File(
+                                                          imageFileList![index].path),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    Positioned(
+                                                      top: 0,
+                                                      right: 0,
+                                                      child: IconButton(
+                                                        icon: Icon(Icons.delete,
+                                                            color: Colors.red),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            imageFileList!
+                                                                .removeAt(index);
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        DropDown(
+                                          label: 'Property Type',
+                                          hint: "Select Property type",
+                                          initialValue: selectedPropertyType.text,
+                                          selectedValue: selectedPropertyType.text,
+                                          items: const [
+                                            'Student Hostel',
+                                            'Apartment/Flat',
+                                            'Bungalow',
+                                            'Duplex',
+                                            'Shop',
+                                            'Offices'
+                                          ],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedPropertyType.text = value;
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: propertyNameController,
+                                          hint: 'Enter property name',
+                                          label: 'Property Name',
+                                          borderRadius: 10,
+                                          borderColor: Colors.grey,
+                                          backgroundColor: theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.white,
+                                          hintColor: !theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.grey,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: addressController,
+                                          hint: 'Enter address',
+                                          maxLines: 3,
+                                          label: 'Address',
+                                          borderColor: Colors.grey,
+                                          backgroundColor: theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.white,
+                                          hintColor: !theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.grey,
+                                          borderRadius: 10,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: townController,
+                                          hint: 'Enter town',
+                                          label: 'Town',
+                                          borderColor: Colors.grey,
+                                          backgroundColor: theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.white,
+                                          hintColor: !theme.isDark
+                                              ? AppColors.darkCardBackgroundColor
+                                              : AppColors.grey,
+                                          borderRadius: 10,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        DropDown(
+                                          label: 'State',
+                                          hint: "Select state",
+                                          selectedValue: selectedState.text,
+                                          initialValue: selectedState.text,
+                                          items: const [
+                                            "Abia",
+                                            "Adamawa",
+                                            "Akwa Ibom",
+                                            "Anambra",
+                                            "Bauchi",
+                                            "Bayelsa",
+                                            "Benue",
+                                            "Borno",
+                                            "Cross River",
+                                            "Delta",
+                                            "Ebonyi",
+                                            "Edo",
+                                            "Ekiti",
+                                            "Enugu",
+                                            "FCT - Abuja",
+                                            "Gombe",
+                                            "Imo",
+                                            "Jigawa",
+                                            "Kaduna",
+                                            "Kano",
+                                            "Katsina",
+                                            "Kebbi",
+                                            "Kogi",
+                                            "Kwara",
+                                            "Lagos",
+                                            "Nasarawa",
+                                            "Niger",
+                                            "Ogun",
+                                            "Ondo",
+                                            "Osun",
+                                            "Oyo",
+                                            "Plateau",
+                                            "Rivers",
+                                            "Sokoto",
+                                            "Taraba",
+                                            "Yobe",
+                                            "Zamfara"
+                                          ],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedState.text = value;
+                                            });
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                  const SizedBox(
-                                    height: 10,
                                   ),
-                                  DropDown(
-                                    label: 'Property Type',
-                                    hint: "Select Property type",
-                                    initialValue: selectedPropertyType.text,
-                                    selectedValue: selectedPropertyType.text,
-                                    items: const [
-                                      'Student Hostel',
-                                      'Apartment/Flat',
-                                      'Bungalow',
-                                      'Duplex',
-                                      'Shop',
-                                      'Offices'
-                                    ],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedPropertyType.text = value;
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: propertyNameController,
-                                    hint: 'Enter property name',
-                                    label: 'Property Name',
-                                    borderRadius: 10,
-                                    borderColor: Colors.grey,
-                                    backgroundColor: theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.white,
-                                    hintColor: !theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.grey,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: addressController,
-                                    hint: 'Enter address',
-                                    maxLines: 3,
-                                    label: 'Address',
-                                    borderColor: Colors.grey,
-                                    backgroundColor: theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.white,
-                                    hintColor: !theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.grey,
-                                    borderRadius: 10,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: townController,
-                                    hint: 'Enter town',
-                                    label: 'Town',
-                                    borderColor: Colors.grey,
-                                    backgroundColor: theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.white,
-                                    hintColor: !theme.isDark
-                                        ? AppColors.darkCardBackgroundColor
-                                        : AppColors.grey,
-                                    borderRadius: 10,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  DropDown(
-                                    label: 'State',
-                                    hint: "Select state",
-                                    selectedValue: selectedState.text,
-                                    initialValue: selectedState.text,
-                                    items: const [
-                                      "Abia",
-                                      "Adamawa",
-                                      "Akwa Ibom",
-                                      "Anambra",
-                                      "Bauchi",
-                                      "Bayelsa",
-                                      "Benue",
-                                      "Borno",
-                                      "Cross River",
-                                      "Delta",
-                                      "Ebonyi",
-                                      "Edo",
-                                      "Ekiti",
-                                      "Enugu",
-                                      "FCT - Abuja",
-                                      "Gombe",
-                                      "Imo",
-                                      "Jigawa",
-                                      "Kaduna",
-                                      "Kano",
-                                      "Katsina",
-                                      "Kebbi",
-                                      "Kogi",
-                                      "Kwara",
-                                      "Lagos",
-                                      "Nasarawa",
-                                      "Niger",
-                                      "Ogun",
-                                      "Ondo",
-                                      "Osun",
-                                      "Oyo",
-                                      "Plateau",
-                                      "Rivers",
-                                      "Sokoto",
-                                      "Taraba",
-                                      "Yobe",
-                                      "Zamfara"
-                                    ],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedState.text = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                           isActive: _currentStep >= 0,
