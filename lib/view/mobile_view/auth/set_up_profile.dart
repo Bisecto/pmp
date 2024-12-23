@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
+import 'package:pim/view/widgets/loading_animation.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/repository/auth_repository.dart';
 import 'package:pim/view/mobile_view/auth/verify_user.dart';
@@ -29,7 +30,8 @@ import '../../widgets/update.dart';
 import 'forgot_password/password_reset_request.dart';
 
 class SetUpProfile extends StatefulWidget {
-  const SetUpProfile({super.key});
+  final String userName;
+  const SetUpProfile({super.key, required this.userName});
 
   @override
   State<SetUpProfile> createState() => _SetUpProfileState();
@@ -58,10 +60,16 @@ class _SetUpProfileState extends State<SetUpProfile> {
         await imagePicker.pickImage(source: ImageSource.gallery);
 
     if (selectedImage != null) {
-      imageFileList = [
-        selectedImage
-      ]; // Replace the list with the newly selected image
-      print("Selected Image Path: ${selectedImage.path}");
+      if (selectedImage.path.toLowerCase().contains('.jpg') ||
+          selectedImage.path.toLowerCase().contains('.png')) {
+        imageFileList = [
+          selectedImage
+        ]; // Replace the list with the newly selected image
+        print("Selected Image Path: ${selectedImage.name}");
+      } else {
+        MSG.warningSnackBar(context, 'Selected image not supported');
+      }
+
       setState(() {});
     }
   }
@@ -83,9 +91,9 @@ class _SetUpProfileState extends State<SetUpProfile> {
               MSG.snackBar(context, state.msg);
 
               AppNavigator.pushAndRemovePreviousPages(context,
-
                   page: LandingPage(
-                    selectedIndex: 0, userModel: state.userModel!,
+                    selectedIndex: 0,
+                    userModel: state.userModel!,
                   ));
             } else if (state is ErrorState) {
               MSG.warningSnackBar(context, state.error);
@@ -174,7 +182,6 @@ class _SetUpProfileState extends State<SetUpProfile> {
                               //if (imageFileList!.isNotEmpty)
                               GestureDetector(
                                 onTap: selectSingleImage,
-
                                 child: CircleAvatar(
                                   backgroundColor: AppColors.mainAppColor,
                                   radius: 50,
@@ -248,37 +255,6 @@ class _SetUpProfileState extends State<SetUpProfile> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              // if (_formKey.currentState!.validate()) {
-                                              //   authBloc.add(SignInEventClick(
-                                              //       _emailController.text,
-                                              //       _passwordController.text));
-                                              // }
-
-                                              AppNavigator.pushAndStackPage(
-                                                  context,
-                                                  page:
-                                                      const PasswordResetRequest());
-                                            },
-                                            child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: CustomText(
-                                                text: "Forgot password ?",
-                                                color: !theme.isDark
-                                                    ? AppColors.blue
-                                                    : AppColors.white,
-                                                size: 16,
-                                                weight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                       FormButton(
                                         onPressed: () async {
                                           // AppNavigator
@@ -289,18 +265,21 @@ class _SetUpProfileState extends State<SetUpProfile> {
                                           //         ));
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            if(imageFileList!.isNotEmpty){
-                                              authBloc.add(SetUpProfileEventClick(
-                                                  _firstNameController.text
-                                                      .toLowerCase()
-                                                      .trim(),
-                                                  _lastNameController.text,
-                                                  _phoneNumberController.text,
-                                                  imageFileList![0]));
-                                            }else{
-                                              MSG.infoSnackBar(context, 'Please select a profile image');
+                                            if (imageFileList!.isNotEmpty) {
+                                              authBloc.add(
+                                                  SetUpProfileEventClick(
+                                                      _firstNameController
+                                                          .text
+                                                          .toLowerCase()
+                                                          .trim(),
+                                                      _lastNameController.text,
+                                                      _phoneNumberController
+                                                          .text,
+                                                      imageFileList![0],widget.userName));
+                                            } else {
+                                              MSG.infoSnackBar(context,
+                                                  'Please select a profile image');
                                             }
-
                                           }
                                         },
                                         text: 'Complete',
@@ -364,13 +343,10 @@ class _SetUpProfileState extends State<SetUpProfile> {
                 );
 
               case LoadingState:
-                return const Center(
-                  child: AppLoadingPage("Signing user in..."),
-                );
+                return LoadingDialog('');
+
               default:
-                return const Center(
-                  child: AppLoadingPage("Signing user in..."),
-                );
+                return LoadingDialog('');
             }
           }),
     );

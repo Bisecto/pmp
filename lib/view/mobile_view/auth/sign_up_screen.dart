@@ -101,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     AppNavigator.pushAndStackPage(context,
                         page: VerifyOtp(
-                           email: _userNameController.text, isNewAccount: true,
+                           email: _emailController.text, isNewAccount: true, userName: _userNameController.text,
                         ));
                   } else if (state is ErrorState) {
                     MSG.warningSnackBar(context, state.error);
@@ -321,10 +321,24 @@ class _SignUpPageState extends State<SignUpPage> {
                                   ],
                                 ),
                               ),
-                              TextStyles.richTexts(
-                                  text1: "Don't have an account yet? ",
-                                  text2: "Create Account"),
-                              SizedBox(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const CustomText(
+                                    text: "Already have an account? ",
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const CustomText(
+                                      text: "Log in",
+                                      color: AppColors.blue,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(
                                 height: 50,
                               ),
                               Align(

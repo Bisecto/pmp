@@ -21,9 +21,10 @@ import 'change_password.dart';
 
 class VerifyOtp extends StatefulWidget {
   String email;
+  String userName;
   bool isNewAccount;
 
-  VerifyOtp({super.key, required this.email, required this.isNewAccount});
+  VerifyOtp({super.key, required this.email, required this.isNewAccount, required this.userName});
 
   @override
   State<VerifyOtp> createState() => _VerifyOtpState();
@@ -172,7 +173,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                                 if (isCompleted) {
                                   authBloc.add(OnVerifyOtpEvent(
                                       addedPin,
-                                      widget.email.toLowerCase(),
+                                      widget.userName.toLowerCase(),
                                       widget.isNewAccount));
                                 } else {
                                   MSG.warningSnackBar(

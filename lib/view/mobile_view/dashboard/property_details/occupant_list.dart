@@ -37,8 +37,8 @@ class _OccupantListState extends State<OccupantList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: widget.occupants.length * 150,
+    return SizedBox(
+      height: widget.occupants.length * 162,
       child: ListView.builder(
         itemCount: widget.occupants.length,
         padding: EdgeInsets.zero,
@@ -130,7 +130,7 @@ class _OccupantListState extends State<OccupantList> {
                   ],
                 ),
               ),
-              Container(
+              SizedBox(
                 width: AppUtils
                     .deviceScreenSize(context)
                     .width,
@@ -155,7 +155,7 @@ class _OccupantListState extends State<OccupantList> {
                           ),
                         ],
                       ),
-                      Container(
+                      SizedBox(
                         width: AppUtils
                             .deviceScreenSize(context)
                             .width / 3,

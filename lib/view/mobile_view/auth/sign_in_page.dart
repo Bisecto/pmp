@@ -37,7 +37,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _userNameController = TextEditingController();
 
   final _passwordController = TextEditingController();
   final AuthBloc authBloc = AuthBloc();
@@ -128,7 +128,7 @@ class _SignInPageState extends State<SignInPage> {
                         MSG.warningSnackBar(context, state.error);
                       } else if (state is ProfileSetUpState) {
                         AppNavigator.pushAndStackPage(context,
-                            page: const SetUpProfile());
+                            page:  SetUpProfile(userName: _userNameController.text,));
                       }
                     },
                     builder: (context, state) {
@@ -193,7 +193,7 @@ class _SignInPageState extends State<SignInPage> {
                                                   hint: 'Enter your username',
                                                   label: 'Username',
                                                   borderColor: Colors.black54,
-                                                  controller: _emailController,
+                                                  controller: _userNameController,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
                                                           .darkCardBackgroundColor
@@ -239,7 +239,7 @@ class _SignInPageState extends State<SignInPage> {
                                                       onTap: () {
                                                         // if (_formKey.currentState!.validate()) {
                                                         //   authBloc.add(SignInEventClick(
-                                                        //       _emailController.text,
+                                                        //       _userNameController.text,
                                                         //       _passwordController.text));
                                                         // }
 
@@ -279,7 +279,7 @@ class _SignInPageState extends State<SignInPage> {
                                                       authBloc.add(
                                                           SignInEventClick(
                                                             //'Bisect','Qwerty123@'
-                                                              _emailController
+                                                              _userNameController
                                                                   .text,
                                                               _passwordController
                                                                   .text

@@ -47,7 +47,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     };
     AppUtils().debuglog(formData);
 
-    try {
+    //try {
       final loginResponse =
           await authRepository.authPostRequest(formData, AppApis.loginApi);
 
@@ -88,14 +88,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AppUtils().debuglog(json.decode(loginResponse.body));
         emit(AuthInitial());
       }
-    } catch (e) {
-      AppUtils().debuglog(e);
-      emit(ErrorState("There was a problem login you in please try again."));
-
-      AppUtils().debuglog(e);
-      emit(AuthInitial());
-      AppUtils().debuglog(12345678);
-    }
+    // } catch (e) {
+    //   AppUtils().debuglog(e);
+    //   emit(ErrorState("There was a problem login you in please try again."));
+    //
+    //   AppUtils().debuglog(e);
+    //   emit(AuthInitial());
+    //   AppUtils().debuglog(12345678);
+    // }
   }
 
   FutureOr<void> initialEvent(InitialEvent event, Emitter<AuthState> emit) {
@@ -368,11 +368,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Map<String, String> formData = {
       'mobile_phone': event.phoneNumber,
       'first_name': event.firstname,
-      'last_name': event.lastname
+      'last_name': event.lastname,
+      'username': event.userName
     };
     AppUtils().debuglog(formData);
     String accessToken = await SharedPref.getString('access-token');
-    try {
+    //try {
       final profileResponse =
           await appRepository.appPostRequestWithSingleImages(
               formData, AppApis.profile, event.profileImage, accessToken);
@@ -392,20 +393,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthInitial());
       } else {
         emit(ErrorState(json.decode(profileResponse.body)['mobile_phone'][0] ??
-            json.decode(profileResponse.body)['first_name'][0] ??
+            json.decode(profileResponse.body)['first_name'][0]??
+            json.decode(profileResponse.body)['username'][0] ??
             json.decode(profileResponse.body)['last_name'][0] ??
             json.decode(profileResponse.body)['profile_pic'][0]));
         //AppUtils().debuglog(event.password);
         AppUtils().debuglog(json.decode(profileResponse.body));
         emit(AuthInitial());
       }
-    } catch (e) {
-      AppUtils().debuglog(e);
-      emit(ErrorState("There was a problem completing profile set up."));
-
-      AppUtils().debuglog(e);
-      emit(AuthInitial());
-      AppUtils().debuglog(12345678);
-    }
+    // } catch (e) {
+    //   AppUtils().debuglog(e);
+    //   emit(ErrorState("There was a problem completing profile set up."));
+    //
+    //   AppUtils().debuglog(e);
+    //   emit(AuthInitial());
+    //   AppUtils().debuglog(12345678);
+    // }
   }
 }

@@ -568,7 +568,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  ${AppUtils.formateSimpleDate(dateTime: occupant.rentDueDate.toString())}.',
+                        text: '  ${AppUtils.formatComplexDate(dateTime: occupant.rentDueDate.toString())}.',
                         size: 14,
                         maxLines: 3,
                       ),

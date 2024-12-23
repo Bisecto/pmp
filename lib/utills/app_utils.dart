@@ -103,7 +103,7 @@ class AppUtils {
     if (dateTime != '') {
       DateTime parseDate = DateFormat("yyyy-MM-dd").parse(dateTime);
       var inputDate = DateTime.parse(parseDate.toString());
-      var outputFormat = DateFormat('d MMM y hh:mm');
+      var outputFormat = DateFormat('d MMM y');
       var outputDate = outputFormat.format(inputDate);
 
       return outputDate;
