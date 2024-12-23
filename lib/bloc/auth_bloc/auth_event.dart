@@ -22,8 +22,20 @@ class SetUpProfileEventClick extends AuthEvent {
   final XFile? profileImage;
   final String userName;
 
-  SetUpProfileEventClick(
-      this.firstname, this.lastname, this.phoneNumber, this.profileImage, this.userName);
+  SetUpProfileEventClick(this.firstname, this.lastname, this.phoneNumber,
+      this.profileImage, this.userName);
+}
+
+class UpdateProfileEventClick extends AuthEvent {
+  final String firstname;
+  final String lastname;
+  final String phoneNumber;
+  final XFile? profileImage;
+  final String userName;
+  final String email;
+
+  UpdateProfileEventClick(this.firstname, this.lastname, this.phoneNumber,
+      this.profileImage, this.userName, this.email);
 }
 
 class SignUpEventClick extends AuthEvent {

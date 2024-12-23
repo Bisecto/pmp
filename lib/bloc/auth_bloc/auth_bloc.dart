@@ -31,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RequestResendOTPEventClick>(requestResendOTPEventClick);
     on<OnVerifyOtpEvent>(onVerifyOtpEvent);
     on<ResetPasswordEventClick>(resetPasswordEventClick);
+    on<UpdateProfileEventClick>(updateProfileEventClick);
     // on<AuthEvent>((event, emit) {
     //   // TODO: implement event handler
     // });
@@ -401,6 +402,56 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AppUtils().debuglog(json.decode(profileResponse.body));
         emit(AuthInitial());
       }
+    // } catch (e) {
+    //   AppUtils().debuglog(e);
+    //   emit(ErrorState("There was a problem completing profile set up."));
+    //
+    //   AppUtils().debuglog(e);
+    //   emit(AuthInitial());
+    //   AppUtils().debuglog(12345678);
+    // }
+  }
+
+  FutureOr<void> updateProfileEventClick(UpdateProfileEventClick event, Emitter<AuthState> emit) async {
+    emit(LoadingState());
+    AppRepository appRepository = AppRepository();
+    Map<String, String> formData = {
+      'mobile_phone': event.phoneNumber,
+      'first_name': event.firstname,
+      'last_name': event.lastname,
+      'username': event.userName,
+      'email': event.email
+    };
+    AppUtils().debuglog(formData);
+    String accessToken = await SharedPref.getString('access-token');
+    //try {
+    final profileResponse =
+    await appRepository.appPatchRequestWithSingleImages(
+        formData, "${AppApis.profile}update/", event.profileImage, accessToken);
+
+    AppUtils().debuglog('Response status: ${profileResponse.statusCode}');
+    AppUtils().debuglog('Response body: ${profileResponse.body}');
+    AppUtils().debuglog(profileResponse.statusCode);
+
+    if (profileResponse.statusCode == 200 ||
+        profileResponse.statusCode == 201) {
+      UserModel userModel =
+      UserModel.fromJson(json.decode(profileResponse.body));
+      emit(SuccessState("Profile Updated Successful", userModel));
+    } else if (profileResponse.statusCode == 500 ||
+        profileResponse.statusCode == 501) {
+      emit(ErrorState("There was a problem completing profile set up."));
+      emit(AuthInitial());
+    } else {
+      emit(ErrorState(json.decode(profileResponse.body)['mobile_phone'][0] ??
+          json.decode(profileResponse.body)['first_name'][0]??
+          json.decode(profileResponse.body)['username'][0] ??
+          json.decode(profileResponse.body)['last_name'][0] ??
+          json.decode(profileResponse.body)['profile_pic'][0]));
+      //AppUtils().debuglog(event.password);
+      AppUtils().debuglog(json.decode(profileResponse.body));
+      emit(AuthInitial());
+    }
     // } catch (e) {
     //   AppUtils().debuglog(e);
     //   emit(ErrorState("There was a problem completing profile set up."));

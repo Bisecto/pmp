@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pim/utills/app_navigator.dart';
+import 'package:pim/view/mobile_view/profile/update_profile.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 
 import '../../../model/user_model.dart';
@@ -29,6 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
             profileContainer(widget.userModel, context: context),
             FormButton(
               onPressed: () {
+                AppNavigator.pushAndStackPage(context,
+                    page: UpdateProfile(userModel: widget.userModel));
               },
               text: "Edit Profile",
               bgColor: AppColors.mainAppColor.withOpacity(0.9),
