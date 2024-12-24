@@ -65,7 +65,7 @@ class _LandingPageState extends State<LandingPage> {
             status: '',
             occupants: [],
             firstImage: '',
-            images: []),
+            imageUrls: [ImageUrl(id: 0, url: '')]),
       ),
       ProfileTab(
         userModel: widget.userModel,

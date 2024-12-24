@@ -62,34 +62,44 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   //Property? property;
   void handleUpdate() async {
-    setState(() async {
-      propertyNameController.text = widget.property.propertyName;
-      selectedPropertyType.text = widget.property.propertyType;
-      selectedState.text = widget.property.location;
-      addressController.text = widget.property.address;
-      townController.text = widget.property.city;
-      selectedPriceType.text = widget.property.priceType;
-      priceController.text = widget.property.price;
-      fromPriceController.text = widget.property.priceRangeStart;
-      toPriceController.text = widget.property.priceRangeStop;
-      availableRoomsController.text =
-          widget.property.availableFlatsRooms.toString();
-      occupiedRoomsController.text =
-          widget.property.occupiedFlatsRooms.toString();
-      descriptionController.text = widget.property.description.toString();
-      print(widget.property.images);
-      for (String imageUrl in widget.property.images) {
-        print(imageUrl);
-        try {
-          File imageFile = await downloadImage(AppApis.appBaseUrl + imageUrl);
-          setState(() {
-            imageFileList!.add(XFile(imageFile.path));
-          });
-        } catch (e) {
-          print('Error downloading image: $e');
-        }
+    print('Updating property details...');
+
+    // Update controllers outside setState
+    propertyNameController.text = widget.property.propertyName;
+    selectedPropertyType.text = widget.property.propertyType;
+    selectedState.text = widget.property.location;
+    addressController.text = widget.property.address;
+    townController.text = widget.property.city;
+    selectedPriceType.text = widget.property.priceType;
+    priceController.text = widget.property.price?.toString() ?? '';
+    fromPriceController.text = widget.property.priceRangeStart?.toString() ?? '';
+    toPriceController.text = widget.property.priceRangeStop?.toString() ?? '';
+    availableRoomsController.text =
+        widget.property.availableFlatsRooms.toString();
+    occupiedRoomsController.text =
+        widget.property.occupiedFlatsRooms.toString();
+    descriptionController.text = widget.property.description;
+
+    print('Image URLs: ${widget.property.imageUrls}');
+    List<String> urls = widget.property.imageUrls
+        .map((imageUrl) => AppApis.appBaseUrl+imageUrl.url)
+        .toList() ??
+        [];
+    print('Extracted URLs: $urls');
+
+    // Download images
+    for (String imageUrl in urls) {
+      print('Downloading image from: $imageUrl');
+      try {
+        File imageFile = await downloadImage(imageUrl);
+        setState(() {
+          imageFileList ??= []; // Initialize if null
+          imageFileList!.add(XFile(imageFile.path));
+        });
+      } catch (e) {
+        print('Error downloading image: $e');
       }
-    });
+    }
   }
 
   @override
@@ -114,6 +124,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           const SnackBar(content: Text('You can only select up to 4 images.')),
         );
         int remainingSlots = 4 - imageFileList!.length;
+
         imageFileList!.addAll(selectedImages
             .take(remainingSlots)
             .map((xFile) => XFile(xFile.path)));
@@ -221,31 +232,34 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                             size: 12,
                           ),
                           content: SizedBox(
-                            height: AppUtils.deviceScreenSize(context).height,//-500,
+                            height: imageFileList!.isNotEmpty ? 850 : 750,
+                            //-500,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Expanded(
                                   child: SingleChildScrollView(
-                                    physics: NeverScrollableScrollPhysics(
-
-                                    ),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         GestureDetector(
                                           onTap: selectImages,
                                           child: Container(
                                             height: 250,
                                             decoration: BoxDecoration(
-                                                color: Colors.grey.withOpacity(0.2),
+                                                color: Colors.grey
+                                                    .withOpacity(0.2),
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                const Icon(Icons.save_alt_rounded),
+                                                const Icon(
+                                                    Icons.save_alt_rounded),
                                                 const SizedBox(
                                                   height: 10,
                                                 ),
@@ -273,24 +287,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                                 crossAxisCount: 4,
                                               ),
                                               itemBuilder:
-                                                  (BuildContext context, int index) {
+                                                  (BuildContext context,
+                                                      int index) {
                                                 return Stack(
                                                   children: [
                                                     Image.file(
-                                                      File(
-                                                          imageFileList![index].path),
+                                                      File(imageFileList![index]
+                                                          .path),
                                                       fit: BoxFit.cover,
                                                     ),
                                                     Positioned(
                                                       top: 0,
                                                       right: 0,
                                                       child: IconButton(
-                                                        icon: Icon(Icons.delete,
+                                                        icon: const Icon(
+                                                            Icons.delete,
                                                             color: Colors.red),
                                                         onPressed: () {
                                                           setState(() {
                                                             imageFileList!
-                                                                .removeAt(index);
+                                                                .removeAt(
+                                                                    index);
                                                           });
                                                         },
                                                       ),
@@ -306,8 +323,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                         DropDown(
                                           label: 'Property Type',
                                           hint: "Select Property type",
-                                          initialValue: selectedPropertyType.text,
-                                          selectedValue: selectedPropertyType.text,
+                                          initialValue:
+                                              selectedPropertyType.text,
+                                          selectedValue:
+                                              selectedPropertyType.text,
                                           items: const [
                                             'Student Hostel',
                                             'Apartment/Flat',
@@ -332,10 +351,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                           borderRadius: 10,
                                           borderColor: Colors.grey,
                                           backgroundColor: theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.white,
                                           hintColor: !theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.grey,
                                         ),
                                         const SizedBox(
@@ -348,10 +369,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                           label: 'Address',
                                           borderColor: Colors.grey,
                                           backgroundColor: theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.white,
                                           hintColor: !theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.grey,
                                           borderRadius: 10,
                                         ),
@@ -364,10 +387,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                           label: 'Town',
                                           borderColor: Colors.grey,
                                           backgroundColor: theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.white,
                                           hintColor: !theme.isDark
-                                              ? AppColors.darkCardBackgroundColor
+                                              ? AppColors
+                                                  .darkCardBackgroundColor
                                               : AppColors.grey,
                                           borderRadius: 10,
                                         ),
@@ -702,7 +727,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                                 top: 0,
                                                 right: 0,
                                                 child: IconButton(
-                                                  icon: Icon(Icons.delete,
+                                                  icon: const Icon(Icons.delete,
                                                       color: Colors.red),
                                                   onPressed: () {
                                                     setState(() {
@@ -1058,7 +1083,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 150,
+        height: 120,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           // color: AppColors.white,
@@ -1113,30 +1138,30 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     ),
                   ),
                 ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color: AppColors.red,
-                        ),
-                        CustomText(text: 'Dublin,ireland', size: 14),
-                      ],
-                    ),
-                    TextStyles.textHeadings(
-                      textValue: "NGN 200,000",
-                      textSize: 18,
-                    ),
-                  ],
-                ),
-              ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.all(0.0),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       const Row(
+              //         children: [
+              //           Icon(
+              //             Icons.location_on,
+              //             color: AppColors.red,
+              //           ),
+              //           CustomText(text: 'Dublin,ireland', size: 14),
+              //         ],
+              //       ),
+              //       TextStyles.textHeadings(
+              //         textValue: "NGN 200,000",
+              //         textSize: 18,
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(
                 height: 10,
               ),

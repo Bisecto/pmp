@@ -61,7 +61,7 @@ class _OccupantListState extends State<OccupantList> {
 
   Widget occupantContainer({required Occupant occupant, required context}) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.only(bottom: 10,right: 3,left: 3),
       child: Container(
         height: 135,
         padding: const EdgeInsets.all(0),
@@ -96,9 +96,12 @@ class _OccupantListState extends State<OccupantList> {
                           //radius: 20,
                         ),
                         // Image.network(),
-                        TextStyles.textHeadings(
-                          textValue: "  ${occupant.name.split(' ')[0]} ${occupant.name.split(' ')[1]}",
-                          textSize: 14,
+                        Container(
+                          width: 150,
+                          child: CustomText(
+                            text: "  ${occupant.name}",
+                            size: 14,
+                          ),
                         ),
                       ],
                     ),
@@ -146,11 +149,11 @@ class _OccupantListState extends State<OccupantList> {
                             text: "Room Number:",
                             color: AppColors.black,
                             weight: FontWeight.w600,
-                            size: 14,
+                            size: 12,
                           ),
                           CustomText(
                             text: ' ${occupant.roomNumber}  ',
-                            size: 14,
+                            size: 12,
                             maxLines: 3,
                           ),
                         ],

@@ -6,7 +6,7 @@ class Property {
   String city;
   String description;
   String propertyType;
-  String price;
+  dynamic price;
   String priceType;
   dynamic priceRangeStart;
   dynamic priceRangeStop;
@@ -15,7 +15,7 @@ class Property {
   String status;
   List<Occupant> occupants;
   String firstImage;
-  List<String> images;
+  List<ImageUrl> imageUrls;
 
   Property({
     required this.id,
@@ -34,28 +34,34 @@ class Property {
     required this.status,
     required this.occupants,
     required this.firstImage,
-    required this.images,
+    required this.imageUrls,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
-        id: json["id"],
-        propertyName: json["property_name"],
-        address: json["address"] ?? '',
-        location: json["location"] ?? '',
-        city: json["city"] ?? '',
-        description: json["description"] ?? '',
-        propertyType: json["property_type"] ?? '',
-        price: json["price"] ?? 0,
-        priceType: json["price_type"] ?? 'Static',
-        priceRangeStart: json["price_range_start"] ?? 0,
-        priceRangeStop: json["price_range_stop"] ?? 0,
-        availableFlatsRooms: json["available_flats_rooms"] ?? 0,
-        occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
-        status: json["status"] ?? '',
-    occupants: List<Occupant>.from(json["occupants"]?.map((x) => Occupant.fromJson(x)) ?? []),
-        firstImage: json["first_image"]??'',
-        images: List<String>.from(json["images"] ?? [].map((x) => x)),
-      );
+    id: json["id"],
+    propertyName: json["property_name"] ?? '',
+    address: json["address"] ?? '',
+    location: json["location"] ?? '',
+    city: json["city"] ?? '',
+    description: json["description"] ?? '',
+    propertyType: json["property_type"] ?? '',
+    price: json["price"] ?? 0,
+    priceType: json["price_type"] ?? 'Static',
+    priceRangeStart: json["price_range_start"] ?? 0,
+    priceRangeStop: json["price_range_stop"] ?? 0,
+    availableFlatsRooms: json["available_flats_rooms"] ?? 0,
+    occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
+    status: json["status"] ?? '',
+    occupants: (json["occupants"] as List<dynamic>?)
+        ?.map((x) => Occupant.fromJson(x))
+        .toList() ??
+        [],
+    firstImage: json["first_image"] ?? '',
+    imageUrls: (json["image_urls"] as List<dynamic>?)
+        ?.map((x) => ImageUrl.fromJson(x))
+        .toList() ??
+        [],
+  );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -74,7 +80,7 @@ class Property {
         "status": status,
         "occupants": List<dynamic>.from(occupants.map((x) => x.toJson())),
         "first_image": firstImage,
-        "images": List<dynamic>.from(images.map((x) => x)),
+        "image_urls": List<dynamic>.from(imageUrls.map((x) => x.toJson())),
       };
 }
 
@@ -117,26 +123,26 @@ class Occupant {
 
   factory Occupant.fromJson(Map<String, dynamic> json) => Occupant(
         id: json["id"].toString(),
-        name: json["name"],
-        dob: json["dob"]??'',
-        mobileNumber: json["mobile_phone"]??'',
-        gender: json["gender"]??'',
-        state: json["state"]??'',
-        localGovernment: json["local_government"]??'',
-        roomNumber: json["room_number"]??0,
-        rentDueDate: json["rent_expiration_date"]??'',
-        rentCommencementDate: json["rent_commencement_date"]??'',
-        rentPaid: json["rent_paid"]??'',
-        meshBillPaid: json["mesh_bill_paid"]??'',
-        occupationStatus: json["occupation_status"]??'',
-        relationship: json["relationship"]??'',
-        profilePic: json["profile_pic"]??'',
-        country: json["country"]??'',
+        name: json["full_name"] ?? '',
+        dob: json["dob"] ?? '',
+        mobileNumber: json["mobile_phone"] ?? '',
+        gender: json["gender"] ?? '',
+        state: json["state"] ?? '',
+        localGovernment: json["local_government"] ?? '',
+        roomNumber: json["room_number"] ?? 0,
+        rentDueDate: json["rent_expiration_date"] ?? '',
+        rentCommencementDate: json["rent_commencement_date"] ?? '',
+        rentPaid: json["rent_paid"] ?? '',
+        meshBillPaid: json["mesh_bill_paid"] ?? '',
+        occupationStatus: json["occupation_status"] ?? '',
+        relationship: json["relationship"] ?? '',
+        profilePic: json["profile_pic"] ?? '',
+        country: json["country"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
+        "full_name": name,
         "dob": dob!,
         "mobile_phone": mobileNumber,
         "gender": gender,
@@ -151,5 +157,25 @@ class Occupant {
         "relationship": relationship,
         "profile_pic": profilePic,
         "country": country,
+      };
+}
+
+class ImageUrl {
+  int id;
+  String url;
+
+  ImageUrl({
+    required this.id,
+    required this.url,
+  });
+
+  factory ImageUrl.fromJson(Map<String, dynamic> json) => ImageUrl(
+        id: json["id"],
+        url: json["url"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "url": url,
       };
 }

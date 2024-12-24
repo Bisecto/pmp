@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/res/app_svg_images.dart';
@@ -15,6 +17,8 @@ import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:pim/view/widgets/form_button.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -40,24 +44,66 @@ class PropertyDetails extends StatefulWidget {
 
 class _PropertyDetailsState extends State<PropertyDetails> {
   PropertyBloc propertyBloc = PropertyBloc();
+  List<String> images=[];
 
   @override
   void initState() {
-    // TODO: implement initState
-    propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
     super.initState();
+    propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
+
+    //propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
+
+    loadResources();
   }
+
+  late Uint8List logoImage;
+  late Uint8List companyImage;
+  late Uint8List studentImageBytes;
+
+  Future<void> loadResources() async {
+    try {
+      await prepareImage();
+    } catch (e) {
+      // Handle error gracefully
+      print("Error loading resources: $e");
+    }
+  }
+
+  Future<void> prepareImage() async {
+    try {
+      final ByteData logoBytes = await rootBundle.load(AppImages.logo);
+      logoImage = logoBytes.buffer.asUint8List();
+
+      final ByteData companyLogoBytes =
+          await rootBundle.load(AppImages.companyLogo);
+      companyImage = companyLogoBytes.buffer.asUint8List();
+
+      final http.Response response = await http.get(
+        Uri.parse(AppApis.appBaseUrl + widget.property.firstImage),
+      );
+
+      if (response.statusCode == 200) {
+        studentImageBytes = response.bodyBytes;
+      } else {
+        throw Exception("Failed to load student image: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error preparing images: $e");
+      rethrow; // Propagate the error to the caller
+    }
+  }
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   prepareImage();
+  //   super.initState();
+  // }
 
   Future<Uint8List> generatePdf(Property prop) async {
     final pdf = pw.Document();
-    final ByteData logoBytes = await rootBundle.load(AppImages.logo);
-    final Uint8List logoImage = logoBytes.buffer.asUint8List();
-    final ByteData companyLogoBytes =
-        await rootBundle.load(AppImages.companyLogo);
-    final Uint8List companyImage = companyLogoBytes.buffer.asUint8List();
-    // Load student image
-    final http.Response response =
-        await http.get(Uri.parse(AppApis.appBaseUrl+prop.firstImage));
+
+    print("Starting PDF generation...");
     final tableHeaders = [
       'Name',
       'State',
@@ -67,124 +113,104 @@ class _PropertyDetailsState extends State<PropertyDetails> {
       'Employment Status'
     ];
 
-    ///studentImage);
-    ///response.statusCode);
-    Uint8List studentImageBytes;
-    studentImageBytes = response.bodyBytes;
+    // Verify resources
+    if (logoImage == null || companyImage == null) {
+      print("Missing required images for PDF generation");
+      return Uint8List(0);
+    }
+
+    // Check occupants data
+    if (prop.occupants.isEmpty) {
+      print("No occupants data available in the property model");
+    }
+
     pdf.addPage(
       pw.Page(
-        //pageFormat: Pd,
         build: (pw.Context context) {
           return pw.Container(
-              //padding: pw.EdgeInsets.all(32),
-              child: pw.Column(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(logoImage,prop),
-                    //pw.Divider(),
-                    pw.SizedBox(height: 10),
-                    _buildTitle('Generated Property details'),
-                    pw.SizedBox(height: 10),
-                    _buildPropertyInfo(
-                      studentImageBytes,prop
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                _buildHeader(logoImage, prop),
+                pw.SizedBox(height: 10),
+                _buildTitle('Generated Property details'),
+                pw.SizedBox(height: 10),
+                _buildPropertyInfo(studentImageBytes, prop),
+                pw.Divider(),
+                // Table Header
+                pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                  color: PdfColors.blueGrey,
+                  child: pw.Row(
+                    children: tableHeaders
+                        .map((header) => pw.Expanded(
+                              child: pw.Text(
+                                header,
+                                style: pw.TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: pw.FontWeight.bold,
+                                  color: PdfColors.white,
+                                ),
+                                textAlign: pw.TextAlign.center,
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+                // Table Rows
+                ...prop.occupants.map((occupant) {
+                  return pw.Column(children: [
+                    pw.Row(
+                      children: [
+                        pw.Expanded(
+                          child: pw.Text(occupant.name,
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.start),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(occupant.state,
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text('${occupant.roomNumber}',
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(occupant.rentPaid,
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(occupant.rentDueDate,
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(occupant.occupationStatus,
+                              style: const pw.TextStyle(fontSize: 10),
+                              textAlign: pw.TextAlign.center),
+                        ),
+                      ],
                     ),
                     pw.Divider(),
 
-                    // Table Header
-                    pw.Container(
-                      padding: const pw.EdgeInsets.symmetric(vertical: 5),
-                      color: PdfColors.blueGrey,
-                      child: pw.Row(
-                        children: tableHeaders
-                            .map((header) => pw.Expanded(
-                                  child: pw.Text(
-                                    header,
-                                    style: pw.TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: pw.FontWeight.bold,
-                                      color: PdfColors.white,
-                                    ),
-                                    textAlign: pw.TextAlign.center,
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-
-                    ...prop.occupants.map((occupant) {
-                      print(occupant);
-                      return pw.Container(
-                        padding: const pw.EdgeInsets.symmetric(vertical: 5),
-                        decoration: const pw.BoxDecoration(
-                          border: pw.Border(
-                            bottom: pw.BorderSide(color: PdfColors.grey300),
-                          ),
-                        ),
-                        child: pw.Row(
-                          children: [
-                            pw.Expanded(
-                                child: pw.Text(occupant.name,
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                            pw.Expanded(
-                                child: pw.Text(occupant.state,
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                            pw.Expanded(
-                                child: pw.Text('${occupant.roomNumber}',
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                            pw.Expanded(
-                                child: pw.Text(occupant.rentPaid,
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                            pw.Expanded(
-                                child: pw.Text(occupant.rentDueDate,
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                            pw.Expanded(
-                                child: pw.Text(occupant.occupationStatus,
-                                    style: const pw.TextStyle(fontSize: 10),
-                                    textAlign: pw.TextAlign.center)),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-
-                    pw.SizedBox(height: 20),
-
-                    //_buildFooter('Thank you for your payment.'),
-                  ],
-                ),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(""),
-                    pw.Row(
-                      children: [
-                        pw.Text("Powered by"),
-                        pw.Image(
-                            pw.MemoryImage(
-                              companyImage,
-                            ),
-                            width: 100,
-                            height: 100),
-                      ],
-                    ),
-                  ],
-                ),
-              ]));
+                  ]);
+                }).toList(),
+                pw.SizedBox(height: 20),
+              ],
+            ),
+          );
         },
       ),
     );
 
+    print("PDF generation complete.");
     return pdf.save();
   }
 
-  pw.Widget _buildHeader(logoImage,Property prop) {
+  pw.Widget _buildHeader(logoImage, Property prop) {
     return pw.Container(
       //padding: pw.EdgeInsets.all(16),
       // padding: pw.EdgeInsets.all(16),
@@ -212,7 +238,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     );
   }
 
-  pw.Widget _buildPropertyInfo(Uint8List studentImage,Property prop) {
+  pw.Widget _buildPropertyInfo(Uint8List studentImage, Property prop) {
     return pw.Row(
       children: [
         pw.Image(pw.MemoryImage(studentImage),
@@ -228,13 +254,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               _buildInfoRow('Property State', prop.location),
               _buildInfoRow(
                   'Total Flats',
-                  (prop.occupiedFlatsRooms +
-                          prop.availableFlatsRooms)
+                  (prop.occupiedFlatsRooms + prop.availableFlatsRooms)
                       .toString()),
-              _buildInfoRow('Available Flats',
-                  prop.availableFlatsRooms.toString()),
-              _buildInfoRow('Occupied Flats',
-                  prop.occupiedFlatsRooms.toString()),
+              _buildInfoRow(
+                  'Available Flats', prop.availableFlatsRooms.toString()),
+              _buildInfoRow(
+                  'Occupied Flats', prop.occupiedFlatsRooms.toString()),
             ],
           ),
         ),
@@ -291,7 +316,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   case SinglePropertySuccessState:
                     final singlePropertySuccessState =
                         state as SinglePropertySuccessState;
-
+                    images = singlePropertySuccessState.property.imageUrls
+                        .map((imageUrl) => AppApis.appBaseUrl+imageUrl.url)
+                        .toList() ??
+                        [];
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Padding(
@@ -311,7 +339,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 children: [
                                   const CustomText(
                                     text: "Property Details",
-                                    size: 18,
+                                    size: 16,
                                     weight: FontWeight.w700,
                                   ),
                                   Row(
@@ -364,7 +392,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     children: [
                                       const CustomText(
                                         text: "Status",
-                                        size: 18,
+                                        size: 15,
                                         weight: FontWeight.w600,
                                       ),
                                       Container(
@@ -382,6 +410,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                           text: singlePropertySuccessState
                                               .property.status,
                                           color: AppColors.white,
+                                          size: 15,
                                           weight: FontWeight.bold,
                                         )),
                                       )
@@ -393,7 +422,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     children: [
                                       const CustomText(
                                         text: "Available rooms",
-                                        size: 18,
+                                        size: 15,
                                         weight: FontWeight.w600,
                                       ),
                                       Container(
@@ -410,6 +439,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                             child: CustomText(
                                           text:
                                               "${singlePropertySuccessState.property.availableFlatsRooms}",
+                                          size: 15,
                                           color: AppColors.black,
                                           weight: FontWeight.bold,
                                         )),
@@ -427,21 +457,55 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 children: [
                                   const CustomText(
                                     text: "Occupants",
-                                    size: 18,
+                                    size: 15,
                                     weight: FontWeight.w600,
                                   ),
                                   Row(
                                     children: [
-                                      GestureDetector(
+                                      InkWell(
                                           onTap: () async {
-                                            final pdfData = await generatePdf(singlePropertySuccessState.property);
+                                            print(1);
+                                            final pdfData = await generatePdf(
+                                                singlePropertySuccessState
+                                                    .property);
+                                            if (pdfData.isEmpty) {
+                                              print(
+                                                  "Generated PDF data is empty!");
+                                              return;
+                                            }
+
+                                            // Save PDF locally
+                                            final directory =
+                                                await getTemporaryDirectory();
+                                            final filePath =
+                                                '${directory.path}/GeneratedProperty.pdf';
+                                            final file = File(filePath);
+                                            await file.writeAsBytes(pdfData);
+                                            print("PDF saved to: $filePath");
+
                                             await Printing.layoutPdf(
-                                                onLayout: (PdfPageFormat
-                                                        format) async =>
-                                                    pdfData,
-                                                dynamicLayout: false,
-                                                name:
-                                                    "${widget.property.propertyName}PROPERTY_INFO");
+                                              onLayout:
+                                                  (PdfPageFormat format) async {
+                                                print(
+                                                    "Generating PDF layout...");
+                                                final data = pdfData;
+                                                print(
+                                                    "PDF layout generated. Size: ${data.length} bytes");
+                                                return data;
+                                              },
+                                              dynamicLayout: false,
+                                              name:
+                                                  "${widget.property.propertyName}_PROPERTY_INFO",
+                                            );
+
+                                            // await Printing.layoutPdf(
+                                            //     onLayout: (PdfPageFormat
+                                            //             format) async =>
+                                            //         pdfData,
+                                            //     dynamicLayout: false,
+                                            //     name:
+                                            //         "${widget.property.propertyName}PROPERTY_INFO");
+                                            print(1);
                                           },
                                           child: SvgPicture.asset(
                                             AppSvgImages.download,
@@ -463,10 +527,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                         },
                                         child: Container(
                                           height: 45,
-                                          width:
-                                              AppUtils.deviceScreenSize(context)
-                                                      .width /
-                                                  3,
+                                          // width:
+                                          //     AppUtils.deviceScreenSize(context)
+                                          //             .width /
+                                          //         3,
                                           decoration: BoxDecoration(
                                               color: AppColors.blue,
                                               borderRadius:
@@ -475,13 +539,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Icon(
-                                                Icons.add_box,
-                                                color: AppColors.white,
-                                              ),
                                               CustomText(
-                                                text: " Add occupant",
+                                                text: "  Add occupant  ",
                                                 color: AppColors.white,
+                                                size: 14,
                                                 weight: FontWeight.bold,
                                               ),
                                             ],
@@ -530,12 +591,51 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               })),
     );
   }
+  int imageNum = 0;
+
+  PageController _controller = PageController();
+  _onPageChanged(int index) {
+    setState(() {
+      imageNum = index;
+    });
+  }
+  void nextPage() {
+    _controller.animateToPage(_controller.page!.toInt() + 1,
+        duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
+
+    setState(() {
+      if (imageNum == images.length - 1) {
+      } else {
+        imageNum = imageNum + 1;
+      }
+    });
+  }
+
+  void previousPage() {
+    _controller.animateToPage(_controller.page!.toInt() - 1,
+        duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
+
+    setState(() {
+      if (imageNum == 0) {
+      } else {
+        imageNum = imageNum - 1;
+      }
+    });
+  }
+
+  // Set active = {};
+  //
+  // void _handleTap(index) {
+  //   setState(() {
+  //     active.contains(index) ? active.remove(index) : active.add(index);
+  //   });
+  // }
 
   Widget lodgeContainer({required Property property, required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 250,
+        height: 270,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           // color: AppColors.white,
@@ -546,6 +646,139 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              if(property.imageUrls.isNotEmpty)
+                Stack(
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      child: PageView.builder(
+                        itemCount: images.length,
+                        controller: _controller,
+                        onPageChanged: _onPageChanged,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Stack(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(images[index]),
+                                  ),
+                                  borderRadius: BorderRadius.circular(10)
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.width * 0.2,
+                      left: 25,
+                      child: GestureDetector(
+                        onTap: () {
+                          previousPage();
+                        },
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                            size: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.width * 0.2,
+                      right: 25,
+                      child: GestureDetector(
+                        onTap: () {
+                          nextPage();
+                        },
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 150,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Align(
+                        alignment: Alignment.center,
+                        //width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: SizedBox(
+                            width: 78,
+                            child: Material(
+                              type: MaterialType.card,
+                              color: Colors.black38,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.camera_enhance,
+                                      color: Colors.orange,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    CustomText(
+                                      maxLines: 1,
+                                      text: imageNum == 0
+                                          ? '1/${images.length}'
+                                          : '${imageNum + 1}/${images.length}',
+                                      color: Colors.orange,
+                                      size: 14,
+                                      weight: FontWeight.w400,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              if(property.imageUrls.isNotEmpty)
+
+                const SizedBox(height: 20),
+              // GestureDetector(
+              //   onTap: () => Get.to(() => FullGalleryScreen(
+              //     index: 1,
+              //     images: images,
+              //   )),
+              //   child: const Center(
+              //     child: CustomText(
+              //         color: Colors.black54,
+              //         text: 'Tap to view in fullScreen',
+              //         weight: FontWeight.w700,
+              //         size: 13),
+              //   ),
+              // ),
+              if(property.imageUrls.isEmpty)
               Container(
                 height: 200,
                 width: AppUtils.deviceScreenSize(context).width,
@@ -575,26 +808,27 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on,
                           color: AppColors.red,
                         ),
-                        CustomText(text: 'Dublin,ireland', size: 14),
+                        CustomText(text: property.location, size: 14),
                       ],
                     ),
-                    if (property.propertyType.toLowerCase() == 'static')
+                    if (property.priceType.toLowerCase() == 'static')
                       TextStyles.textHeadings(
                         textValue:
                             "NGN ${AppUtils.convertPrice(property.price)}",
-                        textSize: 18,
+                        textSize: 12,
                       ),
-                    //   if(property.propertyType.toLowerCase()=='static')
-                    // TextStyles.textHeadings(
-                    //   textValue: AppUtils.formatCurrency(1000.0),
-                    //   textSize: 18,
-                    // ),
+                    if (property.priceType.toLowerCase() != 'static')
+                      TextStyles.textHeadings(
+                        textValue:
+                            "NGN ${AppUtils.convertPrice(property.priceRangeStart.toString())} - ${AppUtils.convertPrice(property.priceRangeStop.toString())}",
+                        textSize: 12,
+                      ),
                   ],
                 ),
               ),

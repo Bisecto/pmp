@@ -38,7 +38,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-   // try {
+    try {
     var listPropertyResponse = await appRepository.getRequestWithToken(
         accessToken, AppApis.propertiesListApi);
     // var res = await appRepository.appGetRequest(
@@ -63,10 +63,10 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           json.decode(listPropertyResponse.body)['message'])));
       print(json.decode(listPropertyResponse.body));
     }
-    // } catch (e) {
-    //   emit(PropertyErrorState("An error occurred while fetching property."));
-    //   print(e);
-    // }
+    } catch (e) {
+      emit(PropertyErrorState("An error occurred while fetching property."));
+      print(e);
+    }
   }
 
   FutureOr<void> addPropertyEvent(
@@ -90,6 +90,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'price_range_start': event.priceRangeStart!,
         'price': event.price.toString(),
       };
+      print(formData);
       var addPropertyResponse =
           await appRepository.appPostRequestWithMultipleImages(
         formData,
@@ -256,7 +257,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     try {
       //Map<String, String> formData = json.decode(event.occupant);
       var addPropertyResponse =
-      await appRepository.appPutRequestWithSingleImages(
+      await appRepository.appPatchRequestWithSingleImages(
         event.formData,
         '${AppApis.updateOccupantApi+event.occupantId}/',
         event.image,

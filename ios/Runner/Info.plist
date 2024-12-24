@@ -41,12 +41,21 @@
         <key>NSPhotoLibraryAddUsageDescription</key>
         <string>We need permission to save images to your photo library.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This app requires access to the photo library to save files.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+    </array>
+    <key>NSFileAccessUsageDescription</key>
+    <string>This app requires access to files for printing and saving PDFs.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

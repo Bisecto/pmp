@@ -52,8 +52,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController rentCommencementController =
       TextEditingController();
-  final TextEditingController rentExpirationController =
-      TextEditingController();
+  // final TextEditingController rentExpirationController =
+  //     TextEditingController();
   final TextEditingController lgaController = TextEditingController();
   final TextEditingController amtPaidController = TextEditingController();
   final TextEditingController roomNumberController = TextEditingController();
@@ -84,7 +84,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
           widget.occupant!.mobileNumber.replaceAll('+234', '');
       dobController.text = widget.occupant!.dob;
       rentCommencementController.text = widget.occupant!.rentCommencementDate;
-      rentExpirationController.text = widget.occupant!.rentDueDate;
+     // rentExpirationController.text = widget.occupant!.rentDueDate;
       lgaController.text = widget.occupant!.localGovernment;
       amtPaidController.text = widget.occupant!.rentPaid;
       roomNumberController.text = widget.occupant!.roomNumber.toString();
@@ -96,6 +96,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       print(widget.occupant!.profilePic);
       // for (String imageUrl in widget.occupant!) {
       try {
+
         File imageFile = await downloadImage(widget.occupant!.profilePic);
         setState(() {
           imageFileList!.add(XFile(imageFile.path));
@@ -124,11 +125,19 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         await imagePicker.pickImage(source: ImageSource.gallery);
 
     if (selectedImage != null) {
-      imageFileList = [
-        selectedImage
-      ]; // Replace the list with the newly selected image
-      print("Selected Image Path: ${selectedImage.path}");
-      setState(() {});
+      if (selectedImage.path.toLowerCase().contains('.jpg') ||
+          selectedImage.path.toLowerCase().contains('.png')) {
+        setState(() {
+          imageFileList = [
+            selectedImage
+          ];
+        });
+        // Replace the list with the newly selected image
+        print("Selected Image Path: ${selectedImage.name}");
+      } else {
+        MSG.warningSnackBar(context, 'Selected image not supported');
+      }
+
     }
   }
 
@@ -462,22 +471,22 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
-                              CustomTextFormField(
-                                controller: rentExpirationController,
-                                hint: 'DD/MM/YY',
-                                label: 'Rent Expiration Date',
-                                borderColor: Colors.grey,
-                                //: Icons.date_range,
-
-                                readOnly: true,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
-                              ),
+                              // CustomTextFormField(
+                              //   controller: rentExpirationController,
+                              //   hint: 'DD/MM/YY',
+                              //   label: 'Rent Expiration Date',
+                              //   borderColor: Colors.grey,
+                              //   //: Icons.date_range,
+                              //
+                              //   readOnly: true,
+                              //   backgroundColor: theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.white,
+                              //   hintColor: !theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.grey,
+                              //   borderRadius: 10,
+                              // ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: roomNumberController,
@@ -840,23 +849,23 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
-                              CustomTextFormField(
-                                controller: rentExpirationController,
-                                hint: 'DD/MM/YY',
-                                label: 'Rent Expiration Date',
-                                borderColor: Colors.grey,
-                                //: Icons.date_range,
-
-                                readOnly: true,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
-                              ),
-                              const SizedBox(height: 16),
+                              // CustomTextFormField(
+                              //   controller: rentExpirationController,
+                              //   hint: 'DD/MM/YY',
+                              //   label: 'Rent Expiration Date',
+                              //   borderColor: Colors.grey,
+                              //   //: Icons.date_range,
+                              //
+                              //   readOnly: true,
+                              //   backgroundColor: theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.white,
+                              //   hintColor: !theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.grey,
+                              //   borderRadius: 10,
+                              // ),
+                             // const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: roomNumberController,
                                 hint: 'Enter room number',
@@ -1052,21 +1061,21 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const CustomText(
-                        text: "Rent Due In:",
-                        color: AppColors.black,
-                        size: 14,
-                        weight: FontWeight.bold,
-                      ),
-                      CustomText(
-                        text: '  ${rentExpirationController.text}',
-                        size: 14,
-                        maxLines: 3,
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     const CustomText(
+                  //       text: "Rent Due In:",
+                  //       color: AppColors.black,
+                  //       size: 14,
+                  //       weight: FontWeight.bold,
+                  //     ),
+                  //     CustomText(
+                  //       text: '  ${rentExpirationController.text}',
+                  //       size: 14,
+                  //       maxLines: 3,
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
               Row(
@@ -1266,7 +1275,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'country': 'Nigeria',
         'room_number': roomNumberController.text,
         'rent_commencement_date': rentCommencementController.text,
-        'rent_expiration_date': rentExpirationController.text,
+        //'rent_expiration_date': rentExpirationController.text,
         'rent_paid': amtPaidController.text,
         'mesh_bill_paid': cautionFeeController.text,
         'relationship': selectedMaritalStatus,
