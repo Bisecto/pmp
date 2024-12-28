@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/res/apis.dart';
@@ -7,6 +8,7 @@ import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/view_occupant.dart';
+import 'package:telephony/telephony.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../model/user_model.dart';
@@ -179,35 +181,33 @@ class _OccupantListState extends State<OccupantList> {
     );
   }
 
-  String getCountdownText(String targetDateString) {
-    DateTime targetDate = DateTime.parse(targetDateString);
-    DateTime now = DateTime.now();
 
-    Duration difference = targetDate.difference(now);
 
-    if (difference.isNegative) {
-      return "Countdown has expired!";
-    } else {
-      return "${difference
-          .inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
-          ;
-    }
-  }
+  // import 'package:flutter/material.dart';
+  // import 'package:url_launcher/url_launcher.dart';
+  // import 'package:telephony/telephony.dart';
 
   Future<void> _sendSMS(String phoneNumber, String message) async {
-    final Uri smsUri = Uri(
-      scheme: 'sms',
-      path: phoneNumber,
-      queryParameters: {'body': message},
-    );
+    final Telephony telephony = Telephony.instance;
 
-    if (await canLaunchUrl(smsUri)) {
-      await launchUrl(smsUri);
-    } else {
-      throw 'Could not launch $smsUri';
+    try {
+      await telephony.sendSms(to: phoneNumber, message: message);
+    } on PlatformException catch (e) {
+      // Handle platform-specific errors
+      if (e.code == 'PERMISSION_DENIED') {
+        // Request SMS permissions
+        await telephony.requestSmsPermissions;
+        // Retry sending the SMS
+        await telephony.sendSms(to: phoneNumber, message: message);
+      } else {
+        // Handle other errors
+        throw 'Failed to send SMS: ${e.message}';
+      }
+    } catch (e) {
+      // Handle other exceptions
+      throw 'Failed to send SMS: $e';
     }
   }
-
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri url = Uri.parse('tel:$phoneNumber');
     if (await canLaunchUrl(url)) {
