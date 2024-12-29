@@ -22,6 +22,7 @@ import '../../../utills/custom_theme.dart';
 import '../../important_pages/dialog_box.dart';
 import '../../important_pages/not_found_page.dart';
 import '../../widgets/app_custom_text.dart';
+import '../../widgets/drop_down.dart';
 import '../../widgets/form_button.dart';
 import '../../widgets/form_input.dart';
 import '../../widgets/update.dart';
@@ -38,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _userNameController = TextEditingController();
-
+  final TextEditingController selectedRoleType = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthBloc authBloc = AuthBloc();
@@ -101,7 +102,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     AppNavigator.pushAndStackPage(context,
                         page: VerifyOtp(
-                           email: _emailController.text, isNewAccount: true, userName: _userNameController.text,
+                          email: _emailController.text,
+                          isNewAccount: true,
+                          userName: _userNameController.text,
                         ));
                   } else if (state is ErrorState) {
                     MSG.warningSnackBar(context, state.error);
@@ -201,6 +204,25 @@ class _SignUpPageState extends State<SignUpPage> {
                                             const SizedBox(
                                               height: 10,
                                             ),
+                                            DropDown(
+                                              label: 'Choose Your Role',
+                                              hint: "Select your role",
+                                              //initialValue: 'Static',
+                                              selectedValue:
+                                                  selectedRoleType.text,
+                                              items: const [
+                                                'Agent',
+                                                'Landlord'
+                                              ],
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedRoleType.text = value;
+                                                });
+                                              },
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
                                             CustomTextFormField(
                                               label: 'Create Password',
                                               isPasswordField: true,
@@ -295,14 +317,23 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 //         ));
                                                 if (_formKey.currentState!
                                                     .validate()) {
-                                                  authBloc.add(SignUpEventClick(
-                                                      _emailController.text
-                                                          .toLowerCase()
-                                                          .trim(),
-                                                      _passwordController.text,
-                                                      _userNameController.text,
-                                                      _confirmPasswordController
-                                                          .text));
+                                                  if (selectedRoleType.text ==
+                                                      '') {
+                                                    MSG.warningSnackBar(context,
+                                                        'Select a role before proceeding');
+                                                  } else {
+                                                    authBloc.add(SignUpEventClick(
+                                                        _emailController.text
+                                                            .toLowerCase()
+                                                            .trim(),
+                                                        _passwordController
+                                                            .text,
+                                                        _userNameController
+                                                            .text,
+                                                        _confirmPasswordController
+                                                            .text,
+                                                        selectedRoleType.text));
+                                                  }
                                                 }
                                               },
                                               text: 'Create account',

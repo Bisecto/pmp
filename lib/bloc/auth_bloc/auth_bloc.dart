@@ -273,6 +273,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Map<String, String> formData = {
       "email": event.email,
       "username": event.userName,
+      "role": event.selectedRole.toLowerCase(),
       "password": event.password,
       "confirm_password": event.confirmPassword
     };

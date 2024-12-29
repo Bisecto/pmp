@@ -43,12 +43,13 @@ class SignUpEventClick extends AuthEvent {
   final String userName;
   final String password;
   final String confirmPassword;
+  final String selectedRole;
 
   // final String loginOption;
   // final String accessPin;
 
   SignUpEventClick(
-      this.email, this.password, this.userName, this.confirmPassword);
+      this.email, this.password, this.userName, this.confirmPassword, this.selectedRole);
 }
 
 class RequestResetPasswordEventClick extends AuthEvent {
