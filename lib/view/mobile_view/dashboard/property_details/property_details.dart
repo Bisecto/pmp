@@ -814,7 +814,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           Icons.location_on,
                           color: AppColors.red,
                         ),
-                        CustomText(text: property.location, size: 14),
+                        CustomText(text: "${property.city}, ${property.location}", size: 14),
                       ],
                     ),
                     if (property.priceType.toLowerCase() == 'static')

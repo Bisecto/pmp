@@ -38,30 +38,30 @@ class Property {
   });
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
-    id: json["id"],
-    propertyName: json["property_name"] ?? '',
-    address: json["address"] ?? '',
-    location: json["location"] ?? '',
-    city: json["city"] ?? '',
-    description: json["description"] ?? '',
-    propertyType: json["property_type"] ?? '',
-    price: json["price"] ?? 0,
-    priceType: json["price_type"] ?? 'Static',
-    priceRangeStart: json["price_range_start"] ?? 0,
-    priceRangeStop: json["price_range_stop"] ?? 0,
-    availableFlatsRooms: json["available_flats_rooms"] ?? 0,
-    occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
-    status: json["status"] ?? '',
-    occupants: (json["occupants"] as List<dynamic>?)
-        ?.map((x) => Occupant.fromJson(x))
-        .toList() ??
-        [],
-    firstImage: json["first_image"] ?? '',
-    imageUrls: (json["image_urls"] as List<dynamic>?)
-        ?.map((x) => ImageUrl.fromJson(x))
-        .toList() ??
-        [],
-  );
+        id: json["id"],
+        propertyName: json["property_name"] ?? '',
+        address: json["address"] ?? '',
+        location: json["location"] ?? '',
+        city: json["city"] ?? '',
+        description: json["description"] ?? '',
+        propertyType: json["property_type"] ?? '',
+        price: json["price"] ?? 0,
+        priceType: json["price_type"] ?? 'Static',
+        priceRangeStart: json["price_range_start"] ?? 0,
+        priceRangeStop: json["price_range_stop"] ?? 0,
+        availableFlatsRooms: json["available_flats_rooms"] ?? 0,
+        occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
+        status: json["status"] ?? '',
+        occupants: (json["occupants"] as List<dynamic>?)
+                ?.map((x) => Occupant.fromJson(x))
+                .toList() ??
+            [],
+        firstImage: json["first_image"] ?? '',
+        imageUrls: (json["image_urls"] as List<dynamic>?)
+                ?.map((x) => ImageUrl.fromJson(x))
+                .toList() ??
+            [],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,

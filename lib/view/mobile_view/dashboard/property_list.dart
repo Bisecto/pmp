@@ -97,7 +97,7 @@ class LodgeList extends StatelessWidget {
                             Icons.location_on_outlined,
                             color: AppColors.red,
                           ),
-                          CustomText(text: property.location, size: 14),
+                          CustomText(text:"${property.city}, ${property.location}", size: 14),
                         ],
                       ),
                     ),
