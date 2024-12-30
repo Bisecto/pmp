@@ -1,6 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/res/app_images.dart';
@@ -8,7 +11,6 @@ import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/view_occupant.dart';
-//import 'package:telephony/telephony.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../model/user_model.dart';
@@ -123,8 +125,37 @@ class _OccupantListState extends State<OccupantList> {
                         ),
 
                         GestureDetector(
-                          onTap: () {
-                            _sendSMS(occupant.mobileNumber, '');
+                          onTap: () async {
+                            //_sendSMS(occupant.mobileNumber, '');
+                            try {
+                              await openSMS(
+                              phone: occupant.mobileNumber,
+                              text: '',
+                              );
+                            } on Exception catch (e) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => CupertinoAlertDialog(
+                                    title: CustomText(text:"Attention"),
+                                    content: Padding(
+                                      padding: const EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        'We did not find the «SMS Messenger» application on your phone, please install it and try again»',
+                                        style: context.theme.textTheme.labelSmall?.copyWith(
+                                          height: 1.1,
+                                          color: context.theme.textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: Text('Close'),
+                                        onPressed: () => Navigator.of(context).pop(),
+                                      ),
+                                    ],
+                                  )
+                              );
+                            }
                           },
                           child: SvgPicture.asset(AppSvgImages.message,
                               height: 25, width: 25),
@@ -181,33 +212,66 @@ class _OccupantListState extends State<OccupantList> {
     );
   }
 
+  String getCountdownText(String targetDateString) {
+    DateTime targetDate = DateTime.parse(targetDateString);
+    DateTime now = DateTime.now();
 
+    Duration difference = targetDate.difference(now);
 
-  // import 'package:flutter/material.dart';
-  // import 'package:url_launcher/url_launcher.dart';
-  // import 'package:telephony/telephony.dart';
-
-  Future<void> _sendSMS(String phoneNumber, String message) async {
-    // final Telephony telephony = Telephony.instance;
-    //
-    // try {
-    //   await telephony.sendSms(to: phoneNumber, message: message);
-    // } on PlatformException catch (e) {
-    //   // Handle platform-specific errors
-    //   if (e.code == 'PERMISSION_DENIED') {
-    //     // Request SMS permissions
-    //     await telephony.requestSmsPermissions;
-    //     // Retry sending the SMS
-    //     await telephony.sendSms(to: phoneNumber, message: message);
-    //   } else {
-    //     // Handle other errors
-    //     throw 'Failed to send SMS: ${e.message}';
-    //   }
-    // } catch (e) {
-    //   // Handle other exceptions
-    //   throw 'Failed to send SMS: $e';
-    // }
+    if (difference.isNegative) {
+      return "Countdown has expired!";
+    } else {
+      return "${difference
+          .inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
+          ;
+    }
   }
+  Future<void> openSMS({
+    required String phone,
+    String? text,
+    LaunchMode mode = LaunchMode.externalApplication,
+  }) async {
+    final String effectivePhone;
+    if (Platform.isAndroid) {
+      effectivePhone = phone.replaceAll('-', ' ');
+    } else {
+      effectivePhone = phone.replaceFirst('+', '');
+    }
+
+    final String effectiveText =
+    Platform.isAndroid ? '?body=$text' : '&body=$text';
+
+    final String url = 'sms:$effectivePhone';
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse('$url$effectiveText'), mode: mode);
+    } else {
+      throw Exception('openSMS could not launching url: $url');
+    }
+  }
+
+  // Future<void> _sendSMS(String phoneNumber, String message) async {
+  //   final Uri smsUri = Uri(
+  //     scheme: 'sms',
+  //     path: phoneNumber,
+  //     queryParameters: {'body': message},
+  //   );
+  //
+  //   print('Attempting to launch: $smsUri');
+  //
+  //   if (await canLaunchUrl(smsUri)) {
+  //     try {
+  //       await launchUrl(smsUri);
+  //       print('SMS sent successfully.');
+  //     } catch (e) {
+  //       print('Error launching SMS URL: $e');
+  //     }
+  //   } else {
+  //     print('Could not launch SMS URL: $smsUri');
+  //     throw 'Could not launch $smsUri';
+  //   }
+  // }
+
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri url = Uri.parse('tel:$phoneNumber');
     if (await canLaunchUrl(url)) {
