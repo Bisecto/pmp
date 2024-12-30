@@ -114,7 +114,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   void selectImages() async {
-    final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
+    final List<XFile>? selectedImages = await imagePicker.pickMultiImage(imageQuality:50,limit: 4);
 
     if (selectedImages != null && selectedImages.isNotEmpty) {
       int totalImages = imageFileList!.length + selectedImages.length;
@@ -146,6 +146,72 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     } else {
       throw Exception('Failed to download image');
     }
+  }
+  void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Select from Gallery'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final List<XFile>? selectedImages = await imagePicker.pickMultiImage(
+                  imageQuality: 50,
+                  maxWidth: 800,
+                );
+
+                if (selectedImages != null && selectedImages.isNotEmpty) {
+                  int totalImages = imageFileList!.length + selectedImages.length;
+
+                  if (totalImages > 4) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You can only select up to 4 images.')),
+                    );
+                    int remainingSlots = 4 - imageFileList!.length;
+
+                    imageFileList!.addAll(
+                      selectedImages.take(remainingSlots).map((xFile) => XFile(xFile.path)),
+                    );
+                  } else {
+                    imageFileList!.addAll(
+                      selectedImages.map((xFile) => XFile(xFile.path)),
+                    );
+                  }
+
+                  setState(() {});
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Capture with Camera'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final XFile? capturedImage = await imagePicker.pickImage(
+                  source: ImageSource.camera,
+                  imageQuality: 50,
+                  maxWidth: 800,
+                );
+
+                if (capturedImage != null) {
+                  if (imageFileList!.length < 4) {
+                    imageFileList!.add(capturedImage);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You can only select up to 4 images.')),
+                    );
+                  }
+                  setState(() {});
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -229,7 +295,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       Step(
                           title: const CustomText(
                             text: 'Property Details',
-                            size: 12,
+                            size: 10,
                           ),
                           content: SizedBox(
                             height: imageFileList!.isNotEmpty ? 850 : 750,
@@ -245,71 +311,72 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+
                                         GestureDetector(
-                                          onTap: selectImages,
+                                          onTap: () => _showImagePickerOptions(),
                                           child: Container(
                                             height: 250,
+                                            width: AppUtils.deviceScreenSize(context).width,
                                             decoration: BoxDecoration(
-                                                color: Colors.grey
-                                                    .withOpacity(0.2),
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
+                                              color: Colors.grey.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
                                             child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                const Icon(
-                                                    Icons.save_alt_rounded),
-                                                const SizedBox(
-                                                  height: 10,
+                                                const Icon(Icons.save_alt_rounded, size: 50, color: Colors.purple),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  'Click to select or capture images',
+                                                  style: TextStyle(color: Colors.purple, fontSize: 14),
                                                 ),
-                                                Center(
-                                                  child: TextStyles.richTexts(
-                                                      text1:
-                                                          '    Click to select images   ',
-                                                      text2:
-                                                          '\n(only 4 images are allowed)',
-                                                      color: Colors.purple,
-                                                      size: 13,
-                                                      color2: AppColors.black),
+                                                const SizedBox(height: 5),
+                                                Text(
+                                                  '(Only 4 images are allowed)',
+                                                  style: TextStyle(color: Colors.black, fontSize: 12),
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
-                                        if (imageFileList!.isNotEmpty)
+                                        SizedBox(height: 10,),
+                                        if (imageFileList != null && imageFileList!.isNotEmpty)
                                           SizedBox(
                                             height: 100,
                                             child: GridView.builder(
                                               itemCount: imageFileList!.length,
-                                              gridDelegate:
-                                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 4,
+                                                crossAxisSpacing: 4.0,
+                                                mainAxisSpacing: 4.0,
                                               ),
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
+                                              itemBuilder: (BuildContext context, int index) {
                                                 return Stack(
                                                   children: [
-                                                    Image.file(
-                                                      File(imageFileList![index]
-                                                          .path),
-                                                      fit: BoxFit.cover,
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      child: Image.file(
+                                                        File(imageFileList![index].path),
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                      ),
                                                     ),
                                                     Positioned(
-                                                      top: 0,
-                                                      right: 0,
-                                                      child: IconButton(
-                                                        icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red),
-                                                        onPressed: () {
+                                                      top: 5,
+                                                      right: 5,
+                                                      child: GestureDetector(
+                                                        onTap: () {
                                                           setState(() {
-                                                            imageFileList!
-                                                                .removeAt(
-                                                                    index);
+                                                            imageFileList!.removeAt(index);
                                                           });
                                                         },
+                                                        child: Container(
+                                                          decoration: const BoxDecoration(
+                                                            color: Colors.white,
+                                                            shape: BoxShape.circle,
+                                                          ),
+                                                          child: const Icon(Icons.close, color: Colors.red, size: 20),
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -317,9 +384,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                               },
                                             ),
                                           ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
+
                                         DropDown(
                                           label: 'Property Type',
                                           hint: "Select Property type",
@@ -464,7 +529,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       Step(
                           title: const CustomText(
                             text: 'Rent Information',
-                            size: 12,
+                            size: 10,
                           ),
                           content: Column(
                             children: [
@@ -590,7 +655,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       Step(
                           title: const CustomText(
                             text: 'Overview',
-                            size: 12,
+                            size: 10,
                           ),
                           content: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
