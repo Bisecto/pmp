@@ -72,7 +72,10 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    handleUpdate();
+    if(widget.isEdit){
+      handleUpdate();
+
+    }
     super.initState();
   }
 
@@ -100,6 +103,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         File imageFile = await downloadImage(widget.occupant!.profilePic);
         setState(() {
           imageFileList!.add(XFile(imageFile.path));
+         // _selectedImage=XFile(imageFile.path);
+
         });
       } catch (e) {
         print('Error downloading image: $e');
@@ -119,25 +124,51 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       throw Exception('Failed to download image');
     }
   }
+  void _showPickerDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera),
+                title: Text('Camera'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? _selectedImage;
 
-  void selectSingleImage() async {
-    final XFile? selectedImage =
-        await imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (selectedImage != null) {
-      if (selectedImage.path.toLowerCase().contains('.jpg') ||
-          selectedImage.path.toLowerCase().contains('.png')) {
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? selectedImage = await _imagePicker.pickImage(source: source,imageQuality: 50);
+      if (selectedImage != null) {
         setState(() {
-          imageFileList = [
-            selectedImage
-          ];
-        });
-        // Replace the list with the newly selected image
-        print("Selected Image Path: ${selectedImage.name}");
-      } else {
-        MSG.warningSnackBar(context, 'Selected image not supported');
-      }
+          _selectedImage = selectedImage;
+          imageFileList!.clear();
+          imageFileList!.add(selectedImage);
 
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
     }
   }
 
@@ -208,7 +239,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: selectSingleImage,
+                                onTap: _showPickerDialog,
                                 child: Container(
                                   height: 250,
                                   decoration: BoxDecoration(
@@ -593,7 +624,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: selectSingleImage,
+                                onTap: _showPickerDialog,
                                 child: Container(
                                   height: 250,
                                   decoration: BoxDecoration(
