@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            AppAppBar(title: 'Profile'),
+            const AppAppBar(title: 'Profile'),
             profileContainer(widget.userModel, context: context),
             FormButton(
               onPressed: () {
@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 350,
+        height: 380,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.grey.withOpacity(0.2),
@@ -80,34 +80,63 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomText(
-                    text: user.username,
-                    color: AppColors.black,
-                    size: 16,
-                    weight: FontWeight.bold,
-                  ),
-                  CustomText(
-                    text: '${user.firstName} ${user.lastName}',
-                    color: AppColors.black,
-                    size: 16,
-                    weight: FontWeight.bold,
+                  Row(
+                    children: [
+                      const CustomText(
+                        text: "Username:",
+                        color: AppColors.black,
+                        size: 13,
+                        weight: FontWeight.bold,
+                      ),
+                      CustomText(
+                        text: ' ${user.username}  ',
+                        size: 13,
+                        maxLines: 3,
+                      ),
+                    ],
                   ),
                 ],
               ),
               const SizedBox(
-                height: 10,
+                height: 5,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
+                      const CustomText(
+                        text: "Full Name:",
+                        color: AppColors.black,
+                        size: 13,
+                        weight: FontWeight.bold,
+                      ),
                       CustomText(
+                        text: ' ${user.firstName} ${user.lastName}  ',
+                        size: 13,
+                        maxLines: 3,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const CustomText(
                         text: "Email:",
                         color: AppColors.black,
                         size: 13,
@@ -120,23 +149,27 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      CustomText(
-                        text: "Mobile number:",
-                        color: AppColors.black,
-                        size: 13,
-                        weight: FontWeight.bold,
-                      ),
-                      CustomText(
-                        text: '  ${user.mobilePhone}',
-                        size: 13,
-                        maxLines: 3,
-                      ),
-                    ],
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  const CustomText(
+                    text: "Mobile number:",
+                    color: AppColors.black,
+                    size: 13,
+                    weight: FontWeight.bold,
+                  ),
+                  CustomText(
+                    text: '  ${user.mobilePhone}',
+                    size: 13,
+                    maxLines: 3,
                   ),
                 ],
-              )
+              ),
+
             ],
           ),
         ),

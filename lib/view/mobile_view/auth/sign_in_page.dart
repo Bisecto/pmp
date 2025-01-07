@@ -190,8 +190,8 @@ class _SignInPageState extends State<SignInPage> {
                                             child: Column(
                                               children: [
                                                 CustomTextFormField(
-                                                  hint: 'Enter your username',
-                                                  label: 'Username',
+                                                  hint: 'Enter your email or username',
+                                                  label: 'Username/Email',
                                                   borderColor: Colors.black54,
                                                   controller: _userNameController,
                                                   backgroundColor: theme.isDark

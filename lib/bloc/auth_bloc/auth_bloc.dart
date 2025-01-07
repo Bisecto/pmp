@@ -43,7 +43,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AppRepository appRepository = AppRepository();
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = {
-      'username': event.userData,
+      'username_or_email': event.userData,
       'password': event.password,
     };
     AppUtils().debuglog(formData);
