@@ -357,10 +357,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                                 ));
                                           },
                                           child: SvgPicture.asset(
-                                              AppSvgImages.edit)),
+                                              AppSvgImages.edit,height: 25,width: 25,)),
                                       //const Icon(Icons.edit),
                                       const SizedBox(
-                                        width: 10,
+                                        width: 20,
                                       ),
                                       GestureDetector(
                                           onTap: () {
@@ -371,7 +371,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                                         .toString()));
                                           },
                                           child: SvgPicture.asset(
-                                              AppSvgImages.delete)),
+                                              AppSvgImages.delete,height: 25,width: 25,)),
                                     ],
                                   ),
                                 ],

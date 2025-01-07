@@ -95,6 +95,11 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                   child: TextFormField(
                     readOnly: widget.readOnly!,
                     controller: widget.controller,
+                    onTapOutside: (event){
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                    },
+                    //focusNode:FocusNode().,
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.black, // Ensures text color is visible.

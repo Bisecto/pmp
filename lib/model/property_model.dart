@@ -13,6 +13,7 @@ class Property {
   int availableFlatsRooms;
   dynamic occupiedFlatsRooms;
   String status;
+  bool advertise;
   List<Occupant> occupants;
   String firstImage;
   List<ImageUrl> imageUrls;
@@ -32,6 +33,7 @@ class Property {
     required this.availableFlatsRooms,
     required this.occupiedFlatsRooms,
     required this.status,
+    required this.advertise,
     required this.occupants,
     required this.firstImage,
     required this.imageUrls,
@@ -52,6 +54,7 @@ class Property {
         availableFlatsRooms: json["available_flats_rooms"] ?? 0,
         occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
         status: json["status"] ?? '',
+        advertise: json["advertise"] ?? false,
         occupants: (json["occupants"] as List<dynamic>?)
                 ?.map((x) => Occupant.fromJson(x))
                 .toList() ??
@@ -78,6 +81,7 @@ class Property {
         "available_flats_rooms": availableFlatsRooms,
         "occupied_flats_rooms": occupiedFlatsRooms,
         "status": status,
+        "advertise": advertise,
         "occupants": List<dynamic>.from(occupants.map((x) => x.toJson())),
         "first_image": firstImage,
         "image_urls": List<dynamic>.from(imageUrls.map((x) => x.toJson())),

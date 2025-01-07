@@ -80,7 +80,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'property_name': event.propertyName,
         'property_type': event.propertyType,
         'available_flats_rooms': event.availableFlatsRooms,
-        'occupied_flats_rooms': event.occupiedRooms,
+       // 'occupied_flats_rooms': event.occupiedRooms,
         'address': event.address,
         'city': event.city,
         'description': event.description,
@@ -207,7 +207,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'property_name': event.propertyName,
         'property_type': event.propertyType,
         'available_flats_rooms': event.availableFlatsRooms,
-        'occupied_flats_rooms': event.occupiedRooms,
+       // 'occupied_flats_rooms': event.occupiedRooms,
         'address': event.address,
         'city': event.city,
         'description': event.description,
@@ -216,6 +216,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'price_range_stop': event.priceRangeStop!,
         'price_range_start': event.priceRangeStart!,
         'price': event.price.toString(),
+        'advertise': event.isToggled?"True":"False",
       };
       var addPropertyResponse =
       await appRepository.appPutRequestWithMultipleImages(

@@ -39,6 +39,7 @@ class AddPropertyScreen extends StatefulWidget {
 
 class _AddPropertyScreenState extends State<AddPropertyScreen> {
   int _currentStep = 0;
+  bool isToggled = false;
 
   // Controllers to capture form input
   final TextEditingController propertyNameController = TextEditingController();
@@ -49,7 +50,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final TextEditingController toPriceController = TextEditingController();
   final TextEditingController availableRoomsController =
       TextEditingController();
-  final TextEditingController occupiedRoomsController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   PropertyBloc propertyBloc = PropertyBloc();
   final TextEditingController selectedPropertyType =
@@ -72,18 +72,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     townController.text = widget.property.city;
     selectedPriceType.text = widget.property.priceType;
     priceController.text = widget.property.price?.toString() ?? '';
-    fromPriceController.text = widget.property.priceRangeStart?.toString() ?? '';
+    fromPriceController.text =
+        widget.property.priceRangeStart?.toString() ?? '';
     toPriceController.text = widget.property.priceRangeStop?.toString() ?? '';
     availableRoomsController.text =
         widget.property.availableFlatsRooms.toString();
-    occupiedRoomsController.text =
-        widget.property.occupiedFlatsRooms.toString();
-    descriptionController.text = widget.property.description;
 
+    descriptionController.text = widget.property.description;
+    isToggled= widget.property.advertise;
     print('Image URLs: ${widget.property.imageUrls}');
     List<String> urls = widget.property.imageUrls
-        .map((imageUrl) => AppApis.appBaseUrl+imageUrl.url)
-        .toList() ??
+            .map((imageUrl) => AppApis.appBaseUrl + imageUrl.url)
+            .toList() ??
         [];
     print('Extracted URLs: $urls');
 
@@ -114,7 +114,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   }
 
   void selectImages() async {
-    final List<XFile>? selectedImages = await imagePicker.pickMultiImage(imageQuality:50,limit: 4);
+    final List<XFile>? selectedImages =
+        await imagePicker.pickMultiImage(imageQuality: 50, limit: 4);
 
     if (selectedImages != null && selectedImages.isNotEmpty) {
       int totalImages = imageFileList!.length + selectedImages.length;
@@ -147,6 +148,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       throw Exception('Failed to download image');
     }
   }
+
   void _showImagePickerOptions() {
     showModalBottomSheet(
       context: context,
@@ -158,22 +160,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               title: const Text('Select from Gallery'),
               onTap: () async {
                 Navigator.of(context).pop();
-                final List<XFile>? selectedImages = await imagePicker.pickMultiImage(
+                final List<XFile>? selectedImages =
+                    await imagePicker.pickMultiImage(
                   imageQuality: 50,
                   maxWidth: 800,
                 );
 
                 if (selectedImages != null && selectedImages.isNotEmpty) {
-                  int totalImages = imageFileList!.length + selectedImages.length;
+                  int totalImages =
+                      imageFileList!.length + selectedImages.length;
 
                   if (totalImages > 4) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('You can only select up to 4 images.')),
+                      const SnackBar(
+                          content: Text('You can only select up to 4 images.')),
                     );
                     int remainingSlots = 4 - imageFileList!.length;
 
                     imageFileList!.addAll(
-                      selectedImages.take(remainingSlots).map((xFile) => XFile(xFile.path)),
+                      selectedImages
+                          .take(remainingSlots)
+                          .map((xFile) => XFile(xFile.path)),
                     );
                   } else {
                     imageFileList!.addAll(
@@ -201,7 +208,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     imageFileList!.add(capturedImage);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('You can only select up to 4 images.')),
+                      const SnackBar(
+                          content: Text('You can only select up to 4 images.')),
                     );
                   }
                   setState(() {});
@@ -242,7 +250,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   fromPriceController.text = '';
                   toPriceController.text = '';
                   availableRoomsController.text = '';
-                  occupiedRoomsController.text = '';
                   descriptionController.text = '';
                   //PropertyBloc propertyBloc = PropertyBloc();
                 });
@@ -311,52 +318,74 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-
                                         GestureDetector(
-                                          onTap: () => _showImagePickerOptions(),
+                                          onTap: () =>
+                                              _showImagePickerOptions(),
                                           child: Container(
                                             height: 250,
-                                            width: AppUtils.deviceScreenSize(context).width,
+                                            width: AppUtils.deviceScreenSize(
+                                                    context)
+                                                .width,
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(10),
+                                              color:
+                                                  Colors.grey.withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
-                                                const Icon(Icons.save_alt_rounded, size: 50, color: Colors.purple),
+                                                const Icon(
+                                                    Icons.save_alt_rounded,
+                                                    size: 50,
+                                                    color: Colors.purple),
                                                 const SizedBox(height: 10),
                                                 Text(
                                                   'Click to select or capture images',
-                                                  style: TextStyle(color: Colors.purple, fontSize: 14),
+                                                  style: TextStyle(
+                                                      color: Colors.purple,
+                                                      fontSize: 14),
                                                 ),
                                                 const SizedBox(height: 5),
                                                 Text(
                                                   '(Only 4 images are allowed)',
-                                                  style: TextStyle(color: Colors.black, fontSize: 12),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12),
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
-                                        SizedBox(height: 10,),
-                                        if (imageFileList != null && imageFileList!.isNotEmpty)
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        if (imageFileList != null &&
+                                            imageFileList!.isNotEmpty)
                                           SizedBox(
                                             height: 100,
                                             child: GridView.builder(
                                               itemCount: imageFileList!.length,
-                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                              gridDelegate:
+                                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 4,
                                                 crossAxisSpacing: 4.0,
                                                 mainAxisSpacing: 4.0,
                                               ),
-                                              itemBuilder: (BuildContext context, int index) {
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
                                                 return Stack(
                                                   children: [
                                                     ClipRRect(
-                                                      borderRadius: BorderRadius.circular(8),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
                                                       child: Image.file(
-                                                        File(imageFileList![index].path),
+                                                        File(imageFileList![
+                                                                index]
+                                                            .path),
                                                         fit: BoxFit.cover,
                                                         width: double.infinity,
                                                       ),
@@ -367,15 +396,22 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setState(() {
-                                                            imageFileList!.removeAt(index);
+                                                            imageFileList!
+                                                                .removeAt(
+                                                                    index);
                                                           });
                                                         },
                                                         child: Container(
-                                                          decoration: const BoxDecoration(
+                                                          decoration:
+                                                              const BoxDecoration(
                                                             color: Colors.white,
-                                                            shape: BoxShape.circle,
+                                                            shape:
+                                                                BoxShape.circle,
                                                           ),
-                                                          child: const Icon(Icons.close, color: Colors.red, size: 20),
+                                                          child: const Icon(
+                                                              Icons.close,
+                                                              color: Colors.red,
+                                                              size: 20),
                                                         ),
                                                       ),
                                                     ),
@@ -384,7 +420,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                               },
                                             ),
                                           ),
-
                                         DropDown(
                                           label: 'Property Type',
                                           hint: "Select Property type",
@@ -532,11 +567,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                             size: 10,
                           ),
                           content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               DropDown(
                                 label: 'Price Type',
                                 hint: "Select price Type",
-                                initialValue: 'Static',
+                                initialValue: selectedPriceType.text,
                                 selectedValue: selectedPriceType.text,
                                 items: const ['Static', 'Dynamic'],
                                 onChanged: (value) {
@@ -545,6 +581,23 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   });
                                 },
                               ),
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'dynamic')
+                                const CustomText(
+                                  text:
+                                      "Select static if the price of property is constant.",
+                                  color: AppColors.red,
+                                  size: 12,
+                                ),
+
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'static')
+                                const CustomText(
+                                  text:
+                                      "Select dynamic if price of the property varies.",
+                                  color: AppColors.red,
+                                  size: 12,
+                                ),
                               if (selectedPriceType.text.toLowerCase() ==
                                   'dynamic')
                                 Row(
@@ -605,8 +658,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 ),
                               CustomTextFormField(
                                 controller: availableRoomsController,
-                                hint: 'Enter number of available rooms',
-                                label: 'Number of Available Rooms',
+                                hint: 'Enter total space',
+                                label: 'Total Space',
                                 textInputType: TextInputType.number,
                                 borderColor: Colors.grey,
                                 borderRadius: 10,
@@ -617,20 +670,20 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.grey,
                               ),
-                              CustomTextFormField(
-                                controller: occupiedRoomsController,
-                                hint: 'Enter number of occupied rooms',
-                                label: 'Number of Occupied Rooms',
-                                textInputType: TextInputType.number,
-                                borderColor: Colors.grey,
-                                borderRadius: 10,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                              ),
+                              // CustomTextFormField(
+                              //   controller: occupiedRoomsController,
+                              //   hint: 'Enter number of occupied rooms',
+                              //   label: 'Number of Occupied Rooms',
+                              //   textInputType: TextInputType.number,
+                              //   borderColor: Colors.grey,
+                              //   borderRadius: 10,
+                              //   backgroundColor: theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.white,
+                              //   hintColor: !theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.grey,
+                              // ),
                               CustomTextFormField(
                                 controller: descriptionController,
                                 hint: 'Write about this property',
@@ -660,6 +713,31 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                           content: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(height: 10),
+                              if(widget.isEdit)
+
+                                Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                    child: CustomText(
+                                      text: 'Advertise Property?',
+                                      size: 15,
+                                      weight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: isToggled,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isToggled = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
                               const SizedBox(
                                 height: 15,
                               ),
@@ -676,11 +754,15 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               _overviewRow('Address', addressController.text),
                               _overviewRow('Town', townController.text),
                               _overviewRow('State', selectedState.text),
-                              _overviewRow('Price', priceController.text),
+                              _overviewRow(
+                                  'Price',
+                                  selectedPriceType.text.toLowerCase()!='static'
+                                      ? "₦${fromPriceController.text} - ₦${toPriceController.text}"
+                                      : "₦${priceController.text}"),
                               _overviewRow('Available Rooms',
                                   availableRoomsController.text),
-                              _overviewRow('Occupied Rooms',
-                                  occupiedRoomsController.text),
+                              // _overviewRow('Occupied Rooms',
+                              //     occupiedRoomsController.text),
                               _overviewRow(
                                   'Description', descriptionController.text),
                             ],
@@ -950,7 +1032,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               DropDown(
                                 label: 'Price Type',
                                 hint: "Select price Type",
-                                initialValue: 'Static',
+                                initialValue: selectedPriceType.text,
                                 selectedValue: selectedPriceType.text,
                                 items: const ['Static', 'Dynamic'],
                                 onChanged: (value) {
@@ -959,6 +1041,24 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                   });
                                 },
                               ),
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'dynamic')
+                                const CustomText(
+                                  text:
+                                      "Select static if the price of property is constant.",
+                                  color: AppColors.red,
+                                  size: 12,
+                                ),
+
+                              if (selectedPriceType.text.toLowerCase() ==
+                                  'static')
+                                const CustomText(
+                                  text:
+                                      "Select dynamic if price of the property varies.",
+                                  color: AppColors.red,
+                                  size: 12,
+                                ),
+
                               if (selectedPriceType.text.toLowerCase() ==
                                   'dynamic')
                                 Row(
@@ -1019,8 +1119,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                 ),
                               CustomTextFormField(
                                 controller: availableRoomsController,
-                                hint: 'Enter number of available rooms',
-                                label: 'Number of Available Rooms',
+                                hint: 'Enter total space',
+                                label: 'Total Space',
                                 textInputType: TextInputType.number,
                                 borderColor: Colors.grey,
                                 borderRadius: 10,
@@ -1031,20 +1131,20 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.grey,
                               ),
-                              CustomTextFormField(
-                                controller: occupiedRoomsController,
-                                hint: 'Enter number of occupied rooms',
-                                label: 'Number of Occupied Rooms',
-                                textInputType: TextInputType.number,
-                                borderColor: Colors.grey,
-                                borderRadius: 10,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                              ),
+                              // CustomTextFormField(
+                              //   controller: occupiedRoomsController,
+                              //   hint: 'Enter number of occupied rooms',
+                              //   label: 'Number of Occupied Rooms',
+                              //   textInputType: TextInputType.number,
+                              //   borderColor: Colors.grey,
+                              //   borderRadius: 10,
+                              //   backgroundColor: theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.white,
+                              //   hintColor: !theme.isDark
+                              //       ? AppColors.darkCardBackgroundColor
+                              //       : AppColors.grey,
+                              // ),
                               CustomTextFormField(
                                 controller: descriptionController,
                                 hint: 'Write about this property',
@@ -1090,11 +1190,16 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               _overviewRow('Address', addressController.text),
                               _overviewRow('Town', townController.text),
                               _overviewRow('State', selectedState.text),
-                              _overviewRow('Price', priceController.text),
+                              _overviewRow(
+                                  'Price',
+                                  selectedPriceType.text.toLowerCase()!='static'
+
+                                      ? "$fromPriceController - $toPriceController"
+                                      : priceController.text),
                               _overviewRow('Available Rooms',
                                   availableRoomsController.text),
-                              _overviewRow('Occupied Rooms',
-                                  occupiedRoomsController.text),
+                              // _overviewRow('Occupied Rooms',
+                              //     occupiedRoomsController.text),
                               _overviewRow(
                                   'Description', descriptionController.text),
                             ],
@@ -1247,29 +1352,23 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 if (selectedPriceType.text.toLowerCase() == 'static') {
                   if (priceController.text.isNotEmpty) {
                     if (availableRoomsController.text.isNotEmpty) {
-                      if (occupiedRoomsController.text.isNotEmpty) {
-                        if (descriptionController.text.isNotEmpty) {
-                          propertyBloc.add(AddPropertyEvent(
-                              propertyNameController.text,
-                              selectedPropertyType.text,
-                              availableRoomsController.text,
-                              addressController.text,
-                              townController.text,
-                              descriptionController.text,
-                              selectedState.text,
-                              imageFileList!,
-                              selectedPriceType.text,
-                              priceController.text,
-                              fromPriceController.text,
-                              toPriceController.text,
-                              occupiedRoomsController.text));
-                        } else {
-                          MSG.warningSnackBar(
-                              context, 'Property description field is empty');
-                        }
+                      if (descriptionController.text.isNotEmpty) {
+                        propertyBloc.add(AddPropertyEvent(
+                            propertyNameController.text,
+                            selectedPropertyType.text,
+                            availableRoomsController.text,
+                            addressController.text,
+                            townController.text,
+                            descriptionController.text,
+                            selectedState.text,
+                            imageFileList!,
+                            selectedPriceType.text,
+                            priceController.text,
+                            fromPriceController.text,
+                            toPriceController.text));
                       } else {
                         MSG.warningSnackBar(
-                            context, 'Occupied room field is empty');
+                            context, 'Property description field is empty');
                       }
                     } else {
                       MSG.warningSnackBar(
@@ -1282,29 +1381,24 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   if (fromPriceController.text.isNotEmpty) {
                     if (toPriceController.text.isNotEmpty) {
                       if (availableRoomsController.text.isNotEmpty) {
-                        if (occupiedRoomsController.text.isNotEmpty) {
-                          if (descriptionController.text.isNotEmpty) {
-                            propertyBloc.add(AddPropertyEvent(
-                                propertyNameController.text,
-                                selectedPropertyType.text,
-                                availableRoomsController.text,
-                                addressController.text,
-                                townController.text,
-                                descriptionController.text,
-                                selectedState.text,
-                                imageFileList!,
-                                selectedPriceType.text,
-                                priceController.text,
-                                fromPriceController.text,
-                                toPriceController.text,
-                                occupiedRoomsController.text));
-                          } else {
-                            MSG.warningSnackBar(
-                                context, 'Property description field is empty');
-                          }
+                        if (descriptionController.text.isNotEmpty) {
+                          propertyBloc.add(AddPropertyEvent(
+                            propertyNameController.text,
+                            selectedPropertyType.text,
+                            availableRoomsController.text,
+                            addressController.text,
+                            townController.text,
+                            descriptionController.text,
+                            selectedState.text,
+                            imageFileList!,
+                            selectedPriceType.text,
+                            priceController.text,
+                            fromPriceController.text,
+                            toPriceController.text,
+                          ));
                         } else {
                           MSG.warningSnackBar(
-                              context, 'Occupied room field is empty');
+                              context, 'Property description field is empty');
                         }
                       } else {
                         MSG.warningSnackBar(
@@ -1348,7 +1442,37 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 if (selectedPriceType.text.toLowerCase() == 'static') {
                   if (priceController.text.isNotEmpty) {
                     if (availableRoomsController.text.isNotEmpty) {
-                      if (occupiedRoomsController.text.isNotEmpty) {
+                      if (descriptionController.text.isNotEmpty) {
+                        propertyBloc.add(UpdatePropertyEvent(
+                            propertyNameController.text,
+                            selectedPropertyType.text,
+                            availableRoomsController.text,
+                            addressController.text,
+                            townController.text,
+                            descriptionController.text,
+                            selectedState.text,
+                            imageFileList!,
+                            selectedPriceType.text,
+                            priceController.text,
+                            fromPriceController.text,
+                            toPriceController.text,
+                            // occupiedRoomsController.text,
+                            widget.property.id.toString(),isToggled));
+                      } else {
+                        MSG.warningSnackBar(
+                            context, 'Property description field is empty');
+                      }
+                    } else {
+                      MSG.warningSnackBar(
+                          context, 'Available room field is empty');
+                    }
+                  } else {
+                    MSG.warningSnackBar(context, 'Price field is empty');
+                  }
+                } else {
+                  if (fromPriceController.text.isNotEmpty) {
+                    if (toPriceController.text.isNotEmpty) {
+                      if (availableRoomsController.text.isNotEmpty) {
                         if (descriptionController.text.isNotEmpty) {
                           propertyBloc.add(UpdatePropertyEvent(
                               propertyNameController.text,
@@ -1363,51 +1487,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               priceController.text,
                               fromPriceController.text,
                               toPriceController.text,
-                              occupiedRoomsController.text,
-                              widget.property.id.toString()));
+                              widget.property.id.toString(),isToggled));
                         } else {
                           MSG.warningSnackBar(
                               context, 'Property description field is empty');
-                        }
-                      } else {
-                        MSG.warningSnackBar(
-                            context, 'Occupied room field is empty');
-                      }
-                    } else {
-                      MSG.warningSnackBar(
-                          context, 'Available room field is empty');
-                    }
-                  } else {
-                    MSG.warningSnackBar(context, 'Price field is empty');
-                  }
-                } else {
-                  if (fromPriceController.text.isNotEmpty) {
-                    if (toPriceController.text.isNotEmpty) {
-                      if (availableRoomsController.text.isNotEmpty) {
-                        if (occupiedRoomsController.text.isNotEmpty) {
-                          if (descriptionController.text.isNotEmpty) {
-                            propertyBloc.add(UpdatePropertyEvent(
-                                propertyNameController.text,
-                                selectedPropertyType.text,
-                                availableRoomsController.text,
-                                addressController.text,
-                                townController.text,
-                                descriptionController.text,
-                                selectedState.text,
-                                imageFileList!,
-                                selectedPriceType.text,
-                                priceController.text,
-                                fromPriceController.text,
-                                toPriceController.text,
-                                occupiedRoomsController.text,
-                                widget.property.id.toString()));
-                          } else {
-                            MSG.warningSnackBar(
-                                context, 'Property description field is empty');
-                          }
-                        } else {
-                          MSG.warningSnackBar(
-                              context, 'Occupied room field is empty');
                         }
                       } else {
                         MSG.warningSnackBar(
