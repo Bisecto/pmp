@@ -367,11 +367,14 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       ),
                                       GestureDetector(
                                           onTap: () {
-                                            propertyBloc.add(
-                                                DeletePropertyEvent(
-                                                    singlePropertySuccessState
-                                                        .property.id
-                                                        .toString()));
+                                            showDeleteConfirmationModal(context,
+                                                () {
+                                              propertyBloc.add(
+                                                  DeletePropertyEvent(
+                                                      singlePropertySuccessState
+                                                          .property.id
+                                                          .toString()));
+                                            });
                                           },
                                           child: SvgPicture.asset(
                                             AppSvgImages.delete,
@@ -595,6 +598,38 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     );
                 }
               })),
+    );
+  }
+
+  void showDeleteConfirmationModal(
+      BuildContext context, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Property'),
+          content: const Text(
+              'Are you sure you want to delete this property? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the modal
+              },
+              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the modal
+                onConfirm(); // Trigger the confirm action
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const CustomText(text:'Delete',color: AppColors.white,),
+            ),
+          ],
+        );
+      },
     );
   }
 

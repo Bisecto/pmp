@@ -53,6 +53,10 @@ class ContactUsPage extends StatelessWidget {
               icon: FontAwesomeIcons.whatsapp,
               text: '+234 705 602 0452',
               onTap: () => _launchWhatsApp('+2347056020452'),
+            ),ContactInfoRow(
+              icon: FontAwesomeIcons.globe,
+              text: 'https://property.appleadng.net',
+              onTap: () => _launchWhatsApp('https://property.appleadng.net/contact/'),
             ),
             ContactInfoRow(
               icon: FontAwesomeIcons.instagram,

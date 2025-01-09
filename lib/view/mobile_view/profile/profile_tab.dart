@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pim/utills/app_utils.dart';
 import 'package:pim/view/mobile_view/auth/sign_in_page.dart';
 import 'package:pim/view/mobile_view/profile/profile_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../model/user_model.dart';
 import '../../../res/app_colors.dart';
@@ -50,15 +52,19 @@ class _ProfileTabState extends State<ProfileTab> {
                             ));
                       },
                       child: _buildSettingsOption('Profile')),
-                  _buildSettingsOption('Settings'),
+                  //_buildSettingsOption('Settings'),
                   InkWell(
                       onTap: () {
                         AppNavigator.pushAndStackPage(context,
-                            page:  ContactUsPage());
+                            page: ContactUsPage());
                       },
                       child: _buildSettingsOption('Contact Us')),
-                  _buildSettingsOption('About PMP'),
-                  _buildSettingsOption('Support'),
+                  InkWell(
+                    onTap: (){
+                      _launchUrl('https://property.appleadng.net/about/');
+                    },
+                      child: _buildSettingsOption('About PMP')),
+                  //_buildSettingsOption('Support'),
                 ],
               ),
             ),
@@ -71,13 +77,46 @@ class _ProfileTabState extends State<ProfileTab> {
                     page: const SignInPage());
               },
               text: "Logout",
-              bgColor: AppColors.mainAppColor.withOpacity(0.9),
+              bgColor: AppColors.blue.withOpacity(0.9),
               textColor: AppColors.white,
+              width: AppUtils.deviceScreenSize(context).width/2,
+            ),
+            FormButton(
+              onPressed: () {
+                // AppNavigator.pushAndRemovePreviousPages(context,
+                //     page: const SignInPage());
+              },
+              text: "Delete Account",
+              bgColor: AppColors.red,
+              textColor: AppColors.white,
+              width: AppUtils.deviceScreenSize(context).width/2,
+
             ),
           ],
         ),
       ),
     );
+  }
+  void _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    try {
+      bool launched =
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        // Handle the case where the URL couldn't be launched
+        // You might want to display an error message to the user
+        print('Could not launch $uri');
+        // Or try opening in a browser:
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.platformDefault);
+        } else {
+          print('Could not launch $uri in a browser either');
+        }
+      }
+    } catch (e) {
+      // Handle any potential errors during launch
+      print('Error launching URL: $e');
+    }
   }
 
   Widget _buildSettingsOption(String title) {
