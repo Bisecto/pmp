@@ -7,11 +7,12 @@ import '../../../res/app_colors.dart';
 import '../../../utills/app_navigator.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
+import 'contact_us_page.dart';
 
 class ProfileTab extends StatefulWidget {
   final UserModel userModel;
 
-   ProfileTab({super.key, required this.userModel});
+  ProfileTab({super.key, required this.userModel});
 
   @override
   State<ProfileTab> createState() => _ProfileTabState();
@@ -44,11 +45,18 @@ class _ProfileTabState extends State<ProfileTab> {
                   InkWell(
                       onTap: () {
                         AppNavigator.pushAndStackPage(context,
-                            page:  ProfilePage(userModel: widget.userModel,));
+                            page: ProfilePage(
+                              userModel: widget.userModel,
+                            ));
                       },
                       child: _buildSettingsOption('Profile')),
                   _buildSettingsOption('Settings'),
-                  _buildSettingsOption('Contact Us'),
+                  InkWell(
+                      onTap: () {
+                        AppNavigator.pushAndStackPage(context,
+                            page:  ContactUsPage());
+                      },
+                      child: _buildSettingsOption('Contact Us')),
                   _buildSettingsOption('About PMP'),
                   _buildSettingsOption('Support'),
                 ],
@@ -59,7 +67,8 @@ class _ProfileTabState extends State<ProfileTab> {
 
             FormButton(
               onPressed: () {
-                AppNavigator.pushAndRemovePreviousPages(context, page: const SignInPage());
+                AppNavigator.pushAndRemovePreviousPages(context,
+                    page: const SignInPage());
               },
               text: "Logout",
               bgColor: AppColors.mainAppColor.withOpacity(0.9),
