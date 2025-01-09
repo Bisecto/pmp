@@ -11,10 +11,18 @@ class GetSinglePropertyEvent extends PropertyEvent {
   final String propertyId;
 
   GetSinglePropertyEvent(this.propertyId);
-}class DeletePropertyEvent extends PropertyEvent {
+}
+
+class DeletePropertyEvent extends PropertyEvent {
   final String propertyId;
 
   DeletePropertyEvent(this.propertyId);
+}
+
+class DeleteOccupantEvent extends PropertyEvent {
+  final String occupantId;
+
+  DeleteOccupantEvent(this.occupantId);
 }
 
 class AddOccupantEvent extends PropertyEvent {
@@ -24,13 +32,15 @@ class AddOccupantEvent extends PropertyEvent {
 
   AddOccupantEvent(this.formData, this.image, this.propertyId);
 }
+
 class UpdateOccupantEvent extends PropertyEvent {
   final Map<String, String> formData;
   final XFile image;
   final String propertyId;
   final String occupantId;
 
-  UpdateOccupantEvent(this.formData, this.image, this.propertyId,this.occupantId);
+  UpdateOccupantEvent(
+      this.formData, this.image, this.propertyId, this.occupantId);
 }
 
 class AddPropertyEvent extends PropertyEvent {
@@ -48,19 +58,19 @@ class AddPropertyEvent extends PropertyEvent {
   final String? priceRangeStop;
 
   AddPropertyEvent(
-      this.propertyName,
-      this.propertyType,
-      this.availableFlatsRooms,
-      this.address,
-      this.city,
-      this.description,
-      this.location,
-      this.propertyImages,
-      this.priceType,
-      this.price,
-      this.priceRangeStart,
-      this.priceRangeStop,
-      );
+    this.propertyName,
+    this.propertyType,
+    this.availableFlatsRooms,
+    this.address,
+    this.city,
+    this.description,
+    this.location,
+    this.propertyImages,
+    this.priceType,
+    this.price,
+    this.priceRangeStart,
+    this.priceRangeStop,
+  );
 }
 
 class UpdatePropertyEvent extends PropertyEvent {
@@ -92,5 +102,6 @@ class UpdatePropertyEvent extends PropertyEvent {
       this.price,
       this.priceRangeStart,
       this.priceRangeStop,
-      this.propertyId, this.isToggled);
+      this.propertyId,
+      this.isToggled);
 }

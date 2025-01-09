@@ -3,6 +3,7 @@ import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
+import 'package:pim/view/widgets/form_input.dart';
 
 import '../../../../res/app_colors.dart';
 import '../../../res/app_images.dart';
@@ -10,27 +11,59 @@ import '../../../utills/app_navigator.dart';
 import '../../../utills/app_utils.dart';
 import '../../widgets/app_custom_text.dart';
 
-class LodgeList extends StatelessWidget {
+class LodgeList extends StatefulWidget {
   List<Property> properties;
   final UserModel userModel;
 
   LodgeList({super.key, required this.properties, required this.userModel});
 
   @override
+  State<LodgeList> createState() => _LodgeListState();
+}
+
+class _LodgeListState extends State<LodgeList> {
+  final TextEditingController _searchTextEditingController =
+      TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    return properties.isNotEmpty
-        ? Container(
-            height: properties.length * 351,
-            child: ListView.builder(
-              itemCount: properties.length,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return lodgeContainer(
-                    property: properties[index], context: context);
-              },
+    return widget.properties.isNotEmpty
+        ? Column(children: [
+            CustomTextFormField(
+                controller: _searchTextEditingController,
+                hint: 'Search....',
+                hintColor: AppColors.black,
+                borderColor: AppColors.grey,
+                //icon: Icons.search,
+                backgroundColor: AppColors.lightPrimary,
+                onChanged: (val) {
+                  setState(() {
+                    _searchTextEditingController.text = val;
+
+                  });
+                },
+                label: ''
             ),
-          )
+            Container(
+              height: widget.properties.length * 351,
+              child: ListView.builder(
+                itemCount: widget.properties.length,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (widget.properties[index].propertyName
+                      .toLowerCase()
+                      .contains(
+                          _searchTextEditingController.text.toLowerCase())) {
+                    return lodgeContainer(
+                        property: widget.properties[index], context: context);
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            )
+          ])
         : Container(
             child: const CustomText(
                 text: "No properties has been uploaded yet", size: 14),
@@ -97,7 +130,9 @@ class LodgeList extends StatelessWidget {
                             Icons.location_on_outlined,
                             color: AppColors.red,
                           ),
-                          CustomText(text:"${property.city}, ${property.location}", size: 14),
+                          CustomText(
+                              text: "${property.city}, ${property.location}",
+                              size: 14),
                         ],
                       ),
                     ),
@@ -164,7 +199,7 @@ class LodgeList extends StatelessWidget {
                         AppNavigator.pushAndStackPage(context,
                             page: PropertyDetails(
                               property: property,
-                              userModel: userModel,
+                              userModel: widget.userModel,
                             ));
                       },
                       child: Container(

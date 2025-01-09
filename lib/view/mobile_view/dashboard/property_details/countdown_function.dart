@@ -49,10 +49,10 @@ class Countdown {
 
     final countdownText = "${years > 0 ? "$years years, " : ""}"
         "${months > 0 ? "$months months, " : ""}"
-        "${difference.inDays.remainder(30)} days,"
-        "${difference.inHours.remainder(24)} hours, "
-        "${difference.inMinutes.remainder(60)} minutes, and "
-        "${difference.inSeconds.remainder(60)} seconds left";
+        "${difference.inDays.remainder(30)}days, "
+        "${difference.inHours.remainder(24)}hrs, "
+        "${difference.inMinutes.remainder(60)}mins, and "
+        "${difference.inSeconds.remainder(60)}s";
 
     onUpdate(countdownText);
   }
@@ -97,8 +97,11 @@ class _CountdownWidgetState extends State<CountdownWidget> {
         textDirection: TextDirection.ltr,
         softWrap: true,
         text: TextSpan(children: [
+
+         // if(_countdownText!='Rent has expired!')
+
           TextSpan(
-            text: "Rent Due In: ",
+            text: _countdownText=='Rent has expired!'?'':'Rent Due In: ',
             style: TextStyle(
                 fontStyle: FontStyle.normal,
                 color: AppColors.black,

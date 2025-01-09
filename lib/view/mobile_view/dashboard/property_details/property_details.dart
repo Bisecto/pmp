@@ -44,7 +44,7 @@ class PropertyDetails extends StatefulWidget {
 
 class _PropertyDetailsState extends State<PropertyDetails> {
   PropertyBloc propertyBloc = PropertyBloc();
-  List<String> images=[];
+  List<String> images = [];
 
   @override
   void initState() {
@@ -163,7 +163,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     pw.Row(
                       children: [
                         pw.Expanded(
-                          child: pw.Text(occupant.name,
+                          child: pw.Text(occupant.fullName,
                               style: const pw.TextStyle(fontSize: 10),
                               textAlign: pw.TextAlign.start),
                         ),
@@ -178,12 +178,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               textAlign: pw.TextAlign.center),
                         ),
                         pw.Expanded(
-                          child: pw.Text(occupant.rentPaid,
+                          child: pw.Text(occupant.rentPaid.toString(),
                               style: const pw.TextStyle(fontSize: 10),
                               textAlign: pw.TextAlign.center),
                         ),
                         pw.Expanded(
-                          child: pw.Text(occupant.rentDueDate,
+                          child: pw.Text(occupant.rentExpirationDate,
                               style: const pw.TextStyle(fontSize: 10),
                               textAlign: pw.TextAlign.center),
                         ),
@@ -195,7 +195,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       ],
                     ),
                     pw.Divider(),
-
                   ]);
                 }).toList(),
                 pw.SizedBox(height: 20),
@@ -317,8 +316,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     final singlePropertySuccessState =
                         state as SinglePropertySuccessState;
                     images = singlePropertySuccessState.property.imageUrls
-                        .map((imageUrl) => AppApis.appBaseUrl+imageUrl.url)
-                        .toList() ??
+                            .map(
+                                (imageUrl) => AppApis.appBaseUrl + imageUrl.url)
+                            .toList() ??
                         [];
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -357,7 +357,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                                 ));
                                           },
                                           child: SvgPicture.asset(
-                                              AppSvgImages.edit,height: 25,width: 25,)),
+                                            AppSvgImages.edit,
+                                            height: 25,
+                                            width: 25,
+                                          )),
                                       //const Icon(Icons.edit),
                                       const SizedBox(
                                         width: 20,
@@ -371,7 +374,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                                         .toString()));
                                           },
                                           child: SvgPicture.asset(
-                                              AppSvgImages.delete,height: 25,width: 25,)),
+                                            AppSvgImages.delete,
+                                            height: 25,
+                                            width: 25,
+                                          )),
                                     ],
                                   ),
                                 ],
@@ -421,7 +427,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       const CustomText(
-                                        text: "Available rooms",
+                                        text: "Total Space",
                                         size: 15,
                                         weight: FontWeight.w600,
                                       ),
@@ -432,15 +438,15 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                                     .width /
                                                 2.5,
                                         decoration: BoxDecoration(
-                                            color: AppColors.white,
+                                            color: AppColors.black,
                                             borderRadius:
                                                 BorderRadius.circular(5)),
                                         child: Center(
                                             child: CustomText(
                                           text:
-                                              "${singlePropertySuccessState.property.availableFlatsRooms}",
+                                              "${singlePropertySuccessState.property.availableFlatsRooms} Spaces",
                                           size: 15,
-                                          color: AppColors.black,
+                                          color: AppColors.white,
                                           weight: FontWeight.bold,
                                         )),
                                       )
@@ -591,14 +597,17 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               })),
     );
   }
+
   int imageNum = 0;
 
   PageController _controller = PageController();
+
   _onPageChanged(int index) {
     setState(() {
       imageNum = index;
     });
   }
+
   void nextPage() {
     _controller.animateToPage(_controller.page!.toInt() + 1,
         duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
@@ -646,7 +655,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if(property.imageUrls.isNotEmpty)
+              if (property.imageUrls.isNotEmpty)
                 Stack(
                   children: [
                     SizedBox(
@@ -662,12 +671,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 width: MediaQuery.of(context).size.width,
                                 height: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(images[index]),
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)
-                                ),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(images[index]),
+                                    ),
+                                    borderRadius: BorderRadius.circular(10)),
                               ),
                             ],
                           );
@@ -691,7 +699,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(40),
-                            color: Colors.black,
+                            color: Colors.black.withOpacity(0.6),
                           ),
                         ),
                       ),
@@ -713,7 +721,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(40),
-                            color: Colors.black,
+                            color: Colors.black.withOpacity(0.6),
                           ),
                         ),
                       ),
@@ -762,9 +770,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ],
                 ),
-              if(property.imageUrls.isNotEmpty)
-
-                const SizedBox(height: 20),
+              if (property.imageUrls.isNotEmpty) const SizedBox(height: 20),
               // GestureDetector(
               //   onTap: () => Get.to(() => FullGalleryScreen(
               //     index: 1,
@@ -778,28 +784,28 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               //         size: 13),
               //   ),
               // ),
-              if(property.imageUrls.isEmpty)
-              Container(
-                height: 200,
-                width: AppUtils.deviceScreenSize(context).width,
-                decoration: BoxDecoration(
-                  //color: AppColors.red,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black.withOpacity(0.15),
-                  //     spreadRadius: 0,
-                  //     blurRadius: 10,
-                  //     offset: const Offset(0, 4),
-                  //   ),
-                  // ],
-                  image: DecorationImage(
-                      image: NetworkImage(
-                        AppApis.appBaseUrl + property.firstImage,
-                      ),
-                      fit: BoxFit.cover),
-                  borderRadius: BorderRadius.circular(10),
+              if (property.imageUrls.isEmpty)
+                Container(
+                  height: 200,
+                  width: AppUtils.deviceScreenSize(context).width,
+                  decoration: BoxDecoration(
+                    //color: AppColors.red,
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.black.withOpacity(0.15),
+                    //     spreadRadius: 0,
+                    //     blurRadius: 10,
+                    //     offset: const Offset(0, 4),
+                    //   ),
+                    // ],
+                    image: DecorationImage(
+                        image: NetworkImage(
+                          AppApis.appBaseUrl + property.firstImage,
+                        ),
+                        fit: BoxFit.cover),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
               const SizedBox(
                 height: 10,
               ),
@@ -814,7 +820,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           Icons.location_on,
                           color: AppColors.red,
                         ),
-                        CustomText(text: "${property.city}, ${property.location}", size: 14),
+                        CustomText(
+                            text: "${property.city}, ${property.location}",
+                            size: 14),
                       ],
                     ),
                     if (property.priceType.toLowerCase() == 'static')

@@ -33,11 +33,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
               ],
             ),
-            SvgPicture.asset(
-              AppSvgImages.notification,
-              height: 20,
-              width: 20,
-            ),
+            SizedBox(),
+            // SvgPicture.asset(
+            //   AppSvgImages.notification,
+            //   height: 20,
+            //   width: 20,
+            // ),
           ],
         ),
       ),

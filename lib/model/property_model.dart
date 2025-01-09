@@ -89,87 +89,109 @@ class Property {
 }
 
 class Occupant {
-  String id;
-  String name;
-  String email;
-  String dob;
-  String mobileNumber;
-  String gender;
-  String state;
-  String localGovernment;
-  int roomNumber;
-  String rentDueDate;
-  String apartmentType;
-  String rentCommencementDate;
-  String rentPaid;
-  String meshBillPaid;
-  String occupationStatus;
-  String relationship;
-  String profilePic;
-  String country;
+  final String id;
+  final String fullName;
+  final String email;
+  final String apartmentType;
+  final String roomNumber;
+  final String mobilePhone;
+  final String rentExpirationDate;
+  final String rentDueDeadlineCountdown;
+  final String profilePic;
+  final String title;
+  final String dob;
+  final String state;
+  final String localGovernment;
+  final String country;
+  final String rentCommencementDate;
+  final String rentTimeline;
+  final String rentPaid;
+  final String meshBillPaid;
+  final String occupationStatus;
+  final String relationship;
+  final String gender;
+  final String paymentStatus;
 
   Occupant({
     required this.id,
-    required this.name,
+    required this.fullName,
     required this.email,
+    required this.apartmentType,
+    required this.roomNumber,
+    required this.mobilePhone,
+    required this.rentExpirationDate,
+    required this.rentDueDeadlineCountdown,
+    required this.profilePic,
+    required this.title,
     required this.dob,
-    required this.mobileNumber,
-    required this.gender,
     required this.state,
     required this.localGovernment,
-    required this.roomNumber,
-    required this.rentDueDate,
-    required this.apartmentType,
+    required this.country,
     required this.rentCommencementDate,
+    required this.rentTimeline,
     required this.rentPaid,
     required this.meshBillPaid,
     required this.occupationStatus,
     required this.relationship,
-    required this.profilePic,
-    required this.country,
+    required this.gender,
+    required this.paymentStatus,
   });
 
-  factory Occupant.fromJson(Map<String, dynamic> json) => Occupant(
-        id: json["id"].toString(),
-        name: json["full_name"] ?? '',
-        email: json["email"] ?? '',
-        dob: json["dob"] ?? '',
-        mobileNumber: json["mobile_phone"] ?? '',
-        gender: json["gender"] ?? '',
-        state: json["state"] ?? '',
-        localGovernment: json["local_government"] ?? '',
-        roomNumber: json["room_number"] ?? 0,
-        rentDueDate: json["rent_expiration_date"] ?? '',
-        apartmentType: json["apartment_type"] ?? '',
-        rentCommencementDate: json["rent_commencement_date"] ?? '',
-        rentPaid: json["rent_paid"] ?? '',
-        meshBillPaid: json["mesh_bill_paid"] ?? '',
-        occupationStatus: json["occupation_status"] ?? '',
-        relationship: json["relationship"] ?? '',
-        profilePic: json["profile_pic"] ?? '',
-        country: json["country"] ?? '',
-      );
+  // Factory for deserializing from JSON
+  factory Occupant.fromJson(Map<String, dynamic> json) {
+    return Occupant(
+      id: json['id'].toString(),
+      fullName: json['full_name'] ?? '',
+      email: json['email'] ?? '',
+      apartmentType: json['apartment_type'] ?? 'a',
+      roomNumber: json['room_number'].toString() ??   '',
+      mobilePhone: json['mobile_phone'] ?? '',
+      rentExpirationDate: json['rent_expiration_date'] ?? '',
+      rentDueDeadlineCountdown: json['rent_due_deadline_countdown'] ?? '',
+      profilePic: json['profile_pic'] ?? '',
+      title: json['title'] ?? '',
+      dob: json['dob'] ?? '',
+      state: json['state'] ?? '',
+      localGovernment: json['local_government'] ?? '',
+      country: json['country'] ?? '',
+      rentCommencementDate: json['rent_commencement_date'] ?? '',
+      rentTimeline: json['rent_timeline'] ?? '',
+      rentPaid: json['rent_paid'] ?? '',
+      meshBillPaid: json['mesh_bill_paid'] ?? '',
+      occupationStatus: json['occupation_status'] ?? '',
+      relationship: json['relationship'] ?? '',
+      gender: json['gender'] ?? '',
+      paymentStatus: json['payment_status'] ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "full_name": name,
-        "email": email,
-        "dob": dob,
-        "mobile_phone": mobileNumber,
-        "gender": gender,
-        "state": state,
-        "local_government": localGovernment,
-        "room_number": roomNumber,
-        "rent_expiration_date": rentDueDate,
-        "rent_commencement_date": rentCommencementDate,
-        "apartment_type": apartmentType,
-        "rent_paid": rentPaid,
-        "mesh_bill_paid": meshBillPaid,
-        "occupation_status": occupationStatus,
-        "relationship": relationship,
-        "profile_pic": profilePic,
-        "country": country,
-      };
+  // Method for serializing to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'full_name': fullName,
+      'email': email,
+      'apartment_type': apartmentType,
+      'room_number': roomNumber,
+      'mobile_phone': mobilePhone,
+      'rent_expiration_date': rentExpirationDate,
+      'rent_due_deadline_countdown': rentDueDeadlineCountdown,
+      'profile_pic': profilePic,
+      'title': title,
+      'dob': dob,
+      'state': state,
+      'local_government': localGovernment,
+      'country': country,
+      'rent_commencement_date': rentCommencementDate,
+      'rent_timeline': rentTimeline,
+      'rent_paid': rentPaid,
+      'mesh_bill_paid': meshBillPaid,
+      'occupation_status': occupationStatus,
+      'relationship': relationship,
+      'gender': gender,
+      'payment_status': paymentStatus,
+    };
+  }
 }
 
 class ImageUrl {

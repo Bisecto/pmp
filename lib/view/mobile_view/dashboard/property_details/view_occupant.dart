@@ -199,7 +199,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              _buildInfoRow('Full Name', widget.occupant.name),
+              _buildInfoRow('Full Name', widget.occupant.fullName),
             ],
           ),
         ),
@@ -234,7 +234,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
           _buildSectionTitle('Occupant INFORMATION'),
           pw.SizedBox(height: 10),
           _buildPaymentTable([
-            ['MOBILE NUMBER', widget.occupant.mobileNumber],
+            ['MOBILE NUMBER', widget.occupant.mobilePhone],
             ['STATE', widget.occupant.state],
             ['LGA', widget.occupant.localGovernment],
             ['DOB', widget.occupant.dob],
@@ -255,8 +255,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
           _buildSectionTitle('RENT INFORMATION'),
           pw.SizedBox(height: 10),
           _buildPaymentTable([
-            ['RENT PAID', widget.occupant.rentPaid],
-            ['RENT DUE', widget.occupant.rentDueDate],
+            ['RENT PAID', widget.occupant.rentPaid.toString()],
+            ['RENT DUE', widget.occupant.rentExpirationDate],
             ['ROOM NUMBER', widget.occupant.roomNumber.toString()],
             ['MARITAL STATUS', widget.occupant.relationship],
           ]),
@@ -360,7 +360,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                AppAppBar(title: widget.occupant.name!),
+                AppAppBar(title: widget.occupant.fullName!),
                 const SizedBox(
                   height: 10,
                 ),
@@ -404,7 +404,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         onLayout: (PdfPageFormat format) async => pdfData,
                         dynamicLayout: false,
                         name:
-                        "${widget.occupant.name}OCCUPANT_INFO");
+                        "${widget.occupant.fullName}OCCUPANT_INFO");
                   },
                   text: "Download",
                   isIcon: true,
@@ -470,7 +470,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomText(
-                    text: occupant.name,
+                    text: occupant.fullName,
                     color: AppColors.black,
                     size: 16,
                     weight: FontWeight.bold,
@@ -568,7 +568,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  ${AppUtils.formatComplexDate(dateTime: occupant.rentDueDate.toString())}.',
+                        text: '  ${AppUtils.formatComplexDate(dateTime: occupant.rentExpirationDate.toString())}.',
                         size: 14,
                         maxLines: 3,
                       ),

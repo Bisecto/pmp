@@ -27,8 +27,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final TextEditingController _searchTextEditingController =
-      TextEditingController();
+
   int semesterId = 0;
   bool isImageNull = false;
   bool isImageAccessible = true;
@@ -48,7 +47,7 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       backgroundColor:
-          theme.isDark ? AppColors.darkBackgroundColor : AppColors.lightPrimary,
+          theme.isDark ? AppColors.darkBackgroundColor : AppColors.white,
       body: SafeArea(
           child: SingleChildScrollView(
         physics: const ScrollPhysics(),
@@ -122,7 +121,7 @@ class _DashboardState extends State<Dashboard> {
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                           TextSpan(
@@ -130,7 +129,7 @@ class _DashboardState extends State<Dashboard> {
                                                 '${propertySuccessState.propertiesModel.totalProperties}  ',
                                             style: const TextStyle(
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                         ],
@@ -141,42 +140,64 @@ class _DashboardState extends State<Dashboard> {
                                       text: TextSpan(
                                         children: [
                                           const TextSpan(
-                                            text: 'Occupied Rooms: ',
+                                            text: 'Total Space: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                           TextSpan(
                                             text:
-                                                '${propertySuccessState.propertiesModel.totalOccupiedRooms}  ',
+                                                '${propertySuccessState.propertiesModel.totalAvailableRooms}  ',
                                             style: const TextStyle(
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
+                                    // RichText(
+                                    //   text: TextSpan(
+                                    //     children: [
+                                    //       const TextSpan(
+                                    //         text: 'Occupied Space: ',
+                                    //         style: TextStyle(
+                                    //           fontWeight: FontWeight.bold,
+                                    //           color: Colors.black,
+                                    //           fontSize: 13.0,
+                                    //         ),
+                                    //       ),
+                                    //       TextSpan(
+                                    //         text:
+                                    //             '${propertySuccessState.propertiesModel.totalOccupiedRooms}  ',
+                                    //         style: const TextStyle(
+                                    //           color: Colors.black,
+                                    //           fontSize: 13.0,
+                                    //         ),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                     // Tenants
                                     RichText(
                                       text: TextSpan(
                                         children: [
                                           const TextSpan(
-                                            text: 'Tenants: ',
+                                            text: 'Occupied Space: ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                           TextSpan(
                                             text:
-                                                '${propertySuccessState.propertiesModel.totalTenants}',
+                                                '${propertySuccessState.propertiesModel.totalOccupiedRooms}',
                                             style: const TextStyle(
                                               color: Colors.black,
-                                              fontSize: 14.0,
+                                              fontSize: 13.0,
                                             ),
                                           ),
                                         ],

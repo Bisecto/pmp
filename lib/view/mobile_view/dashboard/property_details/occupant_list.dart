@@ -49,7 +49,7 @@ class _OccupantListState extends State<OccupantList> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {print(widget.occupants[index].rentDueDate.toString());
+            onTap: () {print(widget.occupants[index].rentExpirationDate.toString());
               AppNavigator.pushAndStackPage(context,
                   page: ViewOccupant(occupant: widget.occupants[index],
                     property: widget.property,
@@ -103,7 +103,7 @@ class _OccupantListState extends State<OccupantList> {
                         Container(
                           width: 150,
                           child: CustomText(
-                            text: "  ${occupant.name}",
+                            text: "  ${occupant.fullName}",
                             size: 14,
                           ),
                         ),
@@ -113,7 +113,7 @@ class _OccupantListState extends State<OccupantList> {
                       children: [
                         GestureDetector(
                             onTap: () {
-                              _makePhoneCall(occupant.mobileNumber);
+                              _makePhoneCall(occupant.mobilePhone);
                             },
                             child: SvgPicture.asset(
                               AppSvgImages.phone,
@@ -129,7 +129,7 @@ class _OccupantListState extends State<OccupantList> {
                             //_sendSMS(occupant.mobileNumber, '');
                             try {
                               await openSMS(
-                              phone: occupant.mobileNumber,
+                              phone: occupant.mobilePhone,
                               text: '',
                               );
                             } on Exception catch (e) {
@@ -198,7 +198,7 @@ class _OccupantListState extends State<OccupantList> {
                         //height: 100,
                         child: CountdownWidget(
                           targetDate:
-                          DateTime.parse(occupant.rentDueDate.toString()),
+                          DateTime.parse(occupant.rentExpirationDate.toString()),
                         ),
                       ),
                     ],

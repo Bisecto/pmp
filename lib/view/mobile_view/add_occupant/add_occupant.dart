@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_common/get_reset.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
@@ -53,6 +54,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController rentCommencementController =
       TextEditingController();
+
   // final TextEditingController rentExpirationController =
   //     TextEditingController();
   final TextEditingController lgaController = TextEditingController();
@@ -74,47 +76,46 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    if(widget.isEdit){
+    if (widget.isEdit) {
       handleUpdate();
-
     }
     super.initState();
   }
 
   void handleUpdate() async {
-    setState(() async {
-      cautionFeeController.text = widget.occupant!.meshBillPaid;
-      occupantNameController.text = widget.occupant!.name;
+    //setState(() async {
+      cautionFeeController.text = widget.occupant!.meshBillPaid.toString();
+      occupantNameController.text = widget.occupant!.fullName;
       occupantEmailController.text = widget.occupant!.email;
       occupantPhoneNumberController.text =
-          widget.occupant!.mobileNumber.replaceAll('+234', '');
+          widget.occupant!.mobilePhone.replaceAll('+234', '');
       dobController.text = widget.occupant!.dob;
       rentCommencementController.text = widget.occupant!.rentCommencementDate;
-     // rentExpirationController.text = widget.occupant!.rentDueDate;
+      // rentExpirationController.text = widget.occupant!.rentDueDate;
       lgaController.text = widget.occupant!.localGovernment;
-      amtPaidController.text = widget.occupant!.rentPaid;
+      amtPaidController.text = widget.occupant!.rentPaid.toString();
       roomNumberController.text = widget.occupant!.roomNumber.toString();
       selectedGender = widget.occupant!.gender;
       selectedState = widget.occupant!.state;
       selectedEmploymentStatus = widget.occupant!.occupationStatus;
       selectedMaritalStatus = widget.occupant!.relationship;
-      selectedPaymnetDueTimeline = widget.occupant!.rentDueDate;
-      selectedApartmentType = widget.occupant!.apartmentType;
+      selectedPaymnetDueTimeline = widget.occupant!.rentTimeline.capitalize();
+      selectedPaymnetStatus = widget.occupant!.paymentStatus.capitalize();
+
+      selectedApartmentType = widget.occupant!.apartmentType.capitalize();
       print(widget.occupant!.profilePic);
       // for (String imageUrl in widget.occupant!) {
       try {
-
         File imageFile = await downloadImage(widget.occupant!.profilePic);
         setState(() {
           imageFileList!.add(XFile(imageFile.path));
-         // _selectedImage=XFile(imageFile.path);
-
+          // _selectedImage=XFile(imageFile.path);
         });
       } catch (e) {
         print('Error downloading image: $e');
       }
       // }
-    });
+   // });
   }
 
   Future<File> downloadImage(String imageUrl) async {
@@ -128,6 +129,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       throw Exception('Failed to download image');
     }
   }
+
   void _showPickerDialog() {
     showModalBottomSheet(
       context: context,
@@ -157,18 +159,19 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       },
     );
   }
+
   final ImagePicker _imagePicker = ImagePicker();
   XFile? _selectedImage;
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final XFile? selectedImage = await _imagePicker.pickImage(source: source,imageQuality: 50);
+      final XFile? selectedImage =
+          await _imagePicker.pickImage(source: source, imageQuality: 50);
       if (selectedImage != null) {
         setState(() {
           _selectedImage = selectedImage;
           imageFileList!.clear();
           imageFileList!.add(selectedImage);
-
         });
       }
     } catch (e) {
@@ -182,7 +185,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title:  CustomText(text:widget.isEdit?'Edit Occupant': 'Add Occupant'),
+          title: CustomText(
+              text: widget.isEdit ? 'Edit Occupant' : 'Add Occupant'),
           backgroundColor: Colors.white,
         ),
         body: BlocConsumer<PropertyBloc, PropertyState>(
@@ -358,7 +362,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 hint: "Status",
                                 initialValue: selectedMaritalStatus,
                                 selectedValue: selectedMaritalStatus,
-                                items: const ['Married', 'Single', 'Others'],
+                                items: const ['Married', 'Single', 'Divorced'],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedMaritalStatus = value;
@@ -467,7 +471,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 hint: "Select Rent Due Timeline",
                                 selectedValue: selectedPaymnetDueTimeline,
                                 initialValue: selectedPaymnetDueTimeline,
-                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                items: const ['Weekly', 'Monthly', "Yearly"],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedPaymnetDueTimeline = value;
@@ -480,7 +484,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 hint: "Select Rent Payment Status",
                                 selectedValue: selectedPaymnetStatus,
                                 initialValue: selectedPaymnetStatus,
-                                items: const ['Paid', 'Unpaid'],
+                                items: const ['Paid', 'Pending'],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedPaymnetStatus = value;
@@ -525,7 +529,27 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 hint: "Select apartment type",
                                 selectedValue: selectedApartmentType,
                                 initialValue: selectedApartmentType,
-                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                items: const [
+                                  "1 Room Self Contain",
+                                  "2 Bedroom Flat",
+                                  "3 Bedroom Flat",
+                                  "Studio Apartment",
+                                  "Office Space",
+                                  "Shop Space",
+                                  "Warehouse",
+                                  "Shared Apartment",
+                                  "Penthouse",
+                                  "Serviced Apartment",
+                                  "Luxury Flat",
+                                  "Mini Flat",
+                                  "Detached House",
+                                  "Semi-Detached House",
+                                  "Bungalow",
+                                  "Duplex",
+                                  "Mansion",
+                                  "Condo",
+                                  "Townhouse"
+                                ],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedApartmentType = value;
@@ -752,6 +776,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Gender',
                                 hint: "Status",
                                 selectedValue: selectedGender,
+                                initialValue: selectedGender,
                                 items: const ['Male', 'Female', 'Others'],
                                 onChanged: (value) {
                                   setState(() {
@@ -763,8 +788,9 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               DropDown(
                                 label: 'Relationship Status Type',
                                 hint: "Status",
+                                initialValue: selectedMaritalStatus,
                                 selectedValue: selectedMaritalStatus,
-                                items: const ['Married', 'Single', 'Others'],
+                                items: const ['Married', 'Single', 'Divorced'],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedMaritalStatus = value;
@@ -776,9 +802,10 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Employment Status Type',
                                 hint: "Status",
                                 selectedValue: selectedEmploymentStatus,
+                                initialValue: selectedEmploymentStatus,
                                 items: const [
                                   'Employed',
-                                  'Self Employed',
+                                  'Self-Employed',
                                   'Unemployed'
                                 ],
                                 onChanged: (value) {
@@ -792,6 +819,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'State',
                                 hint: "Select state",
                                 selectedValue: selectedState,
+                                initialValue: selectedState,
                                 items: const [
                                   "Abia",
                                   "Adamawa",
@@ -870,7 +898,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Rent Due Timeline',
                                 hint: "Select Rent Due Timeline",
                                 selectedValue: selectedPaymnetDueTimeline,
-                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                initialValue: selectedPaymnetDueTimeline,
+                                items: const ['Weekly', 'Monthly', "Yearly"],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedPaymnetDueTimeline = value;
@@ -882,7 +911,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Rent Payment Status',
                                 hint: "Select Rent Payment Status",
                                 selectedValue: selectedPaymnetStatus,
-                                items: const ['Paid', 'Unpaid'],
+                                initialValue: selectedPaymnetStatus,
+                                items: const ['Paid', 'Pending'],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedPaymnetStatus = value;
@@ -926,8 +956,28 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Apartment Type',
                                 hint: "Select apartment type",
                                 selectedValue: selectedApartmentType,
-                               // initialValue: selectedApartmentType,
-                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                initialValue: selectedApartmentType,
+                                items: const [
+                                  "1 Room Self Contain",
+                                  "2 Bedroom Flat",
+                                  "3 Bedroom Flat",
+                                  "Studio Apartment",
+                                  "Office Space",
+                                  "Shop Space",
+                                  "Warehouse",
+                                  "Shared Apartment",
+                                  "Penthouse",
+                                  "Serviced Apartment",
+                                  "Luxury Flat",
+                                  "Mini Flat",
+                                  "Detached House",
+                                  "Semi-Detached House",
+                                  "Bungalow",
+                                  "Duplex",
+                                  "Mansion",
+                                  "Condo",
+                                  "Townhouse"
+                                ],
                                 onChanged: (value) {
                                   setState(() {
                                     selectedApartmentType = value;
@@ -948,7 +998,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               //       : AppColors.grey,
                               //   borderRadius: 10,
                               // ),
-                             const SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: roomNumberController,
                                 hint: 'Enter room number',
@@ -1330,7 +1380,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   }
 
   void _saveOccupant() {
-    if (occupantNameController.text.isEmpty ||occupantEmailController.text.isEmpty ||
+    if (occupantNameController.text.isEmpty ||
+        occupantEmailController.text.isEmpty ||
         occupantPhoneNumberController.text.isEmpty ||
         dobController.text.isEmpty ||
         rentCommencementController.text.isEmpty ||
@@ -1351,7 +1402,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     } else {
       final Map<String, String> formData = {
         'full_name': occupantNameController.text,
-        'email':occupantEmailController.text,
+        'email': occupantEmailController.text,
         'title': 'mr',
         'dob': dobController.text,
         'mobile_phone': '+234${occupantPhoneNumberController.text}',
@@ -1366,18 +1417,23 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'relationship': selectedMaritalStatus,
         'occupation_status': selectedEmploymentStatus,
         'rent_timeline': selectedPaymnetDueTimeline.toLowerCase(),
-        'apartment_type': selectedApartmentType.toLowerCase(),
+        'apartment_type': selectedApartmentType,
         'payment_status': selectedPaymnetStatus,
         'gender': selectedGender,
       };
       print(formData);
       if (widget.isEdit) {
-        propertyBloc.add(UpdateOccupantEvent(
-            formData, imageFileList![0], widget.property.id.toString(),widget.occupant!.id.toString()));
+        propertyBloc.add(UpdateOccupantEvent(formData, imageFileList![0],
+            widget.property.id.toString(), widget.occupant!.id.toString()));
       } else {
         propertyBloc.add(AddOccupantEvent(
             formData, imageFileList![0], widget.property.id.toString()));
       }
     }
+  }
+}
+extension StringExtensions on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }

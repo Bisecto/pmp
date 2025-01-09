@@ -21,6 +21,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   PropertyBloc() : super(PropertyInitial()) {
     on<GetSinglePropertyEvent>(getSinglePropertyEvent);
     on<DeletePropertyEvent>(deletePropertyEvent);
+    //on<DeleteOccupantEvent>(deleteOccupantEvent);
     on<GetPropertyEvent>(getPropertyEvent);
     on<AddPropertyEvent>(addPropertyEvent);
     on<UpdatePropertyEvent>(updatePropertyEvent);
@@ -112,12 +113,12 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['message'])));
+            json.decode(addPropertyResponse.body)['detail'])));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
-      emit(PropertyErrorState("An error occurred while fetching categories."));
+      emit(PropertyErrorState("An error occurred while adding property."));
       emit(PropertyInitial());
       print(e);
     }
@@ -130,7 +131,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-    try {
+    //try {
     var singlePropertyResponse = await appRepository.getRequestWithToken(
         accessToken, AppApis.singlePropertyApi+event.propertyId);
     // var res = await appRepository.appGetRequest(
@@ -151,13 +152,13 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           SinglePropertySuccessState(property)); // Emit success state with data
     } else {
       emit(PropertyErrorState(AppUtils.convertString(
-          json.decode(singlePropertyResponse.body)['message'])));
+          json.decode(singlePropertyResponse.body)['detail'])));
       print(json.decode(singlePropertyResponse.body));
     }
-    } catch (e) {
-      emit(PropertyErrorState("An error occurred while fetching property detail."));
-      print(e);
-    }
+    // } catch (e) {
+    //   emit(PropertyErrorState("An error occurred while fetching property detail."));
+    //   print(e);
+    // }
   }
 
   FutureOr<void> addOccupantEvent(AddOccupantEvent event, Emitter<PropertyState> emit) async {
@@ -185,12 +186,12 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           emit(AddPropertySuccessState()); // Emit success state with data
         } else {
           emit(PropertyErrorState(AppUtils.convertString(
-              json.decode(addPropertyResponse.body)['message'])));
+              json.decode(addPropertyResponse.body)['detail'])));
           print(json.decode(addPropertyResponse.body));
           emit(PropertyInitial());
         }
       } catch (e) {
-        emit(PropertyErrorState("An error occurred while fetching categories."));
+        emit(PropertyErrorState("An error occurred while adding occupant."));
         emit(PropertyInitial());
         print(e);
       }
@@ -239,12 +240,12 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['message'])));
+            json.decode(addPropertyResponse.body)['detail'])));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
-      emit(PropertyErrorState("An error occurred while fetching categories."));
+      emit(PropertyErrorState("An error occurred while updating property."));
       emit(PropertyInitial());
       print(e);
     }
@@ -275,12 +276,12 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['message'])));
+            json.decode(addPropertyResponse.body)['detail'])));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
-      emit(PropertyErrorState("An error occurred while fetching categories."));
+      emit(PropertyErrorState("An error occurred while updating occupant."));
       emit(PropertyInitial());
       print(e);
     }
@@ -303,7 +304,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       // );
       //print(res.body);
       print(" status Code ${singlePropertyResponse.statusCode}");
-      print(" Data ${singlePropertyResponse.body}");
+      //print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 204) {
@@ -313,12 +314,47 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
             DeletePropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(singlePropertyResponse.body)['message'])));
+            json.decode(singlePropertyResponse.body)['detail'])));
         print(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
-      emit(PropertyErrorState("An error occurred while fetching property detail."));
+      emit(PropertyErrorState("An error occurred while deleting property."));
       print(e);
     }
   }
+  // FutureOr<void> deleteOccupantEvent(DeleteOccupantEvent event, Emitter<PropertyState> emit) async  {
+  //   emit(
+  //       PropertyLoadingState()); // Emit loading state at the start of the event
+  //
+  //   AppRepository appRepository = AppRepository();
+  //   String accessToken = await SharedPref.getString('access-token');
+  //   try {
+  //     // var deletePropertyResponse = await appRepository.getRequestWithToken(
+  //     //     accessToken, AppApis.singlePropertyApi+event.propertyId);
+  //     var singlePropertyResponse = await appRepository.deleteRequestWithToken(
+  //         accessToken, '${AppApis.singlePropertyApi}${event.propertyId}/');
+  //     // var res = await appRepository.appGetRequest(
+  //     //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+  //     //   accessToken: accessToken,
+  //     // );
+  //     //print(res.body);
+  //     print(" status Code ${singlePropertyResponse.statusCode}");
+  //     //print(" Data ${singlePropertyResponse.body}");
+  //     print(json.decode(singlePropertyResponse.body));
+  //     if (singlePropertyResponse.statusCode == 200 ||
+  //         singlePropertyResponse.statusCode == 204) {
+  //
+  //       //print(property);
+  //       emit(
+  //           DeletePropertySuccessState()); // Emit success state with data
+  //     } else {
+  //       emit(PropertyErrorState(AppUtils.convertString(
+  //           json.decode(singlePropertyResponse.body)['detail'])));
+  //       print(json.decode(singlePropertyResponse.body));
+  //     }
+  //   } catch (e) {
+  //     emit(PropertyErrorState("An error occurred while deleting property."));
+  //     print(e);
+  //   }
+  // }
 }
