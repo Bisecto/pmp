@@ -47,6 +47,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
 
   // Controllers to capture form input
   final TextEditingController occupantNameController = TextEditingController();
+  final TextEditingController occupantEmailController = TextEditingController();
   final TextEditingController occupantPhoneNumberController =
       TextEditingController();
   final TextEditingController dobController = TextEditingController();
@@ -83,6 +84,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     setState(() async {
       cautionFeeController.text = widget.occupant!.meshBillPaid;
       occupantNameController.text = widget.occupant!.name;
+      occupantEmailController.text = widget.occupant!.email;
       occupantPhoneNumberController.text =
           widget.occupant!.mobileNumber.replaceAll('+234', '');
       dobController.text = widget.occupant!.dob;
@@ -281,6 +283,20 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 controller: occupantNameController,
                                 hint: "Enter Occupant's name",
                                 label: 'Full Name',
+                                borderRadius: 10,
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: occupantEmailController,
+                                hint: "Enter Occupant's email",
+                                label: 'Email',
                                 borderRadius: 10,
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
@@ -503,13 +519,11 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               ),
                               const SizedBox(height: 16),
                               // CustomTextFormField(
-                              //   controller: rentExpirationController,
-                              //   hint: 'DD/MM/YY',
-                              //   label: 'Rent Expiration Date',
+                              //   controller: apartmentTypeController,
+                              //   hint: 'Enter Apartment type',
+                              //   label: 'Apartment Type',
+                              //   textInputType: TextInputType.text,
                               //   borderColor: Colors.grey,
-                              //   //: Icons.date_range,
-                              //
-                              //   readOnly: true,
                               //   backgroundColor: theme.isDark
                               //       ? AppColors.darkCardBackgroundColor
                               //       : AppColors.white,
@@ -666,6 +680,20 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 controller: occupantNameController,
                                 hint: "Enter Occupant's name",
                                 label: 'Full Name',
+                                borderRadius: 10,
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: occupantEmailController,
+                                hint: "Enter Occupant's email",
+                                label: 'Email',
                                 borderRadius: 10,
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
@@ -881,13 +909,11 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               ),
                               const SizedBox(height: 16),
                               // CustomTextFormField(
-                              //   controller: rentExpirationController,
-                              //   hint: 'DD/MM/YY',
-                              //   label: 'Rent Expiration Date',
+                              //   controller: apartmentTypeController,
+                              //   hint: 'Enter Apartment type',
+                              //   label: 'Apartment Type',
+                              //   textInputType: TextInputType.text,
                               //   borderColor: Colors.grey,
-                              //   //: Icons.date_range,
-                              //
-                              //   readOnly: true,
                               //   backgroundColor: theme.isDark
                               //       ? AppColors.darkCardBackgroundColor
                               //       : AppColors.white,
@@ -896,7 +922,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               //       : AppColors.grey,
                               //   borderRadius: 10,
                               // ),
-                             // const SizedBox(height: 16),
+                             const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: roomNumberController,
                                 hint: 'Enter room number',
@@ -1278,7 +1304,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   }
 
   void _saveOccupant() {
-    if (occupantNameController.text.isEmpty ||
+    if (occupantNameController.text.isEmpty ||occupantEmailController.text.isEmpty ||
         occupantPhoneNumberController.text.isEmpty ||
         dobController.text.isEmpty ||
         rentCommencementController.text.isEmpty ||
@@ -1298,6 +1324,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     } else {
       final Map<String, String> formData = {
         'full_name': occupantNameController.text,
+        'email':occupantEmailController.text,
         'title': 'mr',
         'dob': dobController.text,
         'mobile_phone': '+234${occupantPhoneNumberController.text}',

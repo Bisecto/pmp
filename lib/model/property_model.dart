@@ -91,6 +91,7 @@ class Property {
 class Occupant {
   String id;
   String name;
+  String email;
   String dob;
   String mobileNumber;
   String gender;
@@ -109,6 +110,7 @@ class Occupant {
   Occupant({
     required this.id,
     required this.name,
+    required this.email,
     required this.dob,
     required this.mobileNumber,
     required this.gender,
@@ -128,6 +130,7 @@ class Occupant {
   factory Occupant.fromJson(Map<String, dynamic> json) => Occupant(
         id: json["id"].toString(),
         name: json["full_name"] ?? '',
+    email: json["email"] ?? '',
         dob: json["dob"] ?? '',
         mobileNumber: json["mobile_phone"] ?? '',
         gender: json["gender"] ?? '',
@@ -147,6 +150,7 @@ class Occupant {
   Map<String, dynamic> toJson() => {
         "id": id,
         "full_name": name,
+        "email": email,
         "dob": dob!,
         "mobile_phone": mobileNumber,
         "gender": gender,
