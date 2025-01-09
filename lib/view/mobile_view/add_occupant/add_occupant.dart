@@ -66,6 +66,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   String selectedMaritalStatus = '';
   String selectedPaymnetStatus = '';
   String selectedPaymnetDueTimeline = '';
+  String selectedApartmentType = '';
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
   PropertyBloc propertyBloc = PropertyBloc();
@@ -98,6 +99,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       selectedEmploymentStatus = widget.occupant!.occupationStatus;
       selectedMaritalStatus = widget.occupant!.relationship;
       selectedPaymnetDueTimeline = widget.occupant!.rentDueDate;
+      selectedApartmentType = widget.occupant!.apartmentType;
       print(widget.occupant!.profilePic);
       // for (String imageUrl in widget.occupant!) {
       try {
@@ -518,6 +520,18 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
+                              DropDown(
+                                label: 'Apartment Type',
+                                hint: "Select apartment type",
+                                selectedValue: selectedApartmentType,
+                                initialValue: selectedApartmentType,
+                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedApartmentType = value;
+                                  });
+                                },
+                              ),
                               // CustomTextFormField(
                               //   controller: apartmentTypeController,
                               //   hint: 'Enter Apartment type',
@@ -908,6 +922,18 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
+                              DropDown(
+                                label: 'Apartment Type',
+                                hint: "Select apartment type",
+                                selectedValue: selectedApartmentType,
+                               // initialValue: selectedApartmentType,
+                                items: const ['Monthly', 'Quarterly', "Yearly"],
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedApartmentType = value;
+                                  });
+                                },
+                              ),
                               // CustomTextFormField(
                               //   controller: apartmentTypeController,
                               //   hint: 'Enter Apartment type',
@@ -1318,6 +1344,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         selectedMaritalStatus.isEmpty ||
         selectedPaymnetStatus.isEmpty ||
         selectedPaymnetDueTimeline.isEmpty ||
+        selectedApartmentType.isEmpty ||
         imageFileList == null ||
         imageFileList!.isEmpty) {
       MSG.warningSnackBar(context, 'Please fill in all required fields.');
@@ -1339,6 +1366,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'relationship': selectedMaritalStatus,
         'occupation_status': selectedEmploymentStatus,
         'rent_timeline': selectedPaymnetDueTimeline.toLowerCase(),
+        'apartment_type': selectedApartmentType.toLowerCase(),
         'payment_status': selectedPaymnetStatus,
         'gender': selectedGender,
       };

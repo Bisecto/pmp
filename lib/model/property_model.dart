@@ -99,6 +99,7 @@ class Occupant {
   String localGovernment;
   int roomNumber;
   String rentDueDate;
+  String apartmentType;
   String rentCommencementDate;
   String rentPaid;
   String meshBillPaid;
@@ -118,6 +119,7 @@ class Occupant {
     required this.localGovernment,
     required this.roomNumber,
     required this.rentDueDate,
+    required this.apartmentType,
     required this.rentCommencementDate,
     required this.rentPaid,
     required this.meshBillPaid,
@@ -130,7 +132,7 @@ class Occupant {
   factory Occupant.fromJson(Map<String, dynamic> json) => Occupant(
         id: json["id"].toString(),
         name: json["full_name"] ?? '',
-    email: json["email"] ?? '',
+        email: json["email"] ?? '',
         dob: json["dob"] ?? '',
         mobileNumber: json["mobile_phone"] ?? '',
         gender: json["gender"] ?? '',
@@ -138,6 +140,7 @@ class Occupant {
         localGovernment: json["local_government"] ?? '',
         roomNumber: json["room_number"] ?? 0,
         rentDueDate: json["rent_expiration_date"] ?? '',
+        apartmentType: json["apartment_type"] ?? '',
         rentCommencementDate: json["rent_commencement_date"] ?? '',
         rentPaid: json["rent_paid"] ?? '',
         meshBillPaid: json["mesh_bill_paid"] ?? '',
@@ -151,14 +154,15 @@ class Occupant {
         "id": id,
         "full_name": name,
         "email": email,
-        "dob": dob!,
+        "dob": dob,
         "mobile_phone": mobileNumber,
         "gender": gender,
         "state": state,
         "local_government": localGovernment,
         "room_number": roomNumber,
-        "rent_expiration_date": rentDueDate!,
-        "rent_commencement_date": rentCommencementDate!,
+        "rent_expiration_date": rentDueDate,
+        "rent_commencement_date": rentCommencementDate,
+        "apartment_type": apartmentType,
         "rent_paid": rentPaid,
         "mesh_bill_paid": meshBillPaid,
         "occupation_status": occupationStatus,
