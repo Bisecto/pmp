@@ -83,7 +83,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           "There was a problem logging user in please try again later."));
       emit(AuthInitial());
     } else {
-      emit(ErrorState(json.decode(loginResponse.body)['non_field_errors'][0]));
+      emit(ErrorState(json
+          .decode(loginResponse.body)['non_field_errors'][0]
+          .toString()
+          .replaceAll('{', '')
+          .replaceAll('}', '').replaceAll('\'', '')));
       //AppUtils().debuglog(event.password);
       AppUtils().debuglog(json.decode(loginResponse.body));
       emit(AuthInitial());

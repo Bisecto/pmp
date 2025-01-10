@@ -337,16 +337,16 @@ class AppRepository {
       'Authorization': 'Bearer $token',
       // 'Content-Type': 'application/json'
     };
-    AppUtils().debuglog(headers);
+    //AppUtils().debuglog(headers);
     final response = await http.delete(
       Uri.parse(apiUrl),
       headers: headers,
       // body: jsonEncode(user),
     );
-    AppUtils().debuglog(apiUrl + response.statusCode.toString());
-    AppUtils().debuglog(response.statusCode);
-    AppUtils().debuglog(response.statusCode);
-    AppUtils().debuglog(response.body);
+    // AppUtils().debuglog(apiUrl + response.statusCode.toString());
+    // AppUtils().debuglog(response.statusCode);
+    // AppUtils().debuglog(response.statusCode);
+    // AppUtils().debuglog(response.body);
     return response;
   }
 }

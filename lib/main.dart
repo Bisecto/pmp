@@ -13,21 +13,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Remove the redundant import of `firebase_core.dart` here
 import 'dart:io';
 
+import 'package:upgrader/upgrader.dart';
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
-
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Remove the call to Firebase.initializeApp() from here
+  await Upgrader.clearSavedSettings();
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
@@ -72,7 +73,24 @@ class MyApp extends StatelessWidget {
             onGenerateRoute: _appRoutes.onGenerateRoute,
             theme: theme,
             darkTheme: darkTheme,
-            home: const SplashScreen(),
+            home: UpgradeAlert(
+                showIgnore: false,
+                showLater: true,
+                shouldPopScope: () => false,
+                barrierDismissible: false,
+                upgrader: Upgrader(
+                  durationUntilAlertAgain: const Duration(days: 1),
+                  // Frequency to show the dialog again
+
+                  storeController: UpgraderStoreController(
+                    onAndroid: () => UpgraderPlayStore(),
+                    oniOS: () => UpgraderAppcastStore(appcastURL: ''),
+                  ),
+                  // debugDisplayAlways: true,
+                  // // debugDisplayOnce: true,
+                  //  debugLogging: true
+                ),
+                child: const SplashScreen()),
           ),
         ),
       ),

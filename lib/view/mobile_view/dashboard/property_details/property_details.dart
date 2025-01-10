@@ -577,6 +577,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       .property.occupants,
                                   property: singlePropertySuccessState.property,
                                   userModel: widget.userModel,
+                                  propertyBloc: propertyBloc,
                                 )
                             ],
                           ),
@@ -615,7 +616,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the modal
               },
-              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -625,7 +627,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const CustomText(text:'Delete',color: AppColors.white,),
+              child: const CustomText(
+                text: 'Delete',
+                color: AppColors.white,
+              ),
             ),
           ],
         );

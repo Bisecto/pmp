@@ -28,5 +28,8 @@ class AppApis {
   static String updatePropertyApi = "$appBaseUrl/api/property/detail/";
   static String addOccupantApi = "$appBaseUrl/api/add-occupant/";
   static String updateOccupantApi = "$appBaseUrl/api/occupant/";
+  static String singleOccupantApi = "$appBaseUrl/api/occupant/";
+  static String deleteProfile = "$appBaseUrl/api/profile/delete";
+
 
 }

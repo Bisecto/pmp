@@ -60,8 +60,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       emit(PropertySuccessState(
           propertiesModel)); // Emit success state with data
     } else {
-      emit(PropertyErrorState(AppUtils.convertString(
-          json.decode(listPropertyResponse.body)['message'])));
+      emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+          json.decode(listPropertyResponse.body))));
       print(json.decode(listPropertyResponse.body));
     }
     } catch (e) {
@@ -112,8 +112,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         print(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
-        emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['detail'])));
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(addPropertyResponse.body))));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
@@ -151,8 +151,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       emit(
           SinglePropertySuccessState(property)); // Emit success state with data
     } else {
-      emit(PropertyErrorState(AppUtils.convertString(
-          json.decode(singlePropertyResponse.body)['detail'])));
+      emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+          json.decode(singlePropertyResponse.body))));
       print(json.decode(singlePropertyResponse.body));
     }
     // } catch (e) {
@@ -185,8 +185,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           print(addPropertyResponse);
           emit(AddPropertySuccessState()); // Emit success state with data
         } else {
-          emit(PropertyErrorState(AppUtils.convertString(
-              json.decode(addPropertyResponse.body)['detail'])));
+          emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+              json.decode(addPropertyResponse.body))));
           print(json.decode(addPropertyResponse.body));
           emit(PropertyInitial());
         }
@@ -239,8 +239,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         print(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
-        emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['detail'])));
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(addPropertyResponse.body))));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
@@ -275,8 +275,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         print(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
-        emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(addPropertyResponse.body)['detail'])));
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(addPropertyResponse.body))));
         print(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
@@ -313,8 +313,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         emit(
             DeletePropertySuccessState()); // Emit success state with data
       } else {
-        emit(PropertyErrorState(AppUtils.convertString(
-            json.decode(singlePropertyResponse.body)['detail'])));
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(singlePropertyResponse.body))));
         print(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
@@ -348,8 +348,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   //       emit(
   //           DeletePropertySuccessState()); // Emit success state with data
   //     } else {
-  //       emit(PropertyErrorState(AppUtils.convertString(
-  //           json.decode(singlePropertyResponse.body)['detail'])));
+  //       emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+  //           json.decode(singlePropertyResponse.body))));
   //       print(json.decode(singlePropertyResponse.body));
   //     }
   //   } catch (e) {

@@ -130,7 +130,19 @@ class AppUtils {
       return '';
     }
   }
+  static String getAllErrorMessages(Map<String, dynamic> errorResponse) {
+    List<String> messages = [];
 
+    errorResponse.forEach((_, value) {
+      if (value is List) {
+        messages.addAll(value.map((e) => e.toString()));
+      } else if (value is String) {
+        messages.add(value);
+      }
+    });
+
+    return messages.isNotEmpty ? messages.join(" ") : "No error messages found.";
+  }
   static String convertString(dynamic data) {
     if (data is String) {
       return data;

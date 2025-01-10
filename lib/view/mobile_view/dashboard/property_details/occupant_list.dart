@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pim/bloc/property_bloc/property_bloc.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/res/app_images.dart';
@@ -22,8 +23,14 @@ import 'countdown_function.dart';
 class OccupantList extends StatefulWidget {
   final Property property;
   final UserModel userModel;
+  final PropertyBloc propertyBloc;
 
-  OccupantList({super.key, required this.occupants, required this.property, required this.userModel});
+  OccupantList(
+      {super.key,
+      required this.occupants,
+      required this.property,
+      required this.userModel,
+      required this.propertyBloc});
 
   final List<Occupant> occupants;
 
@@ -49,11 +56,18 @@ class _OccupantListState extends State<OccupantList> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {print(widget.occupants[index].rentExpirationDate.toString());
-              AppNavigator.pushAndStackPage(context,
-                  page: ViewOccupant(occupant: widget.occupants[index],
+            onTap: () async {
+              print(widget.occupants[index].rentExpirationDate.toString());
+              bool isDelete = await AppNavigator.pushAndStackPage(context,
+                  page: ViewOccupant(
+                    occupant: widget.occupants[index],
                     property: widget.property,
-                    userModel: widget.userModel,));
+                    userModel: widget.userModel,
+                  ));
+              if (isDelete) {
+                widget.propertyBloc
+                    .add(GetSinglePropertyEvent(widget.property.id.toString()));
+              }
             },
             child: occupantContainer(
                 occupant: widget.occupants[index], context: context),
@@ -65,7 +79,7 @@ class _OccupantListState extends State<OccupantList> {
 
   Widget occupantContainer({required Occupant occupant, required context}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10,right: 3,left: 3),
+      padding: const EdgeInsets.only(bottom: 10, right: 3, left: 3),
       child: Container(
         height: 135,
         padding: const EdgeInsets.all(0),
@@ -93,7 +107,6 @@ class _OccupantListState extends State<OccupantList> {
                     Row(
                       children: [
                         CircleAvatar(
-
                           backgroundImage: NetworkImage(
                             occupant.profilePic,
                           ),
@@ -129,32 +142,36 @@ class _OccupantListState extends State<OccupantList> {
                             //_sendSMS(occupant.mobileNumber, '');
                             try {
                               await openSMS(
-                              phone: occupant.mobilePhone,
-                              text: '',
+                                phone: occupant.mobilePhone,
+                                text: '',
                               );
                             } on Exception catch (e) {
                               showDialog(
                                   context: context,
                                   builder: (context) => CupertinoAlertDialog(
-                                    title: CustomText(text:"Attention"),
-                                    content: Padding(
-                                      padding: const EdgeInsets.only(top: 5),
-                                      child: Text(
-                                        'We did not find the «SMS Messenger» application on your phone, please install it and try again»',
-                                        style: context.theme.textTheme.labelSmall?.copyWith(
-                                          height: 1.1,
-                                          color: context.theme.textTheme.bodyLarge?.color,
+                                        title: CustomText(text: "Attention"),
+                                        content: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 5),
+                                          child: Text(
+                                            'We did not find the «SMS Messenger» application on your phone, please install it and try again»',
+                                            style: context
+                                                .theme.textTheme.labelSmall
+                                                ?.copyWith(
+                                              height: 1.1,
+                                              color: context.theme.textTheme
+                                                  .bodyLarge?.color,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    actions: [
-                                      CupertinoDialogAction(
-                                        child: Text('Close'),
-                                        onPressed: () => Navigator.of(context).pop(),
-                                      ),
-                                    ],
-                                  )
-                              );
+                                        actions: [
+                                          CupertinoDialogAction(
+                                            child: Text('Close'),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(),
+                                          ),
+                                        ],
+                                      ));
                             }
                           },
                           child: SvgPicture.asset(AppSvgImages.message,
@@ -167,9 +184,7 @@ class _OccupantListState extends State<OccupantList> {
                 ),
               ),
               SizedBox(
-                width: AppUtils
-                    .deviceScreenSize(context)
-                    .width,
+                width: AppUtils.deviceScreenSize(context).width,
                 height: 75,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
@@ -192,13 +207,11 @@ class _OccupantListState extends State<OccupantList> {
                         ],
                       ),
                       SizedBox(
-                        width: AppUtils
-                            .deviceScreenSize(context)
-                            .width / 3,
+                        width: AppUtils.deviceScreenSize(context).width / 3,
                         //height: 100,
                         child: CountdownWidget(
-                          targetDate:
-                          DateTime.parse(occupant.rentExpirationDate.toString()),
+                          targetDate: DateTime.parse(
+                              occupant.rentExpirationDate.toString()),
                         ),
                       ),
                     ],
@@ -221,11 +234,11 @@ class _OccupantListState extends State<OccupantList> {
     if (difference.isNegative) {
       return "Countdown has expired!";
     } else {
-      return "${difference
-          .inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
+      return "${difference.inDays} days" // ${difference.inHours.remainder(24)} hours, and ${difference.inMinutes.remainder(60)} minutes left"
           ;
     }
   }
+
   Future<void> openSMS({
     required String phone,
     String? text,
@@ -239,7 +252,7 @@ class _OccupantListState extends State<OccupantList> {
     }
 
     final String effectiveText =
-    Platform.isAndroid ? '?body=$text' : '&body=$text';
+        Platform.isAndroid ? '?body=$text' : '&body=$text';
 
     final String url = 'sms:$effectivePhone';
 

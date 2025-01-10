@@ -30,8 +30,6 @@ PODS:
     - FlutterMacOS
   - syncfusion_flutter_pdfviewer (0.0.1):
     - Flutter
-  - telephony (0.0.1):
-    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
@@ -53,7 +51,6 @@ DEPENDENCIES:
   - rive_common (from `.symlinks/plugins/rive_common/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - syncfusion_flutter_pdfviewer (from `.symlinks/plugins/syncfusion_flutter_pdfviewer/ios`)
-  - telephony (from `.symlinks/plugins/telephony/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -86,8 +83,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   syncfusion_flutter_pdfviewer:
     :path: ".symlinks/plugins/syncfusion_flutter_pdfviewer/ios"
-  telephony:
-    :path: ".symlinks/plugins/telephony/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_flutter_wkwebview:
@@ -108,7 +103,6 @@ SPEC CHECKSUMS:
   rive_common: 4743dbfd2911c99066547a3c6454681e0fa907df
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   syncfusion_flutter_pdfviewer: bb9998884b864cfedf72628df3503bdf57e397c0
-  telephony: c41768fae9fb5495781b05a72004106ca33ec777
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
 

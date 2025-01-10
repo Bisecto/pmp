@@ -1,7 +1,7 @@
 name: pim
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+6
+version: 1.0.0+9
 
 environment:
   sdk: ^3.5.4
@@ -46,6 +46,7 @@ dependencies:
   mime:
   get:
   font_awesome_flutter:
+  upgrader:
   #telephony: ^0.2.0
 
 dev_dependencies:

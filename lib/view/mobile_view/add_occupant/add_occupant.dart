@@ -575,7 +575,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 controller: roomNumberController,
                                 hint: 'Enter room number',
                                 label: 'Room Number',
-                                textInputType: TextInputType.number,
+                                textInputType: TextInputType.text,
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor

@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/res/app_colors.dart';
+import 'package:pim/view/important_pages/dialog_box.dart';
 import 'package:pim/view/widgets/form_button.dart';
 import 'package:printing/printing.dart';
 import '../../../../model/property_model.dart';
@@ -13,6 +16,7 @@ import '../../../../res/app_images.dart';
 import '../../../../res/app_svg_images.dart';
 import '../../../../utills/app_navigator.dart';
 import '../../../../utills/app_utils.dart';
+import '../../../../utills/shared_preferences.dart';
 import '../../../widgets/app_bar.dart';
 import '../../../widgets/app_custom_text.dart';
 import '../../add_occupant/add_occupant.dart';
@@ -88,8 +92,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      pw.Text(
-                          ""),
+                      pw.Text(""),
                       pw.Row(
                         children: [
                           pw.Text("Powered by"),
@@ -173,8 +176,10 @@ class _ViewOccupantState extends State<ViewOccupant> {
         children: [
           pw.Image(pw.MemoryImage(logoImage), width: 70),
           pw.Text(widget.property.propertyName.toUpperCase(),
-              style:
-                  pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold,color: PdfColors.black)),
+              style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.black)),
           pw.SizedBox()
         ],
       ),
@@ -265,8 +270,6 @@ class _ViewOccupantState extends State<ViewOccupant> {
     );
   }
 
-
-
   pw.Widget _buildInfoRow(String title, String value) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
@@ -350,6 +353,38 @@ class _ViewOccupantState extends State<ViewOccupant> {
   pw.TextStyle get _infoTextStyle =>
       const pw.TextStyle(fontSize: 12, color: PdfColors.black);
 
+  Future<void> deleteOccupant({
+    required String accessToken,
+    required String occupantId,
+    required String apiUrl,
+    required VoidCallback onSuccess,
+    required Function(String error) onError,
+  }) async {
+    final String url = '$apiUrl$occupantId/';
+
+    try {
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+      print(url);
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        onSuccess(); // Notify that the delete is complete
+      } else {
+        final errorDetail =
+            json.decode(response.body)['detail'] ?? 'Unknown error';
+        onError(errorDetail); // Notify about the error
+      }
+    } catch (e) {
+      onError('An error occurred while deleting the occupant: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -384,12 +419,43 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                     occupant: widget.occupant,
                                   ));
                             },
-                            child: SvgPicture.asset(AppSvgImages.edit)),
+                            child: SvgPicture.asset(
+                              AppSvgImages.edit,
+                              height: 25,
+                              width: 25,
+                            )),
                         //const Icon(Icons.edit),
                         const SizedBox(
                           width: 10,
                         ),
-                        SvgPicture.asset(AppSvgImages.delete),
+                        GestureDetector(
+                            onTap: () async {
+                              String accessToken =
+                                  await SharedPref.getString('access-token');
+                              showDeleteConfirmationModal(context, () {
+                                deleteOccupant(
+                                  accessToken: accessToken,
+                                  occupantId: widget.occupant.id,
+                                  apiUrl: AppApis.singleOccupantApi,
+                                  onSuccess: () {
+                                    MSG.snackBar(context, 'Occupant deleted successfully!');
+
+
+                                    Navigator.pop(context, true);
+                                  },
+                                  onError: (error) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error: $error')),
+                                    );
+                                  },
+                                );
+                              });
+                            },
+                            child: SvgPicture.asset(
+                              AppSvgImages.delete,
+                              height: 25,
+                              width: 25,
+                            )),
                       ],
                     ),
                   ],
@@ -403,8 +469,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                     await Printing.layoutPdf(
                         onLayout: (PdfPageFormat format) async => pdfData,
                         dynamicLayout: false,
-                        name:
-                        "${widget.occupant.fullName}OCCUPANT_INFO");
+                        name: "${widget.occupant.fullName}OCCUPANT_INFO");
                   },
                   text: "Download",
                   isIcon: true,
@@ -425,6 +490,42 @@ class _ViewOccupantState extends State<ViewOccupant> {
           ),
         ),
       ),
+    );
+  }
+
+  void showDeleteConfirmationModal(
+      BuildContext context, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Occupant'),
+          content: const Text(
+              'Are you sure you want to delete this occupant? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the modal
+              },
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the modal
+                onConfirm(); // Trigger the confirm action
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const CustomText(
+                text: 'Delete',
+                color: AppColors.white,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -568,7 +669,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: '  ${AppUtils.formatComplexDate(dateTime: occupant.rentExpirationDate.toString())}.',
+                        text:
+                            '  ${AppUtils.formatComplexDate(dateTime: occupant.rentExpirationDate.toString())}.',
                         size: 14,
                         maxLines: 3,
                       ),
