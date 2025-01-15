@@ -20,6 +20,7 @@ part 'property_state.dart';
 class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   PropertyBloc() : super(PropertyInitial()) {
     on<GetSinglePropertyEvent>(getSinglePropertyEvent);
+    on<GetSinglePropertyOccupantsEvent>(getSinglePropertyOccupantsEvent);
     on<DeletePropertyEvent>(deletePropertyEvent);
     //on<DeleteOccupantEvent>(deleteOccupantEvent);
     on<GetPropertyEvent>(getPropertyEvent);
@@ -133,7 +134,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     String accessToken = await SharedPref.getString('access-token');
     //try {
     var singlePropertyResponse = await appRepository.getRequestWithToken(
-        accessToken, AppApis.singlePropertyApi+event.propertyId);
+        accessToken, AppApis.singlePropertyApi + event.propertyId);
     // var res = await appRepository.appGetRequest(
     //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
     //   accessToken: accessToken,
@@ -357,4 +358,40 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   //     print(e);
   //   }
   // }
+
+  FutureOr<void> getSinglePropertyOccupantsEvent(GetSinglePropertyOccupantsEvent event, Emitter<PropertyState> emit) async {
+    emit(
+        PropertyLoadingState()); // Emit loading state at the start of the event
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    //try {
+    var singlePropertyResponse = await appRepository.getRequestWithToken(
+        accessToken, AppApis.singlePropertyApi+event.propertyId);
+    // var res = await appRepository.appGetRequest(
+    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+    //   accessToken: accessToken,
+    // );
+    //print(res.body);
+    print(" status Code ${singlePropertyResponse.statusCode}");
+    print(" Data ${singlePropertyResponse.body}");
+    print(json.decode(singlePropertyResponse.body));
+    if (singlePropertyResponse.statusCode == 200 ||
+        singlePropertyResponse.statusCode == 201) {
+      Property property =
+      Property.fromJson(json.decode(singlePropertyResponse.body));
+
+      print(property);
+      emit(
+          SinglePropertySuccessState(property)); // Emit success state with data
+    } else {
+      emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+          json.decode(singlePropertyResponse.body))));
+      print(json.decode(singlePropertyResponse.body));
+    }
+    // } catch (e) {
+    //   emit(PropertyErrorState("An error occurred while fetching property detail."));
+    //   print(e);
+    // }
+  }
 }

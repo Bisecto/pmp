@@ -12,6 +12,8 @@ import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
 import 'package:pim/view/mobile_view/add_property/add_property_tab.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/occupant_container.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/room_container.dart';
 import 'package:pim/view/mobile_view/landing_page.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
@@ -48,239 +50,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
   @override
   void initState() {
-    super.initState();
+    // TODO: implement initState
     propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
-
-    //propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
-
-    loadResources();
+    super.initState();
   }
-
-  late Uint8List logoImage;
-  late Uint8List companyImage;
-  late Uint8List studentImageBytes;
-
-  Future<void> loadResources() async {
-    try {
-      await prepareImage();
-    } catch (e) {
-      // Handle error gracefully
-      print("Error loading resources: $e");
-    }
-  }
-
-  Future<void> prepareImage() async {
-    try {
-      final ByteData logoBytes = await rootBundle.load(AppImages.logo);
-      logoImage = logoBytes.buffer.asUint8List();
-
-      final ByteData companyLogoBytes =
-          await rootBundle.load(AppImages.companyLogo);
-      companyImage = companyLogoBytes.buffer.asUint8List();
-
-      final http.Response response = await http.get(
-        Uri.parse(AppApis.appBaseUrl + widget.property.firstImage),
-      );
-
-      if (response.statusCode == 200) {
-        studentImageBytes = response.bodyBytes;
-      } else {
-        throw Exception("Failed to load student image: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error preparing images: $e");
-      rethrow; // Propagate the error to the caller
-    }
-  }
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   prepareImage();
-  //   super.initState();
-  // }
-
-  Future<Uint8List> generatePdf(Property prop) async {
-    final pdf = pw.Document();
-
-    print("Starting PDF generation...");
-    final tableHeaders = [
-      'Name',
-      'State',
-      'Room No.',
-      'Rent Paid',
-      'Rent Due Date',
-      'Employment Status'
-    ];
-
-    // Verify resources
-    if (logoImage == null || companyImage == null) {
-      print("Missing required images for PDF generation");
-      return Uint8List(0);
-    }
-
-    // Check occupants data
-    if (prop.occupants.isEmpty) {
-      print("No occupants data available in the property model");
-    }
-
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Container(
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                _buildHeader(logoImage, prop),
-                pw.SizedBox(height: 10),
-                _buildTitle('Generated Property details'),
-                pw.SizedBox(height: 10),
-                _buildPropertyInfo(studentImageBytes, prop),
-                pw.Divider(),
-                // Table Header
-                pw.Container(
-                  padding: const pw.EdgeInsets.symmetric(vertical: 5),
-                  color: PdfColors.blueGrey,
-                  child: pw.Row(
-                    children: tableHeaders
-                        .map((header) => pw.Expanded(
-                              child: pw.Text(
-                                header,
-                                style: pw.TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: pw.FontWeight.bold,
-                                  color: PdfColors.white,
-                                ),
-                                textAlign: pw.TextAlign.center,
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
-                // Table Rows
-                ...prop.occupants.map((occupant) {
-                  return pw.Column(children: [
-                    pw.Row(
-                      children: [
-                        pw.Expanded(
-                          child: pw.Text(occupant.fullName,
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.start),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text(occupant.state,
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.center),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text('${occupant.roomNumber}',
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.center),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text(occupant.rentPaid.toString(),
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.center),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text(occupant.rentExpirationDate,
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.center),
-                        ),
-                        pw.Expanded(
-                          child: pw.Text(occupant.occupationStatus,
-                              style: const pw.TextStyle(fontSize: 10),
-                              textAlign: pw.TextAlign.center),
-                        ),
-                      ],
-                    ),
-                    pw.Divider(),
-                  ]);
-                }).toList(),
-                pw.SizedBox(height: 20),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-
-    print("PDF generation complete.");
-    return pdf.save();
-  }
-
-  pw.Widget _buildHeader(logoImage, Property prop) {
-    return pw.Container(
-      //padding: pw.EdgeInsets.all(16),
-      // padding: pw.EdgeInsets.all(16),
-      //color: PdfColors.redAccent,
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-        children: [
-          pw.Image(pw.MemoryImage(logoImage), width: 70),
-          pw.Text(prop.propertyName.toUpperCase(),
-              style: pw.TextStyle(
-                  fontSize: 20,
-                  fontWeight: pw.FontWeight.bold,
-                  color: PdfColors.black)),
-          pw.SizedBox()
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildTitle(String text) {
-    return pw.Text(
-      text,
-      style: pw.TextStyle(
-          fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
-    );
-  }
-
-  pw.Widget _buildPropertyInfo(Uint8List studentImage, Property prop) {
-    return pw.Row(
-      children: [
-        pw.Image(pw.MemoryImage(studentImage),
-            width: 100, height: 100, fit: pw.BoxFit.cover),
-        pw.SizedBox(width: 5),
-        pw.Expanded(
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              _buildInfoRow('Property Name', prop.propertyName),
-              _buildInfoRow('Property Type', prop.propertyType),
-              _buildInfoRow('Property Address', prop.address),
-              _buildInfoRow('Property State', prop.location),
-              _buildInfoRow(
-                  'Total Flats',
-                  (prop.occupiedFlatsRooms + prop.availableFlatsRooms)
-                      .toString()),
-              _buildInfoRow(
-                  'Available Flats', prop.availableFlatsRooms.toString()),
-              _buildInfoRow(
-                  'Occupied Flats', prop.occupiedFlatsRooms.toString()),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  pw.Widget _buildInfoRow(String title, String value) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 2),
-      child: pw.Row(
-        children: [
-          pw.Text('$title: ',
-              style: _infoTextStyle.copyWith(fontWeight: pw.FontWeight.bold)),
-          pw.Expanded(child: pw.Text(value, style: _infoTextStyle)),
-        ],
-      ),
-    );
-  }
-
-  pw.TextStyle get _infoTextStyle =>
-      const pw.TextStyle(fontSize: 12, color: PdfColors.black);
 
   @override
   Widget build(BuildContext context) {
@@ -391,194 +164,73 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               lodgeContainer(
                                   property: singlePropertySuccessState.property,
                                   context: context),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
+                              Container(
+                                height: 1300, // Set a finite height
+                                child: DefaultTabController(
+                                  length: 2,
+                                  initialIndex: 0,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const CustomText(
-                                        text: "Status",
-                                        size: 15,
-                                        weight: FontWeight.w600,
-                                      ),
                                       Container(
-                                        height: 45,
+                                        height: 60,
                                         width:
                                             AppUtils.deviceScreenSize(context)
-                                                    .width /
-                                                2.5,
+                                                .width,
                                         decoration: BoxDecoration(
-                                            color: AppColors.green,
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: Center(
-                                            child: CustomText(
-                                          text: singlePropertySuccessState
-                                              .property.status,
-                                          color: AppColors.white,
-                                          size: 15,
-                                          weight: FontWeight.bold,
-                                        )),
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const CustomText(
-                                        text: "Total Space",
-                                        size: 15,
-                                        weight: FontWeight.w600,
-                                      ),
-                                      Container(
-                                        height: 45,
-                                        width:
-                                            AppUtils.deviceScreenSize(context)
-                                                    .width /
-                                                2.5,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: Center(
-                                            child: CustomText(
-                                          text:
-                                              "${singlePropertySuccessState.property.availableFlatsRooms} Spaces",
-                                          size: 15,
-                                          color: AppColors.white,
-                                          weight: FontWeight.bold,
-                                        )),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const CustomText(
-                                    text: "Occupants",
-                                    size: 15,
-                                    weight: FontWeight.w600,
-                                  ),
-                                  Row(
-                                    children: [
-                                      InkWell(
-                                          onTap: () async {
-                                            print(1);
-                                            final pdfData = await generatePdf(
-                                                singlePropertySuccessState
-                                                    .property);
-                                            if (pdfData.isEmpty) {
-                                              print(
-                                                  "Generated PDF data is empty!");
-                                              return;
-                                            }
-
-                                            // Save PDF locally
-                                            final directory =
-                                                await getTemporaryDirectory();
-                                            final filePath =
-                                                '${directory.path}/GeneratedProperty.pdf';
-                                            final file = File(filePath);
-                                            await file.writeAsBytes(pdfData);
-                                            print("PDF saved to: $filePath");
-
-                                            await Printing.layoutPdf(
-                                              onLayout:
-                                                  (PdfPageFormat format) async {
-                                                print(
-                                                    "Generating PDF layout...");
-                                                final data = pdfData;
-                                                print(
-                                                    "PDF layout generated. Size: ${data.length} bytes");
-                                                return data;
-                                              },
-                                              dynamicLayout: false,
-                                              name:
-                                                  "${widget.property.propertyName}_PROPERTY_INFO",
-                                            );
-
-                                            // await Printing.layoutPdf(
-                                            //     onLayout: (PdfPageFormat
-                                            //             format) async =>
-                                            //         pdfData,
-                                            //     dynamicLayout: false,
-                                            //     name:
-                                            //         "${widget.property.propertyName}PROPERTY_INFO");
-                                            print(1);
-                                          },
-                                          child: SvgPicture.asset(
-                                            AppSvgImages.download,
-                                            height: 30,
-                                            width: 30,
-                                          )),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          AppNavigator.pushAndStackPage(context,
-                                              page: AddOccupantScreen(
-                                                userModel: widget.userModel,
-                                                property: widget.property,
-                                                isEdit: false,
-                                                occupant: null,
-                                              ));
-                                        },
-                                        child: Container(
-                                          height: 45,
-                                          // width:
-                                          //     AppUtils.deviceScreenSize(context)
-                                          //             .width /
-                                          //         3,
-                                          decoration: BoxDecoration(
-                                              color: AppColors.blue,
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              CustomText(
-                                                text: "  Add occupant  ",
-                                                color: AppColors.white,
-                                                size: 14,
-                                                weight: FontWeight.bold,
-                                              ),
-                                            ],
-                                          ),
+                                          border: Border.all(
+                                              color: AppColors.tableBorderColor,
+                                              width: 2),
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
                                         ),
-                                      )
+                                        child: TabBar(
+                                          indicator: BoxDecoration(
+                                            color: AppColors.mainAppColor,
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                          ),
+                                          indicatorSize:
+                                              TabBarIndicatorSize.tab,
+                                          indicatorWeight: 0,
+                                          labelColor: AppColors.white,
+                                          unselectedLabelColor: AppColors.black,
+                                          tabs: [
+                                            Tab(
+                                                text:
+                                                    'Spaces(${singlePropertySuccessState.property.availableFlatsRooms})'),
+                                            const Tab(text: 'Occupants'),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: TabBarView(
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          children: [
+                                            RoomContainer(
+                                              property:
+                                                  singlePropertySuccessState
+                                                      .property,
+                                              userModel: widget.userModel,
+                                              propertyBloc: propertyBloc,
+                                            ),
+                                            OccupantContainer(
+                                              property:
+                                                  singlePropertySuccessState
+                                                      .property,
+                                              userModel: widget.userModel,
+                                              propertyBloc: propertyBloc,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              if (singlePropertySuccessState
-                                  .property.occupants.isEmpty)
-                                const CustomText(
-                                  text: "No tenant has been added yet",
+                                  ),
                                 ),
-                              if (singlePropertySuccessState
-                                  .property.occupants.isNotEmpty)
-                                OccupantList(
-                                  occupants: singlePropertySuccessState
-                                      .property.occupants,
-                                  property: singlePropertySuccessState.property,
-                                  userModel: widget.userModel,
-                                  propertyBloc: propertyBloc,
-                                )
+                              )
                             ],
                           ),
                         ),

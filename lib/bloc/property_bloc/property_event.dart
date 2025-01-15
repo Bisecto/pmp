@@ -13,6 +13,12 @@ class GetSinglePropertyEvent extends PropertyEvent {
   GetSinglePropertyEvent(this.propertyId);
 }
 
+class GetSinglePropertyOccupantsEvent extends PropertyEvent {
+  final String propertyId;
+
+  GetSinglePropertyOccupantsEvent(this.propertyId);
+}
+
 class DeletePropertyEvent extends PropertyEvent {
   final String propertyId;
 
