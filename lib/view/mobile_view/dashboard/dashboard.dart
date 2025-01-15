@@ -149,7 +149,7 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           TextSpan(
                                             text:
-                                                '${propertySuccessState.propertiesModel.totalAvailableRooms}  ',
+                                                '${propertySuccessState.propertiesModel.totalAvailableSpaces}  ',
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 13.0,
@@ -194,7 +194,7 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           TextSpan(
                                             text:
-                                                '${propertySuccessState.propertiesModel.totalOccupiedRooms}',
+                                                '${propertySuccessState.propertiesModel.totalTenants}',
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 13.0,
