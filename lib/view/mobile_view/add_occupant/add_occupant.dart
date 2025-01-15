@@ -11,6 +11,7 @@ import 'package:pim/model/user_model.dart';
 import 'package:pim/view/widgets/drop_down.dart';
 import 'package:provider/provider.dart';
 
+import '../../../model/space_model.dart';
 import '../../../res/app_colors.dart';
 import '../../../res/app_images.dart';
 import '../../../utills/app_navigator.dart';
@@ -31,13 +32,15 @@ class AddOccupantScreen extends StatefulWidget {
   final Property property;
   final Occupant? occupant;
   final bool isEdit;
+  final List<Space> spaces;
 
   const AddOccupantScreen(
       {super.key,
       required this.userModel,
       required this.property,
       required this.occupant,
-      required this.isEdit});
+      required this.isEdit,
+      required this.spaces});
 
   @override
   _AddOccupantScreenState createState() => _AddOccupantScreenState();
@@ -59,10 +62,14 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   //     TextEditingController();
   final TextEditingController lgaController = TextEditingController();
   final TextEditingController amtPaidController = TextEditingController();
-  final TextEditingController roomNumberController = TextEditingController();
+
+  //final TextEditingController roomNumberController = TextEditingController();
   final TextEditingController cautionFeeController = TextEditingController();
 
   String selectedGender = '';
+  String selectedSpace = '';
+  String selectedSpaceType = '';
+  String selectedSpaceId = '';
   String selectedState = '';
   String selectedEmploymentStatus = '';
   String selectedMaritalStatus = '';
@@ -72,10 +79,16 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
   PropertyBloc propertyBloc = PropertyBloc();
+  List<String> spaceNumbers = [];
+  List<String> ids = [];
+  List<String> spaceTypes = [];
 
   @override
   void initState() {
     // TODO: implement initState
+    spaceNumbers = widget.spaces.map((space) => space.spaceNumber).toList();
+    ids = widget.spaces.map((space) => space.id.toString()).toList();
+    spaceTypes = widget.spaces.map((space) => space.spaceType.toString()).toList();
     if (widget.isEdit) {
       handleUpdate();
     }
@@ -84,38 +97,39 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
 
   void handleUpdate() async {
     //setState(() async {
-      cautionFeeController.text = widget.occupant!.meshBillPaid.toString();
-      occupantNameController.text = widget.occupant!.fullName;
-      occupantEmailController.text = widget.occupant!.email;
-      occupantPhoneNumberController.text =
-          widget.occupant!.mobilePhone.replaceAll('+234', '');
-      dobController.text = widget.occupant!.dob;
-      rentCommencementController.text = widget.occupant!.rentCommencementDate;
-      // rentExpirationController.text = widget.occupant!.rentDueDate;
-      lgaController.text = widget.occupant!.localGovernment;
-      amtPaidController.text = widget.occupant!.rentPaid.toString();
-      roomNumberController.text = widget.occupant!.roomNumber.toString();
-      selectedGender = widget.occupant!.gender;
-      selectedState = widget.occupant!.state;
-      selectedEmploymentStatus = widget.occupant!.occupationStatus;
-      selectedMaritalStatus = widget.occupant!.relationship;
-      selectedPaymnetDueTimeline = widget.occupant!.rentTimeline.capitalize();
-      selectedPaymnetStatus = widget.occupant!.paymentStatus.capitalize();
-
-      selectedApartmentType = widget.occupant!.apartmentType.capitalize();
-      print(widget.occupant!.profilePic);
-      // for (String imageUrl in widget.occupant!) {
-      try {
-        File imageFile = await downloadImage(widget.occupant!.profilePic);
-        setState(() {
-          imageFileList!.add(XFile(imageFile.path));
-          // _selectedImage=XFile(imageFile.path);
-        });
-      } catch (e) {
-        print('Error downloading image: $e');
-      }
-      // }
-   // });
+    cautionFeeController.text = widget.occupant!.meshBillPaid.toString();
+    occupantNameController.text = widget.occupant!.fullName;
+    occupantEmailController.text = widget.occupant!.email;
+    occupantPhoneNumberController.text =
+        widget.occupant!.mobilePhone.replaceAll('+234', '');
+    dobController.text = widget.occupant!.dob;
+    rentCommencementController.text = widget.occupant!.rentCommencementDate;
+    // rentExpirationController.text = widget.occupant!.rentDueDate;
+    lgaController.text = widget.occupant!.localGovernment;
+    amtPaidController.text = widget.occupant!.rentPaid.toString();
+    //roomNumberController.text = widget.occupant!.roomNumber.toString();
+    selectedGender = widget.occupant!.gender;
+    selectedState = widget.occupant!.state;
+    selectedEmploymentStatus = widget.occupant!.occupationStatus;
+    selectedMaritalStatus = widget.occupant!.relationship;
+    selectedPaymnetDueTimeline = widget.occupant!.rentTimeline.capitalize();
+    selectedPaymnetStatus = widget.occupant!.paymentStatus.capitalize();
+    selectedSpace = widget.occupant!.roomNumber.capitalize();
+    String selectedSpaceId = '';
+    selectedApartmentType = widget.occupant!.apartmentType.capitalize();
+    print(widget.occupant!.profilePic);
+    // for (String imageUrl in widget.occupant!) {
+    try {
+      File imageFile = await downloadImage(widget.occupant!.profilePic);
+      setState(() {
+        imageFileList!.add(XFile(imageFile.path));
+        // _selectedImage=XFile(imageFile.path);
+      });
+    } catch (e) {
+      print('Error downloading image: $e');
+    }
+    // }
+    // });
   }
 
   Future<File> downloadImage(String imageUrl) async {
@@ -318,6 +332,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 hint: '8123457146',
                                 label: 'Mobile Phone Number',
                                 borderColor: Colors.grey,
+                                textInputType: TextInputType.number,
+
                                 isMobileNumber: true,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -506,6 +522,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
+
                               const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: rentCommencementController,
@@ -523,39 +540,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
-                              const SizedBox(height: 16),
-                              DropDown(
-                                label: 'Apartment Type',
-                                hint: "Select apartment type",
-                                selectedValue: selectedApartmentType,
-                                initialValue: selectedApartmentType,
-                                items: const [
-                                  "1 Room Self Contain",
-                                  "2 Bedroom Flat",
-                                  "3 Bedroom Flat",
-                                  "Studio Apartment",
-                                  "Office Space",
-                                  "Shop Space",
-                                  "Warehouse",
-                                  "Shared Apartment",
-                                  "Penthouse",
-                                  "Serviced Apartment",
-                                  "Luxury Flat",
-                                  "Mini Flat",
-                                  "Detached House",
-                                  "Semi-Detached House",
-                                  "Bungalow",
-                                  "Duplex",
-                                  "Mansion",
-                                  "Condo",
-                                  "Townhouse"
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedApartmentType = value;
-                                  });
-                                },
-                              ),
+
                               // CustomTextFormField(
                               //   controller: apartmentTypeController,
                               //   hint: 'Enter Apartment type',
@@ -571,20 +556,24 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               //   borderRadius: 10,
                               // ),
                               const SizedBox(height: 16),
-                              CustomTextFormField(
-                                controller: roomNumberController,
-                                hint: 'Enter room number',
-                                label: 'Room Number',
-                                textInputType: TextInputType.text,
-                                borderColor: Colors.grey,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
+                              DropDown(
+                                label: 'Space name',
+                                hint: "Select space name",
+                                selectedValue: selectedSpace,
+                                initialValue: selectedSpace,
+                                items: spaceNumbers,
+                                onChanged: (value) {
+                                  setState(() {
+                                    print(ids);
+
+                                    selectedSpace = value;
+                                    int index = spaceNumbers.indexOf(value);
+                                    selectedSpaceId = ids[index];
+                                    selectedSpaceType=spaceTypes[index];
+                                  });
+                                },
                               ),
+
                               const SizedBox(height: 16),
                               CustomTextFormField(
                                 controller: cautionFeeController,
@@ -746,6 +735,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 controller: occupantPhoneNumberController,
                                 hint: 'Enter phone number',
                                 label: 'Mobile Phone Number',
+                                textInputType: TextInputType.number,
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -952,38 +942,20 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
-                              DropDown(
-                                label: 'Apartment Type',
-                                hint: "Select apartment type",
-                                selectedValue: selectedApartmentType,
-                                initialValue: selectedApartmentType,
-                                items: const [
-                                  "1 Room Self Contain",
-                                  "2 Bedroom Flat",
-                                  "3 Bedroom Flat",
-                                  "Studio Apartment",
-                                  "Office Space",
-                                  "Shop Space",
-                                  "Warehouse",
-                                  "Shared Apartment",
-                                  "Penthouse",
-                                  "Serviced Apartment",
-                                  "Luxury Flat",
-                                  "Mini Flat",
-                                  "Detached House",
-                                  "Semi-Detached House",
-                                  "Bungalow",
-                                  "Duplex",
-                                  "Mansion",
-                                  "Condo",
-                                  "Townhouse"
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedApartmentType = value;
-                                  });
-                                },
-                              ),
+                              // DropDown(
+                              //   label: 'Apartment Type',
+                              //   hint: "Select apartment type",
+                              //   selectedValue: selectedApartmentType,
+                              //   initialValue: selectedApartmentType,
+                              //   items: const [
+                              //
+                              //   ],
+                              //   onChanged: (value) {
+                              //     setState(() {
+                              //       selectedApartmentType = value;
+                              //     });
+                              //   },
+                              // ),
                               // CustomTextFormField(
                               //   controller: apartmentTypeController,
                               //   hint: 'Enter Apartment type',
@@ -999,19 +971,22 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               //   borderRadius: 10,
                               // ),
                               const SizedBox(height: 16),
-                              CustomTextFormField(
-                                controller: roomNumberController,
-                                hint: 'Enter room number',
-                                label: 'Room Number',
-                                textInputType: TextInputType.text,
-                                borderColor: Colors.grey,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
+                              DropDown(
+                                label: 'Space name',
+                                hint: "Select space name",
+                                selectedValue: selectedSpace,
+                                initialValue: selectedSpace,
+                                items: spaceNumbers,
+                                onChanged: (value) {
+                                  setState(() {
+                                    print(ids);
+                                    selectedSpace = value;
+                                    int index = spaceNumbers.indexOf(value);
+                                    selectedSpaceId = ids[index];
+                                    selectedSpaceType=spaceTypes[index];
+
+                                  });
+                                },
                               ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
@@ -1188,7 +1163,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' ${roomNumberController.text}  ',
+                        text: ' ${selectedSpace}  ',
                         size: 14,
                         maxLines: 3,
                       ),
@@ -1387,7 +1362,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         rentCommencementController.text.isEmpty ||
         lgaController.text.isEmpty ||
         amtPaidController.text.isEmpty ||
-        roomNumberController.text.isEmpty ||
+        selectedSpace.isEmpty ||
         cautionFeeController.text.isEmpty ||
         selectedGender.isEmpty ||
         selectedState.isEmpty ||
@@ -1395,9 +1370,21 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         selectedMaritalStatus.isEmpty ||
         selectedPaymnetStatus.isEmpty ||
         selectedPaymnetDueTimeline.isEmpty ||
-        selectedApartmentType.isEmpty ||
         imageFileList == null ||
         imageFileList!.isEmpty) {
+      print(occupantEmailController.text);
+      print(occupantPhoneNumberController.text);
+      print(dobController.text);
+      print(rentCommencementController.text);
+      print(cautionFeeController.text.isEmpty);
+      print(selectedGender);
+      print(selectedEmploymentStatus);
+      print(selectedMaritalStatus);
+      print(selectedPaymnetStatus);
+      print(selectedPaymnetDueTimeline);
+      print(selectedSpace);
+      print(selectedSpace);
+      print(occupantNameController.text);
       MSG.warningSnackBar(context, 'Please fill in all required fields.');
     } else {
       final Map<String, String> formData = {
@@ -1409,7 +1396,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'state': selectedState,
         'local_government': lgaController.text,
         'country': 'Nigeria',
-        'room_number': roomNumberController.text,
+        'space_number': selectedSpace,
+        'space_type': selectedSpaceType,
         'rent_commencement_date': rentCommencementController.text,
         //'rent_expiration_date': rentExpirationController.text,
         'rent_paid': amtPaidController.text,
@@ -1426,12 +1414,13 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         propertyBloc.add(UpdateOccupantEvent(formData, imageFileList![0],
             widget.property.id.toString(), widget.occupant!.id.toString()));
       } else {
-        propertyBloc.add(AddOccupantEvent(
-            formData, imageFileList![0], widget.property.id.toString()));
+        propertyBloc.add(AddOccupantEvent(formData, imageFileList![0],
+            widget.property.id.toString(), selectedSpaceId));
       }
     }
   }
 }
+
 extension StringExtensions on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${this.substring(1)}";

@@ -24,12 +24,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../../../../../bloc/property_bloc/property_bloc.dart';
-import '../../../../../model/property_model.dart';
-import '../../../../../res/apis.dart';
-import '../../../../../res/app_colors.dart';
-import '../../../../../res/app_images.dart';
-import '../../../../widgets/app_custom_text.dart';
+import '../../../../../../bloc/property_bloc/property_bloc.dart';
+import '../../../../../../model/property_model.dart';
+import '../../../../../../res/apis.dart';
+import '../../../../../../res/app_colors.dart';
+import '../../../../../../res/app_images.dart';
+import '../../../../../widgets/app_custom_text.dart';
 import 'occupant_list.dart';
 
 class OccupantContainer extends StatefulWidget {
@@ -341,7 +341,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
                             userModel: widget.userModel,
                             property: widget.property,
                             isEdit: false,
-                            occupant: null,
+                            occupant: null, spaces:widget.property.spaces,
                           ));
                     },
                     child: Container(

@@ -14,11 +14,11 @@ import 'package:pim/view/mobile_view/dashboard/property_details/property_details
 import 'package:pim/view/mobile_view/dashboard/property_details/view_occupant.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../model/user_model.dart';
-import '../../../../../res/app_colors.dart';
-import '../../../../../utills/app_utils.dart';
-import '../../../../widgets/app_custom_text.dart';
-import '../countdown_function.dart';
+import '../../../../../../model/user_model.dart';
+import '../../../../../../res/app_colors.dart';
+import '../../../../../../utills/app_utils.dart';
+import '../../../../../widgets/app_custom_text.dart';
+import '../../countdown_function.dart';
 
 class OccupantList extends StatefulWidget {
   final Property property;
