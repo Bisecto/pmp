@@ -1,3 +1,5 @@
+import 'package:pim/model/space_model.dart';
+
 class Property {
   int id;
   String propertyName;
@@ -15,6 +17,8 @@ class Property {
   String status;
   bool advertise;
   List<Occupant> occupants;
+  List<Space> spaces;
+
   String firstImage;
   List<ImageUrl> imageUrls;
 
@@ -37,6 +41,7 @@ class Property {
     required this.occupants,
     required this.firstImage,
     required this.imageUrls,
+    required this.spaces,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
@@ -64,6 +69,10 @@ class Property {
                 ?.map((x) => ImageUrl.fromJson(x))
                 .toList() ??
             [],
+        spaces: (json["spaces"] as List<dynamic>?)
+                ?.map((x) => Space.fromJson(x))
+                .toList() ??
+            [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,6 +92,7 @@ class Property {
         "status": status,
         "advertise": advertise,
         "occupants": List<dynamic>.from(occupants.map((x) => x.toJson())),
+        "spaces": List<dynamic>.from(spaces.map((x) => x.toJson())),
         "first_image": firstImage,
         "image_urls": List<dynamic>.from(imageUrls.map((x) => x.toJson())),
       };
@@ -144,7 +154,7 @@ class Occupant {
       fullName: json['full_name'] ?? '',
       email: json['email'] ?? '',
       apartmentType: json['apartment_type'] ?? 'a',
-      roomNumber: json['room_number'].toString() ??   '',
+      roomNumber: json['room_number'].toString() ?? '',
       mobilePhone: json['mobile_phone'] ?? '',
       rentExpirationDate: json['rent_expiration_date'] ?? '',
       rentDueDeadlineCountdown: json['rent_due_deadline_countdown'] ?? '',

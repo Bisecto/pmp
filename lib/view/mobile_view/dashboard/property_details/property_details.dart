@@ -31,7 +31,7 @@ import '../../../../res/app_images.dart';
 import '../../../../utills/app_utils.dart';
 import '../../../important_pages/dialog_box.dart';
 import '../../../important_pages/not_found_page.dart';
-import 'occupant_list.dart';
+import 'tabview_container/occupant_list.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Property property;
@@ -165,7 +165,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   property: singlePropertySuccessState.property,
                                   context: context),
                               Container(
-                                height: 1300, // Set a finite height
+                                height: singlePropertySuccessState.property.spaces.length * 135, // Set a finite height
                                 child: DefaultTabController(
                                   length: 2,
                                   initialIndex: 0,

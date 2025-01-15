@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/room_list.dart';
 
 import '../../../../../bloc/property_bloc/property_bloc.dart';
 import '../../../../../model/property_model.dart';
@@ -29,22 +30,18 @@ class _RoomContainerState extends State<RoomContainer> {
       backgroundColor: AppColors.white,
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomText(
-                text: "Status",
-                size: 14,
-                weight: FontWeight.w400,
-              ),
-              CustomText(
-                text: widget.property.status,
-                color: AppColors.black,
-                size: 14,
-                weight: FontWeight.w400,
-              ),
-            ],
-          ),
+          SizedBox(height: 10,),
+          if (widget.property.spaces.isEmpty)
+            const CustomText(
+              text: "No tenant has been added yet",
+            ),
+          if (widget.property.spaces.isNotEmpty)
+            SpaceList(
+              spaces: widget.property.spaces,
+              property: widget.property,
+              userModel: widget.userModel,
+              propertyBloc: widget.propertyBloc,
+            )
         ],
       ),
     );

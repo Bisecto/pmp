@@ -81,7 +81,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       Map<String, String> formData = {
         'property_name': event.propertyName,
         'property_type': event.propertyType,
-        'available_flats_rooms': event.availableFlatsRooms,
+        'total_space': event.availableFlatsRooms,
        // 'occupied_flats_rooms': event.occupiedRooms,
         'address': event.address,
         'city': event.city,

@@ -30,7 +30,7 @@ import '../../../../../res/apis.dart';
 import '../../../../../res/app_colors.dart';
 import '../../../../../res/app_images.dart';
 import '../../../../widgets/app_custom_text.dart';
-import '../occupant_list.dart';
+import 'occupant_list.dart';
 
 class OccupantContainer extends StatefulWidget {
   final Property property;
