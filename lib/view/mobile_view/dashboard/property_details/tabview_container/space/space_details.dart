@@ -7,13 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
+import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
-import 'package:pim/view/mobile_view/add_property/add_property_tab.dart';
-import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/occupant/occupant_container.dart';
-import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/space/room_container.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/space/add_space/add_space_tab.dart';
+
 import 'package:pim/view/mobile_view/landing_page.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:pim/view/widgets/app_custom_text.dart';
@@ -24,34 +24,37 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../../../../model/property_model.dart';
-import '../../../../res/apis.dart';
-import '../../../../res/app_colors.dart';
-import '../../../../res/app_images.dart';
-import '../../../../utills/app_utils.dart';
-import '../../../important_pages/dialog_box.dart';
-import '../../../important_pages/not_found_page.dart';
-import 'tabview_container/occupant/occupant_list.dart';
+import '../../../../../../model/space_model.dart';
+import '../../../../../../res/apis.dart';
+import '../../../../../../res/app_colors.dart';
+import '../../../../../../utills/app_utils.dart';
+import '../../../../../important_pages/dialog_box.dart';
+import '../../../../../important_pages/not_found_page.dart';
 
-class PropertyDetails extends StatefulWidget {
+class SpaceDetails extends StatefulWidget {
+  final Space space;
   final Property property;
   final UserModel userModel;
 
-  const PropertyDetails(
-      {super.key, required this.property, required this.userModel});
+  const SpaceDetails(
+      {super.key,
+      required this.space,
+      required this.userModel,
+      required this.property});
 
   @override
-  State<PropertyDetails> createState() => _PropertyDetailsState();
+  State<SpaceDetails> createState() => _SpaceDetailsState();
 }
 
-class _PropertyDetailsState extends State<PropertyDetails> {
-  PropertyBloc propertyBloc = PropertyBloc();
+class _SpaceDetailsState extends State<SpaceDetails> {
+  PropertyBloc spaceBloc = PropertyBloc();
   List<String> images = [];
 
   @override
   void initState() {
     // TODO: implement initState
-    propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
+    spaceBloc.add(GetSingleSpaceEvent(
+        widget.space.id.toString(), widget.property.id.toString()));
     super.initState();
   }
 
@@ -61,17 +64,17 @@ class _PropertyDetailsState extends State<PropertyDetails> {
       backgroundColor: AppColors.white,
       body: SafeArea(
           child: BlocConsumer<PropertyBloc, PropertyState>(
-              bloc: propertyBloc,
+              bloc: spaceBloc,
               listenWhen: (previous, current) => current is! PropertyInitial,
               buildWhen: (previous, current) => current is! PropertyInitial,
               listener: (context, state) {
-                if (state is SinglePropertySuccessState) {
+                if (state is SingleSpaceSuccessState) {
                   //MSG.snackBar(context, state.msg);
 
                   // AppNavigator.pushAndRemovePreviousPages(context,
                   //     page: LandingPage(studentProfile: state.studentProfile));
-                } else if (state is DeletePropertySuccessState) {
-                  MSG.snackBar(context, "Property has beedn deleted");
+                } else if (state is DeleteSpaceSuccessState) {
+                  MSG.snackBar(context, "Space has beedn deleted");
                   AppNavigator.pushAndRemovePreviousPages(context,
                       page: LandingPage(
                           selectedIndex: 0, userModel: widget.userModel));
@@ -85,24 +88,25 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   //   return const Center(
                   //     child: CircularProgressIndicator(),
                   //   );
-                  case SinglePropertySuccessState:
-                    final singlePropertySuccessState =
-                        state as SinglePropertySuccessState;
-                    images = singlePropertySuccessState.property.imageUrls
+                  case SingleSpaceSuccessState:
+                    final singleSpaceSuccessState =
+                        state as SingleSpaceSuccessState;
+                    images = singleSpaceSuccessState.space.imageUrls
                             .map(
-                                (imageUrl) => AppApis.appBaseUrl + imageUrl.url)
+                                (imageUrl) => AppApis.appBaseUrl + imageUrl)
                             .toList() ??
                         [];
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(0.0),
                         child: SingleChildScrollView(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppAppBar(
-                                  title: singlePropertySuccessState
-                                      .property.propertyName),
+                                  title: singleSpaceSuccessState
+                                      .space.spaceNumber),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -111,7 +115,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const CustomText(
-                                    text: "Property Details",
+                                    text: "Space Details",
                                     size: 16,
                                     weight: FontWeight.w700,
                                   ),
@@ -121,12 +125,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                           onTap: () {
                                             AppNavigator.pushAndStackPage(
                                                 context,
-                                                page: AddPropertyScreen(
+                                                page: AddSpace(
                                                   userModel: widget.userModel,
                                                   isEdit: true,
-                                                  property:
-                                                      singlePropertySuccessState
-                                                          .property,
+                                                  space: singleSpaceSuccessState
+                                                      .space,
+                                                  property: widget.property,
                                                 ));
                                           },
                                           child: SvgPicture.asset(
@@ -134,6 +138,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                             height: 25,
                                             width: 25,
                                           )),
+
                                       //const Icon(Icons.edit),
                                       const SizedBox(
                                         width: 20,
@@ -142,11 +147,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                           onTap: () {
                                             showDeleteConfirmationModal(context,
                                                 () {
-                                              propertyBloc.add(
-                                                  DeletePropertyEvent(
-                                                      singlePropertySuccessState
-                                                          .property.id
-                                                          .toString()));
+                                              spaceBloc.add(DeleteSpaceEvent(
+                                                  singleSpaceSuccessState
+                                                      .space.id
+                                                      .toString(),
+                                                  widget.property.id
+                                                      .toString()));
                                             });
                                           },
                                           child: SvgPicture.asset(
@@ -162,75 +168,40 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 height: 15,
                               ),
                               lodgeContainer(
-                                  property: singlePropertySuccessState.property,
+                                  space: singleSpaceSuccessState.space,
                                   context: context),
-                              Container(
-                                height: (singlePropertySuccessState.property.spaces.length * 135)+65,
-                                child: DefaultTabController(
-                                  length: 2,
-                                  initialIndex: 0,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 60,
-                                        width:
-                                            AppUtils.deviceScreenSize(context)
-                                                .width,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: AppColors.tableBorderColor,
-                                              width: 2),
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                        ),
-                                        child: TabBar(
-                                          indicator: BoxDecoration(
-                                            color: AppColors.mainAppColor,
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                          indicatorSize:
-                                              TabBarIndicatorSize.tab,
-                                          indicatorWeight: 0,
-                                          labelColor: AppColors.white,
-                                          unselectedLabelColor: AppColors.black,
-                                          tabs: [
-                                            Tab(
-                                                text:
-                                                    'Spaces(${singlePropertySuccessState.property.spaces.length})'),
-                                             Tab(text: 'Occupants(${singlePropertySuccessState.property.occupants.length})'),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TabBarView(
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          children: [
-                                            RoomContainer(
-                                              property:
-                                                  singlePropertySuccessState
-                                                      .property,
-                                              userModel: widget.userModel,
-                                              propertyBloc: propertyBloc,
-                                            ),
-                                            OccupantContainer(
-                                              property:
-                                                  singlePropertySuccessState
-                                                      .property,
-                                              userModel: widget.userModel,
-                                              propertyBloc: propertyBloc,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
+                              TextStyles.textDetails(
+                                  textValue:
+                                      "Description: ${singleSpaceSuccessState.space.description}",
+                                  textSize: 12,
+                                  textColor: AppColors.black),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              TextStyles.textDetails(
+                                  textValue:
+                                      "Occupant: ${singleSpaceSuccessState.space.occupantName}",
+                                  textSize: 12,
+                                  textColor: AppColors.black),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              TextStyles.textDetails(
+                                  textValue:
+                                      "Space Type: ${singleSpaceSuccessState.space.spaceType}",
+                                  textSize: 12,
+                                  textColor: AppColors.black),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              TextStyles.textHeadings(
+                                textValue:
+                                    "NGN ${AppUtils.convertPrice(singleSpaceSuccessState.space.price)}",
+                                textSize: 12,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                             ],
                           ),
                         ),
@@ -240,13 +211,13 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   case PropertyLoadingState:
                     return const Column(
                       children: [
-                        AppLoadingPage("Fetching Property..."),
+                        AppLoadingPage("Fetching Space..."),
                       ],
                     );
                   default:
                     return const Column(
                       children: [
-                        AppLoadingPage("Fetching Property..."),
+                        AppLoadingPage("Fetching Space..."),
                       ],
                     );
                 }
@@ -260,9 +231,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Property'),
+          title: const Text('Delete Space'),
           content: const Text(
-              'Are you sure you want to delete this property? This action cannot be undone.'),
+              'Are you sure you want to delete this space? This action cannot be undone.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -332,11 +303,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   //   });
   // }
 
-  Widget lodgeContainer({required Property property, required context}) {
+  Widget lodgeContainer({required Space space, required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 270,
+        height: space.imageUrls.isEmpty ? 50 : 270,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           // color: AppColors.white,
@@ -345,9 +316,15 @@ class _PropertyDetailsState extends State<PropertyDetails> {
         ),
         child: Center(
           child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.start,
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (property.imageUrls.isNotEmpty)
+              if (space.imageUrls.isEmpty)
+                TextStyles.textDetails(
+                    textValue:
+                        "No image has been added to this space yet. \nClick the edit icon to added required details",
+                    textColor: AppColors.black),
+              if (space.imageUrls.isNotEmpty)
                 Stack(
                   children: [
                     SizedBox(
@@ -462,76 +439,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ],
                 ),
-              if (property.imageUrls.isNotEmpty) const SizedBox(height: 20),
-              // GestureDetector(
-              //   onTap: () => Get.to(() => FullGalleryScreen(
-              //     index: 1,
-              //     images: images,
-              //   )),
-              //   child: const Center(
-              //     child: CustomText(
-              //         color: Colors.black54,
-              //         text: 'Tap to view in fullScreen',
-              //         weight: FontWeight.w700,
-              //         size: 13),
-              //   ),
-              // ),
-              if (property.imageUrls.isEmpty)
-                Container(
-                  height: 200,
-                  width: AppUtils.deviceScreenSize(context).width,
-                  decoration: BoxDecoration(
-                    //color: AppColors.red,
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.black.withOpacity(0.15),
-                    //     spreadRadius: 0,
-                    //     blurRadius: 10,
-                    //     offset: const Offset(0, 4),
-                    //   ),
-                    // ],
-                    image: DecorationImage(
-                        image: NetworkImage(
-                          AppApis.appBaseUrl + property.firstImage,
-                        ),
-                        fit: BoxFit.cover),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          color: AppColors.red,
-                        ),
-                        CustomText(
-                            text: "${property.city}, ${property.location}",
-                            size: 14),
-                      ],
-                    ),
-                    if (property.priceType.toLowerCase() == 'static')
-                      TextStyles.textHeadings(
-                        textValue:
-                            "NGN ${AppUtils.convertPrice(property.price)}",
-                        textSize: 12,
-                      ),
-                    if (property.priceType.toLowerCase() != 'static')
-                      TextStyles.textHeadings(
-                        textValue:
-                            "NGN ${AppUtils.convertPrice(property.priceRangeStart.toString())} - ${AppUtils.convertPrice(property.priceRangeStop.toString())}",
-                        textSize: 12,
-                      ),
-                  ],
-                ),
-              ),
               const SizedBox(
                 height: 10,
               ),

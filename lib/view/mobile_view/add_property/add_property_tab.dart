@@ -79,7 +79,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         widget.property.availableFlatsRooms.toString();
 
     descriptionController.text = widget.property.description;
-    isToggled= widget.property.advertise;
+    isToggled = widget.property.advertise;
     print('Image URLs: ${widget.property.imageUrls}');
     List<String> urls = widget.property.imageUrls
             .map((imageUrl) => AppApis.appBaseUrl + imageUrl.url)
@@ -428,12 +428,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                           selectedValue:
                                               selectedPropertyType.text,
                                           items: const [
-                                            'Student Hostel',
-                                            'Apartment/Flat',
-                                            'Bungalow',
-                                            'Duplex',
-                                            'Shop',
-                                            'Offices'
+                                            'Select a Property type',
+                                            'Apartment Complex',
+                                            'Bungalow Estate',
+                                            'Duplex Estate',
+                                            'Office Building',
+                                            'Shopping Mall',
+                                            'Warehouse Complex',
+                                            'Industrial Park',
+                                            'Hotel/Resort',
+                                            'Condominium Complex',
+                                            'Mixed-Use Development',
+                                            'Retail Center',
+                                            'Recreational Center',
+                                            'Medical Facility Complex',
+                                            'Religious Facility Complex',
+                                            'Coworking Space Building',
+                                            'Student Housing Complex',
+                                            'Factory Complex',
+                                            'Villa Estate',
+                                            'Residential Estate',
+                                            'Commercial Complex',
                                           ],
                                           onChanged: (value) {
                                             setState(() {
@@ -714,29 +729,30 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 10),
-                              if(widget.isEdit)
-
+                              if (widget.isEdit)
                                 Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: CustomText(
-                                      text: 'Advertise Property?',
-                                      size: 15,
-                                      weight: FontWeight.bold,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: CustomText(
+                                        text: 'Advertise Property?',
+                                        size: 15,
+                                        weight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  Switch(
-                                    value: isToggled,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isToggled = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
+                                    Switch(
+                                      value: isToggled,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isToggled = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
                               const SizedBox(height: 10),
                               const SizedBox(
                                 height: 15,
@@ -756,7 +772,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               _overviewRow('State', selectedState.text),
                               _overviewRow(
                                   'Price',
-                                  selectedPriceType.text.toLowerCase()!='static'
+                                  selectedPriceType.text.toLowerCase() !=
+                                          'static'
                                       ? "₦${fromPriceController.text} - ₦${toPriceController.text}"
                                       : "₦${priceController.text}"),
                               _overviewRow('Available Rooms',
@@ -898,12 +915,27 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                                     initialValue: selectedPropertyType.text,
                                     selectedValue: selectedPropertyType.text,
                                     items: const [
-                                      'Student Hostel',
-                                      'Apartment/Flat',
-                                      'Bungalow',
-                                      'Duplex',
-                                      'Shop',
-                                      'Offices'
+                                      'Select a Property type',
+                                      'Apartment Complex',
+                                      'Bungalow Estate',
+                                      'Duplex Estate',
+                                      'Office Building',
+                                      'Shopping Mall',
+                                      'Warehouse Complex',
+                                      'Industrial Park',
+                                      'Hotel/Resort',
+                                      'Condominium Complex',
+                                      'Mixed-Use Development',
+                                      'Retail Center',
+                                      'Recreational Center',
+                                      'Medical Facility Complex',
+                                      'Religious Facility Complex',
+                                      'Coworking Space Building',
+                                      'Student Housing Complex',
+                                      'Factory Complex',
+                                      'Villa Estate',
+                                      'Residential Estate',
+                                      'Commercial Complex',
                                     ],
                                     onChanged: (value) {
                                       setState(() {
@@ -1192,8 +1224,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               _overviewRow('State', selectedState.text),
                               _overviewRow(
                                   'Price',
-                                  selectedPriceType.text.toLowerCase()!='static'
-
+                                  selectedPriceType.text.toLowerCase() !=
+                                          'static'
                                       ? "$fromPriceController - $toPriceController"
                                       : priceController.text),
                               _overviewRow('Available Rooms',
@@ -1457,7 +1489,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                             fromPriceController.text,
                             toPriceController.text,
                             // occupiedRoomsController.text,
-                            widget.property.id.toString(),isToggled));
+                            widget.property.id.toString(),
+                            isToggled));
                       } else {
                         MSG.warningSnackBar(
                             context, 'Property description field is empty');
@@ -1487,7 +1520,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                               priceController.text,
                               fromPriceController.text,
                               toPriceController.text,
-                              widget.property.id.toString(),isToggled));
+                              widget.property.id.toString(),
+                              isToggled));
                         } else {
                           MSG.warningSnackBar(
                               context, 'Property description field is empty');

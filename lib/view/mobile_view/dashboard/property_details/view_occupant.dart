@@ -416,7 +416,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                     userModel: widget.userModel,
                                     property: widget.property,
                                     isEdit: true,
-                                    occupant: widget.occupant,
+                                    occupant: widget.occupant, spaces: widget.property.spaces,
                                   ));
                             },
                             child: SvgPicture.asset(

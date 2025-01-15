@@ -13,6 +13,13 @@ class GetSinglePropertyEvent extends PropertyEvent {
   GetSinglePropertyEvent(this.propertyId);
 }
 
+class GetSingleSpaceEvent extends PropertyEvent {
+  final String spaceId;
+  final String propertyid;
+
+  GetSingleSpaceEvent(this.spaceId, this.propertyid);
+}
+
 class GetSinglePropertyOccupantsEvent extends PropertyEvent {
   final String propertyId;
 
@@ -25,6 +32,14 @@ class DeletePropertyEvent extends PropertyEvent {
   DeletePropertyEvent(this.propertyId);
 }
 
+class DeleteSpaceEvent extends PropertyEvent {
+  final String spaceId;
+
+  final String propertyId;
+
+  DeleteSpaceEvent(this.propertyId, this.spaceId);
+}
+
 class DeleteOccupantEvent extends PropertyEvent {
   final String occupantId;
 
@@ -35,8 +50,10 @@ class AddOccupantEvent extends PropertyEvent {
   final Map<String, String> formData;
   final XFile image;
   final String propertyId;
+  final String selectedSpaceId;
 
-  AddOccupantEvent(this.formData, this.image, this.propertyId);
+  AddOccupantEvent(
+      this.formData, this.image, this.propertyId, this.selectedSpaceId);
 }
 
 class UpdateOccupantEvent extends PropertyEvent {
@@ -47,6 +64,23 @@ class UpdateOccupantEvent extends PropertyEvent {
 
   UpdateOccupantEvent(
       this.formData, this.image, this.propertyId, this.occupantId);
+}
+
+class AddSpaceEvent extends PropertyEvent {
+  final Map<String, dynamic> formData;
+  final List<XFile> images;
+  final String propertyId;
+
+  AddSpaceEvent(this.formData, this.images, this.propertyId);
+}
+
+class UpdateSpaceEvent extends PropertyEvent {
+  final Map<String, dynamic> formData;
+  final List<XFile> images;
+  final String propertyId;
+  final String spaceId;
+
+  UpdateSpaceEvent(this.formData, this.images, this.propertyId, this.spaceId);
 }
 
 class AddPropertyEvent extends PropertyEvent {

@@ -1,3 +1,5 @@
+import 'package:pim/model/property_model.dart';
+
 class Space {
   final int id;
   final String spaceNumber;
@@ -5,6 +7,10 @@ class Space {
   final bool isOccupied;
   final String description;
   final double price;
+  final List<String> imageUrls;
+  final String? propertyName; // New field
+  final String? occupantName; // New field (nullable)
+  final bool advertise; // New field
 
   Space({
     required this.id,
@@ -13,17 +19,28 @@ class Space {
     required this.isOccupied,
     required this.description,
     required this.price,
+    required this.imageUrls,
+    required this.propertyName,
+    this.occupantName,
+    required this.advertise,
   });
 
   // Factory constructor for JSON serialization
   factory Space.fromJson(Map<String, dynamic> json) {
     return Space(
-      id: json['id'] as int,
-      spaceNumber: json['space_number'] as String,
-      spaceType: json['space_type'] as String,
-      isOccupied: json['is_occupied'] as bool,
-      description: json['description'] as String,
+      id: json['id'] ?? 0,
+      spaceNumber: json['space_number'] ?? '',
+      spaceType: json['space_type'] ?? '',
+      isOccupied: json['is_occupied'] ?? false,
+      description: json['description'] ?? '',
       price: double.parse(json['price']),
+      imageUrls: (json["added_images"] as List<dynamic>?)
+          ?.map((x) => x as String)
+          .toList() ??
+          [],
+      propertyName: json['property_name'] ?? '',
+      occupantName: json['occupant_name'] ?? 'No occupant added yet',
+      advertise: json['advertise'] ?? false,
     );
   }
 
@@ -36,6 +53,10 @@ class Space {
       'is_occupied': isOccupied,
       'description': description,
       'price': price,
+      //"image_urls": List<dynamic>.from(imageUrls.map((x) => x.toJson())),
+      'property_name': propertyName,
+      'occupant_name': occupantName,
+      'advertise': advertise,
     };
   }
 }

@@ -11,26 +11,26 @@ import 'package:pim/res/app_images.dart';
 import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/space/space_details.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../model/space_model.dart';
-import '../../../../../model/user_model.dart';
-import '../../../../../res/app_colors.dart';
-import '../../../../../utills/app_utils.dart';
-import '../../../../widgets/app_custom_text.dart';
-import '../countdown_function.dart';
+import '../../../../../../model/space_model.dart';
+import '../../../../../../model/user_model.dart';
+import '../../../../../../res/app_colors.dart';
+import '../../../../../../utills/app_utils.dart';
+import '../../../../../widgets/app_custom_text.dart';
+import '../../countdown_function.dart';
 
 class SpaceList extends StatefulWidget {
   final Property property;
   final UserModel userModel;
   final PropertyBloc propertyBloc;
 
-  SpaceList(
-      {super.key,
-        required this.spaces,
-        required this.property,
-        required this.userModel,
-        required this.propertyBloc});
+  SpaceList({super.key,
+    required this.spaces,
+    required this.property,
+    required this.userModel,
+    required this.propertyBloc});
 
   final List<Space> spaces;
 
@@ -57,7 +57,10 @@ class _SpaceListState extends State<SpaceList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-
+              AppNavigator.pushAndStackPage(context, page: SpaceDetails(
+                  space: widget.spaces[index],
+                  userModel: widget.userModel,
+                  property: widget.property));
             },
             child: spaceContainer(
                 space: widget.spaces[index], context: context),
@@ -116,7 +119,9 @@ class _SpaceListState extends State<SpaceList> {
                 ),
               ),
               SizedBox(
-                width: AppUtils.deviceScreenSize(context).width,
+                width: AppUtils
+                    .deviceScreenSize(context)
+                    .width,
                 height: 50,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),

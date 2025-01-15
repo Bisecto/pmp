@@ -23,9 +23,20 @@ class SinglePropertySuccessState extends PropertyState {
   final Property property;
 
   SinglePropertySuccessState(this.property);
-}class DeletePropertySuccessState extends PropertyState {
+}
 
+class SingleSpaceSuccessState extends PropertyState {
+  final Space space;
+
+  SingleSpaceSuccessState(this.space);
+}
+
+class DeletePropertySuccessState extends PropertyState {
   DeletePropertySuccessState();
+}
+
+class DeleteSpaceSuccessState extends PropertyState {
+  DeleteSpaceSuccessState();
 }
 
 class AddPropertySuccessState extends PropertyState {
