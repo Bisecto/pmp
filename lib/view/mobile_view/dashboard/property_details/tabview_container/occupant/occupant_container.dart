@@ -241,14 +241,10 @@ class _OccupantContainerState extends State<OccupantContainer> {
               _buildInfoRow('Property Type', prop.propertyType),
               _buildInfoRow('Property Address', prop.address),
               _buildInfoRow('Property State', prop.location),
-              _buildInfoRow(
-                  'Total Flats',
-                  (prop.occupiedFlatsRooms + prop.availableFlatsRooms)
-                      .toString()),
-              _buildInfoRow(
-                  'Available Flats', prop.availableFlatsRooms.toString()),
-              _buildInfoRow(
-                  'Occupied Flats', prop.occupiedFlatsRooms.toString()),
+              _buildInfoRow('Total Flats', (prop.totalSpace).toString()),
+              // _buildInfoRow(
+              //     'Available Flats', prop.totalSpace-prop.occupiedSpace),
+              _buildInfoRow('Occupied Flats', prop.occupiedSpace.toString()),
             ],
           ),
         ),
@@ -341,7 +337,8 @@ class _OccupantContainerState extends State<OccupantContainer> {
                             userModel: widget.userModel,
                             property: widget.property,
                             isEdit: false,
-                            occupant: null, spaces:widget.property.spaces,
+                            occupant: null,
+                            spaces: widget.property.spaces,
                           ));
                     },
                     child: Container(

@@ -172,7 +172,7 @@ class _LodgeListState extends State<LodgeList> {
                                 color: Colors.purple,
                               ),
                               CustomText(
-                                text: ' ${property.availableFlatsRooms}  ',
+                                text: ' ${property.totalSpace}  ',
                                 size: 14,
                                 maxLines: 3,
                               ),
@@ -185,7 +185,7 @@ class _LodgeListState extends State<LodgeList> {
                                 color: Colors.green,
                               ),
                               CustomText(
-                                text: '  ${property.occupiedFlatsRooms}',
+                                text: '  ${property.occupiedSpace}',
                                 size: 14,
                                 maxLines: 3,
                               ),

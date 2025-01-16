@@ -12,13 +12,12 @@ class Property {
   String priceType;
   dynamic priceRangeStart;
   dynamic priceRangeStop;
-  int availableFlatsRooms;
-  dynamic occupiedFlatsRooms;
+  int totalSpace;
+  int occupiedSpace;
   String status;
   bool advertise;
   List<Occupant> occupants;
   List<Space> spaces;
-
   String firstImage;
   List<ImageUrl> imageUrls;
 
@@ -34,8 +33,8 @@ class Property {
     required this.priceType,
     required this.priceRangeStart,
     required this.priceRangeStop,
-    required this.availableFlatsRooms,
-    required this.occupiedFlatsRooms,
+    required this.totalSpace,
+    required this.occupiedSpace,
     required this.status,
     required this.advertise,
     required this.occupants,
@@ -56,8 +55,8 @@ class Property {
         priceType: json["price_type"] ?? 'Static',
         priceRangeStart: json["price_range_start"] ?? 0,
         priceRangeStop: json["price_range_stop"] ?? 0,
-        availableFlatsRooms: json["available_flats_rooms"] ?? 0,
-        occupiedFlatsRooms: json["occupied_flats_rooms"] ?? 0,
+    totalSpace: json["total_space"] ?? 0,
+        occupiedSpace: json["occupied_space"] ?? 0,
         status: json["status"] ?? '',
         advertise: json["advertise"] ?? false,
         occupants: (json["occupants"] as List<dynamic>?)
@@ -87,8 +86,8 @@ class Property {
         "price_type": priceType,
         "price_range_start": priceRangeStart,
         "price_range_stop": priceRangeStop,
-        "available_flats_rooms": availableFlatsRooms,
-        "occupied_flats_rooms": occupiedFlatsRooms,
+        "total_space": totalSpace,
+        "occupied_space": occupiedSpace,
         "status": status,
         "advertise": advertise,
         "occupants": List<dynamic>.from(occupants.map((x) => x.toJson())),

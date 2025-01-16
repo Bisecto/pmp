@@ -33,7 +33,7 @@ class _RoomContainerState extends State<RoomContainer> {
       backgroundColor: AppColors.white,
       body: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomText(
@@ -91,7 +91,7 @@ class _RoomContainerState extends State<RoomContainer> {
           const SizedBox(
             height: 10,
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           if (widget.property.spaces.isEmpty)

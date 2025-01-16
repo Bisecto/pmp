@@ -30,8 +30,8 @@ class AuthRepository {
       headers: headers,
       body: data,
     );
-    AppUtils().debuglog(apiUrl+response.statusCode.toString());
-    AppUtils().debuglog(response.body);
+    // AppUtils().debuglog(apiUrl+response.statusCode.toString());
+    // AppUtils().debuglog(response.body);
     return response;
   }
 

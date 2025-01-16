@@ -75,8 +75,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     fromPriceController.text =
         widget.property.priceRangeStart?.toString() ?? '';
     toPriceController.text = widget.property.priceRangeStop?.toString() ?? '';
-    availableRoomsController.text =
-        widget.property.availableFlatsRooms.toString();
+    availableRoomsController.text = widget.property.totalSpace.toString();
 
     descriptionController.text = widget.property.description;
     isToggled = widget.property.advertise;

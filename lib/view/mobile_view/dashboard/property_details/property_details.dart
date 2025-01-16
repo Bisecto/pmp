@@ -165,7 +165,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   property: singlePropertySuccessState.property,
                                   context: context),
                               Container(
-                                height: (singlePropertySuccessState.property.spaces.length * 135)+65,
+                                height: (singlePropertySuccessState.property.spaces.length * 135)+150,
                                 child: DefaultTabController(
                                   length: 2,
                                   initialIndex: 0,

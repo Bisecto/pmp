@@ -87,7 +87,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .decode(loginResponse.body)['non_field_errors'][0]
           .toString()
           .replaceAll('{', '')
-          .replaceAll('}', '').replaceAll('\'', '')));
+          .replaceAll('}', '')
+          .replaceAll('\'', '')));
       //AppUtils().debuglog(event.password);
       AppUtils().debuglog(json.decode(loginResponse.body));
       emit(AuthInitial());
@@ -281,41 +282,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       "password": event.password,
       "confirm_password": event.confirmPassword
     };
+
     AppUtils().debuglog(formData);
 
     try {
       final registerResponse =
-          await authRepository.authPostRequest(formData, AppApis.registerApi);
+      await authRepository.authPostRequest(formData, AppApis.registerApi);
+      final responseBody = json.decode(registerResponse.body);
 
-      AppUtils().debuglog('Response status: ${registerResponse.statusCode}');
-      AppUtils().debuglog('Response body: ${registerResponse.body}');
-      AppUtils().debuglog(registerResponse.statusCode);
-
-      AppUtils().debuglog(registerResponse.body);
-      if (registerResponse.statusCode == 200 ||
-          registerResponse.statusCode == 201) {
+      if (registerResponse.statusCode == 200 || registerResponse.statusCode == 201) {
         emit(SuccessState("Sign up Successful", null));
-      } else if (registerResponse.statusCode == 500 ||
-          registerResponse.statusCode == 501) {
+      } else if (registerResponse.statusCode == 500 || registerResponse.statusCode == 501) {
         emit(ErrorState(
-            "There was a problem signing user in please try again later."));
+            "There was a problem signing the user in. Please try again later."));
         emit(AuthInitial());
       } else {
-        emit(ErrorState(json.decode(registerResponse.body)['email'][0] ??
-            json.decode(registerResponse.body)['username'][0] ??
-            json.decode(registerResponse.body)['confirm_password'][0] ??
-            json.decode(registerResponse.body)['password'][0]));
-        //AppUtils().debuglog(event.password);
-        AppUtils().debuglog(json.decode(registerResponse.body));
+        // Handle specific field errors with null safety
+        final errorMessage = responseBody['email']?[0] ??
+            responseBody['username']?[0] ??
+            responseBody['confirm_password']?[0] ??
+            responseBody['password']?[0] ??
+            "An unknown error occurred. Please try again.";
+
+        emit(ErrorState(errorMessage));
         emit(AuthInitial());
       }
     } catch (e) {
       AppUtils().debuglog(e);
-      emit(ErrorState("There was a problem login you in please try again."));
-
-      AppUtils().debuglog(e);
+      emit(ErrorState("There was a problem logging you in. Please try again."));
       emit(AuthInitial());
-      AppUtils().debuglog(12345678);
+      AppUtils().debuglog("Error details: $e");
     }
   }
 
