@@ -312,7 +312,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //print(res.body);
       print(" status Code ${singlePropertyResponse.statusCode}");
       //print(" Data ${singlePropertyResponse.body}");
-      print(json.decode(singlePropertyResponse.body));
+      //print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 204) {
         //print(property);
