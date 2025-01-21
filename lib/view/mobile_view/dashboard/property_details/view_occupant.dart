@@ -416,7 +416,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                     userModel: widget.userModel,
                                     property: widget.property,
                                     isEdit: true,
-                                    occupant: widget.occupant, spaces: widget.property.spaces,
+                                    occupant: widget.occupant,
+                                    spaces: widget.property.spaces,
                                   ));
                             },
                             child: SvgPicture.asset(
@@ -438,8 +439,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                   occupantId: widget.occupant.id,
                                   apiUrl: AppApis.singleOccupantApi,
                                   onSuccess: () {
-                                    MSG.snackBar(context, 'Occupant deleted successfully!');
-
+                                    MSG.snackBar(context,
+                                        'Occupant deleted successfully!');
 
                                     Navigator.pop(context, true);
                                   },
@@ -749,6 +750,73 @@ class _ViewOccupantState extends State<ViewOccupant> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 20,
+              ),
+              if (occupant.occupationStatus.toLowerCase() == 'employed')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Employment Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'Organization: ${occupant.employedProfile!.organisation ?? "N/A"}'),
+                    Text(
+                        'Position: ${occupant.employedProfile!.position ?? "N/A"}'),
+                    Text(
+                        'Employer Contact: ${occupant.employedProfile!.employerContact}'),
+                    Text(
+                        'Organization Location: ${occupant.employedProfile!.organisationLocation ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
+              // Display Student Information if Occupant is a Student
+              if (occupant.occupationStatus.toLowerCase() == 'student')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Student Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'University: ${occupant.studentProfile!.university ?? "N/A"}'),
+                    Text(
+                        'Student ID: ${occupant.studentProfile!.studentId ?? "N/A"}'),
+                    Text(
+                        'Faculty: ${occupant.studentProfile!.faculty ?? "N/A"}'),
+                    Text(
+                        'Department: ${occupant.studentProfile!.department ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
+              // Display Self-Employed Information if Occupant is Self-Employed
+              if (occupant.occupationStatus.toLowerCase() == 'self-employed')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Self-Employed Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'Nature of Job: ${occupant.selfEmployedProfile!.natureOfJob ?? "N/A"}'),
+                    Text(
+                        'Job Description: ${occupant.selfEmployedProfile!.jobDescription ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
             ],
           ),
         ),

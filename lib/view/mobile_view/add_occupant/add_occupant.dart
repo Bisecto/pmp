@@ -141,7 +141,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
       universityController.text = widget.occupant!.studentProfile!.university;
       studentIdController.text = widget.occupant!.studentProfile!.studentId;
       departmentController.text = widget.occupant!.studentProfile!.department;
-      facultyController.text = widget.occupant!.studentProfile!.courseOfStudy;
+      facultyController.text = widget.occupant!.studentProfile!.faculty;
     } else if ((widget.occupant!.occupationStatus.toLowerCase() ==
         'self-employed')) {
       natureOfJobController = widget.occupant!.selfEmployedProfile!.natureOfJob;
@@ -765,20 +765,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: departmentController,
-                                hint: 'Enter Department',
-                                label: 'Department',
-                                borderColor: Colors.grey,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
-                              ),
-                              const SizedBox(height: 16),
-                              CustomTextFormField(
                                 controller: facultyController,
                                 hint: 'Enter Faculty',
                                 label: 'Faculty',
@@ -791,6 +777,21 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: departmentController,
+                                hint: 'Enter Department',
+                                label: 'Department',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+
                             ],
                             if (selectedEmploymentStatus ==
                                 'Self-Employed') ...[
@@ -1412,20 +1413,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: departmentController,
-                                hint: 'Enter Department',
-                                label: 'Department',
-                                borderColor: Colors.grey,
-                                backgroundColor: theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.white,
-                                hintColor: !theme.isDark
-                                    ? AppColors.darkCardBackgroundColor
-                                    : AppColors.grey,
-                                borderRadius: 10,
-                              ),
-                              const SizedBox(height: 16),
-                              CustomTextFormField(
                                 controller: facultyController,
                                 hint: 'Enter Faculty',
                                 label: 'Faculty',
@@ -1438,6 +1425,21 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: departmentController,
+                                hint: 'Enter Department',
+                                label: 'Department',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+
                             ],
                             if (selectedEmploymentStatus ==
                                 'Self-Employed') ...[
@@ -1748,7 +1750,9 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               if (selectedEmploymentStatus.toLowerCase() == 'employed')
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1762,8 +1766,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                     const SizedBox(height: 5),
                     Text(
                         'Organization: ${organizationController.text ?? "N/A"}'),
-                    Text(
-                        'Position: ${selectedPosition ?? "N/A"}'),
+                    Text('Position: ${selectedPosition ?? "N/A"}'),
                     Text(
                         'Employer Contact: ${employerContactController.text ?? "N/A"}'),
                     Text(
@@ -1783,20 +1786,15 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
-                        'University: ${universityController.text ?? "N/A"}'),
-                    Text(
-                        'Student ID: ${studentIdController.text ?? "N/A"}'),
-                    Text(
-                        'Department: ${departmentController.text ?? "N/A"}'),
-                    Text(
-                        'Course of Study: ${facultyController.text ?? "N/A"}'),
+                    Text('University: ${universityController.text ?? "N/A"}'),
+                    Text('Student ID: ${studentIdController.text ?? "N/A"}'),
+                    Text('Faculty: ${facultyController.text ?? "N/A"}'),
+                    Text('Department: ${departmentController.text ?? "N/A"}'),
                     const SizedBox(height: 15),
                   ],
                 ),
               // Display Self-Employed Information if Occupant is Self-Employed
-              if (selectedEmploymentStatus.toLowerCase() ==
-                  'self-employed')
+              if (selectedEmploymentStatus.toLowerCase() == 'self-employed')
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1807,8 +1805,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
-                        'Nature of Job: ${natureOfJobController ?? "N/A"}'),
+                    Text('Nature of Job: ${natureOfJobController ?? "N/A"}'),
                     Text(
                         'Job Description: ${jobDescriptionController.text ?? "N/A"}'),
                     const SizedBox(height: 15),
@@ -1985,7 +1982,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         'university': universityController.text,
         'student_id': studentIdController.text,
         'department': departmentController.text,
-        'course_of_study': facultyController.text,
+        'faculty': facultyController.text,
       });
     } else if (selectedEmploymentStatus == 'Self-Employed') {
       if (natureOfJobController.isEmpty ||

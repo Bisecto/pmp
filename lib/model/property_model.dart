@@ -326,22 +326,22 @@ class EmployedProfile {
 class StudentProfile {
   final String university;
   final String studentId;
+  final String faculty;
   final String department;
-  final String courseOfStudy;
 
   StudentProfile({
     required this.university,
     required this.studentId,
+    required this.faculty,
     required this.department,
-    required this.courseOfStudy,
   });
 
   factory StudentProfile.fromJson(Map<String, dynamic> json) {
     return StudentProfile(
       university: json['university'] ?? '',
       studentId: json['student_id'] ?? '',
+      faculty: json['faculty'] ?? '',
       department: json['department'] ?? '',
-      courseOfStudy: json['course_of_study'] ?? '',
     );
   }
 
@@ -349,8 +349,8 @@ class StudentProfile {
     return {
       'university': university,
       'student_id': studentId,
+      'faculty': faculty,
       'department': department,
-      'course_of_study': courseOfStudy,
     };
   }
 }
