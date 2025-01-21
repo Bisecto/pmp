@@ -30,6 +30,7 @@ import 'generate_occupant_pdf.dart';
 
 class ViewOccupant extends StatefulWidget {
   Occupant occupant;
+  final String occpuantId;
   final Property property;
   final UserModel userModel;
 
@@ -37,7 +38,8 @@ class ViewOccupant extends StatefulWidget {
       {super.key,
       required this.occupant,
       required this.property,
-      required this.userModel});
+      required this.userModel,
+      required this.occpuantId});
 
   @override
   State<ViewOccupant> createState() => _ViewOccupantState();
@@ -144,7 +146,6 @@ class _ViewOccupantState extends State<ViewOccupant> {
                     pw.Text("Scan to get information about the property owner"),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.center,
-
                       children: [
                         pw.Text("Powered by"),
                         pw.Image(pw.MemoryImage(companyImage),
@@ -531,7 +532,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                               () {
                                             deleteOccupant(
                                               accessToken: accessToken,
-                                              occupantId: widget.occupant.id,
+                                              occupantId: widget.occpuantId,
                                               apiUrl: AppApis.singleOccupantApi,
                                               onSuccess: () {
                                                 MSG.snackBar(context,

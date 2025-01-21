@@ -148,11 +148,12 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                                             showDeleteConfirmationModal(context,
                                                 () {
                                               spaceBloc.add(DeleteSpaceEvent(
+                                                  widget.property.id
+                                                      .toString(),
                                                   singleSpaceSuccessState
                                                       .space.id
                                                       .toString(),
-                                                  widget.property.id
-                                                      .toString()));
+                                                  ));
                                             });
                                           },
                                           child: SvgPicture.asset(

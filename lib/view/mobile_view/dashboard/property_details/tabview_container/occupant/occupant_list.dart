@@ -65,7 +65,7 @@ class _OccupantListState extends State<OccupantList> {
                   page: ViewOccupant(
                     occupant: widget.occupants[index],
                     property: widget.property,
-                    userModel: widget.userModel,
+                    userModel: widget.userModel, occpuantId: widget.occupants[index].id,
                   ))??false;
               if (isDelete) {
                 widget.propertyBloc
