@@ -65,7 +65,7 @@ class _AppAppBarState extends State<AppAppBar> {
         children: [
           GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context,false);
               },
               child: const Icon(Icons.arrow_back_ios)),
           TextStyles.textHeadings(textValue: widget.title),

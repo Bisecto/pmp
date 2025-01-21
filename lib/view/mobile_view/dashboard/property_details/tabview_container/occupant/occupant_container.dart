@@ -163,7 +163,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
                               textAlign: pw.TextAlign.center),
                         ),
                         pw.Expanded(
-                          child: pw.Text('${occupant.roomNumber}',
+                          child: pw.Text('${occupant.spaceNumber}',
                               style: const pw.TextStyle(fontSize: 10),
                               textAlign: pw.TextAlign.center),
                         ),

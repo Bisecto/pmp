@@ -262,7 +262,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
           _buildPaymentTable([
             ['RENT PAID', widget.occupant.rentPaid.toString()],
             ['RENT DUE', widget.occupant.rentExpirationDate],
-            ['ROOM NUMBER', widget.occupant.roomNumber.toString()],
+            ['ROOM NUMBER', widget.occupant.spaceNumber.toString()],
             ['MARITAL STATUS', widget.occupant.relationship],
           ]),
         ],
@@ -654,7 +654,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
                         weight: FontWeight.bold,
                       ),
                       CustomText(
-                        text: ' ${occupant.roomNumber}  ',
+                        text: ' ${occupant.spaceNumber}  ',
                         size: 14,
                         maxLines: 3,
                       ),

@@ -149,7 +149,7 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                           TextSpan(
                                             text:
-                                                '${propertySuccessState.propertiesModel.totalAvailableSpaces}  ',
+                                                '${propertySuccessState.propertiesModel.totalSpaces}  ',
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 13.0,

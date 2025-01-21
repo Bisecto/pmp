@@ -200,7 +200,7 @@ class _OccupantListState extends State<OccupantList> {
                             size: 12,
                           ),
                           CustomText(
-                            text: ' ${occupant.roomNumber}  ',
+                            text: ' ${occupant.spaceNumber}  ',
                             size: 12,
                             maxLines: 3,
                           ),

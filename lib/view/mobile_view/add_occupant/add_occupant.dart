@@ -63,6 +63,25 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   final TextEditingController lgaController = TextEditingController();
   final TextEditingController amtPaidController = TextEditingController();
 
+  /// selfEmployed controllers
+  String natureOfJobController = '';
+  final TextEditingController jobDescriptionController =
+      TextEditingController();
+
+  /// Student controllers
+  final TextEditingController universityController = TextEditingController();
+  final TextEditingController studentIdController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
+  final TextEditingController facultyController = TextEditingController();
+
+  /// Employed controllers
+  String selectedPosition = '';
+  final TextEditingController organizationController = TextEditingController();
+  final TextEditingController employerContactController =
+      TextEditingController();
+  final TextEditingController organizationLocationContactController =
+      TextEditingController();
+
   //final TextEditingController roomNumberController = TextEditingController();
   final TextEditingController cautionFeeController = TextEditingController();
 
@@ -75,7 +94,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   String selectedMaritalStatus = '';
   String selectedPaymnetStatus = '';
   String selectedPaymnetDueTimeline = '';
-  String selectedApartmentType = '';
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
   PropertyBloc propertyBloc = PropertyBloc();
@@ -88,7 +106,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     // TODO: implement initState
     spaceNumbers = widget.spaces.map((space) => space.spaceNumber).toList();
     ids = widget.spaces.map((space) => space.id.toString()).toList();
-    spaceTypes = widget.spaces.map((space) => space.spaceType.toString()).toList();
+    spaceTypes =
+        widget.spaces.map((space) => space.spaceType.toString()).toList();
     if (widget.isEdit) {
       handleUpdate();
     }
@@ -110,13 +129,30 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     //roomNumberController.text = widget.occupant!.roomNumber.toString();
     selectedGender = widget.occupant!.gender;
     selectedState = widget.occupant!.state;
+    if (widget.occupant!.occupationStatus.toLowerCase() == 'employed') {
+      selectedPosition = widget.occupant!.employedProfile!.position;
+      organizationController.text =
+          widget.occupant!.employedProfile!.organisation;
+      employerContactController.text =
+          widget.occupant!.employedProfile!.employerContact;
+      organizationLocationContactController.text =
+          widget.occupant!.employedProfile!.organisationLocation;
+    } else if (widget.occupant!.occupationStatus.toLowerCase() == 'student') {
+      universityController.text = widget.occupant!.studentProfile!.university;
+      studentIdController.text = widget.occupant!.studentProfile!.studentId;
+      departmentController.text = widget.occupant!.studentProfile!.department;
+      facultyController.text = widget.occupant!.studentProfile!.courseOfStudy;
+    } else if ((widget.occupant!.occupationStatus.toLowerCase() ==
+        'self-employed')) {
+      natureOfJobController = widget.occupant!.selfEmployedProfile!.natureOfJob;
+      jobDescriptionController.text =
+          widget.occupant!.selfEmployedProfile!.jobDescription;
+    }
     selectedEmploymentStatus = widget.occupant!.occupationStatus;
     selectedMaritalStatus = widget.occupant!.relationship;
     selectedPaymnetDueTimeline = widget.occupant!.rentTimeline.capitalize();
     selectedPaymnetStatus = widget.occupant!.paymentStatus.capitalize();
-    selectedSpace = widget.occupant!.roomNumber.capitalize();
-    String selectedSpaceId = '';
-    selectedApartmentType = widget.occupant!.apartmentType.capitalize();
+    selectedSpace = widget.occupant!.spaceNumber.capitalize();
     print(widget.occupant!.profilePic);
     // for (String imageUrl in widget.occupant!) {
     try {
@@ -226,7 +262,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                 //   );
                 case const (PropertySuccessState) || const (PropertyInitial):
                   return Stepper(
-                    type: StepperType.horizontal,
+                    type: StepperType.vertical,
+                    physics: ScrollPhysics(),
                     currentStep: _currentStep,
                     onStepTapped: (int step) {
                       setState(() {
@@ -234,7 +271,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       });
                     },
                     onStepContinue: () {
-                      if (_currentStep < 2) {
+                      if (_currentStep < 3) {
+                        // Adjusted the final step check
                         setState(() {
                           _currentStep += 1;
                         });
@@ -333,7 +371,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 label: 'Mobile Phone Number',
                                 borderColor: Colors.grey,
                                 textInputType: TextInputType.number,
-
                                 isMobileNumber: true,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -386,23 +423,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              DropDown(
-                                label: 'Employment Status Type',
-                                hint: "Status",
-                                initialValue: selectedEmploymentStatus,
-                                selectedValue: selectedEmploymentStatus,
-                                items: const [
-                                  'Employed',
-                                  'Self-Employed',
-                                  'Student'
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedEmploymentStatus = value;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 16),
+
                               DropDown(
                                 label: 'State',
                                 hint: "Select state",
@@ -476,43 +497,159 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                             : StepState.complete,
                       ),
                       Step(
-                          title: const CustomText(
-                            text: 'Rent Information',
-                            size: 12,
-                          ),
-                          content: Column(
-                            children: [
-                              DropDown(
-                                label: 'Rent Due Timeline',
-                                hint: "Select Rent Due Timeline",
-                                selectedValue: selectedPaymnetDueTimeline,
-                                initialValue: selectedPaymnetDueTimeline,
-                                items: const ['Weekly', 'Monthly', "Yearly"],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymnetDueTimeline = value;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              DropDown(
-                                label: 'Rent Payment Status',
-                                hint: "Select Rent Payment Status",
-                                selectedValue: selectedPaymnetStatus,
-                                initialValue: selectedPaymnetStatus,
-                                items: const ['Paid', 'Pending'],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymnetStatus = value;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 16),
+                        title: const CustomText(
+                          text: 'Rent Information',
+                          size: 12,
+                        ),
+                        content: Column(
+                          children: [
+                            DropDown(
+                              label: 'Rent Due Timeline',
+                              hint: "Select Rent Due Timeline",
+                              selectedValue: selectedPaymnetDueTimeline,
+                              initialValue: selectedPaymnetDueTimeline,
+                              items: const ['Weekly', 'Monthly', "Yearly"],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedPaymnetDueTimeline = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DropDown(
+                              label: 'Rent Payment Status',
+                              hint: "Select Rent Payment Status",
+                              selectedValue: selectedPaymnetStatus,
+                              initialValue: selectedPaymnetStatus,
+                              items: const ['Paid', 'Pending'],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedPaymnetStatus = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: amtPaidController,
+                              hint: 'Enter amount paid',
+                              label: 'Amount Paid',
+                              textInputType: TextInputType.number,
+                              borderColor: Colors.grey,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: rentCommencementController,
+                              hint: 'DD/MM/YY',
+                              label: 'Rent Commencement Date',
+                              borderColor: Colors.grey,
+                              //: Icons.date_range,
+
+                              readOnly: true,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+
+                            // CustomTextFormField(
+                            //   controller: apartmentTypeController,
+                            //   hint: 'Enter Apartment type',
+                            //   label: 'Apartment Type',
+                            //   textInputType: TextInputType.text,
+                            //   borderColor: Colors.grey,
+                            //   backgroundColor: theme.isDark
+                            //       ? AppColors.darkCardBackgroundColor
+                            //       : AppColors.white,
+                            //   hintColor: !theme.isDark
+                            //       ? AppColors.darkCardBackgroundColor
+                            //       : AppColors.grey,
+                            //   borderRadius: 10,
+                            // ),
+                            const SizedBox(height: 16),
+                            DropDown(
+                              label: 'Space name',
+                              hint: "Select space name",
+                              selectedValue: selectedSpace,
+                              initialValue: selectedSpace,
+                              items: spaceNumbers,
+                              onChanged: (value) {
+                                setState(() {
+                                  print(ids);
+
+                                  selectedSpace = value;
+                                  int index = spaceNumbers.indexOf(value);
+                                  selectedSpaceId = ids[index];
+                                  selectedSpaceType = spaceTypes[index];
+                                });
+                              },
+                            ),
+
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: cautionFeeController,
+                              hint: '',
+                              label: 'Mess/Caution Bill Paid',
+                              textInputType: TextInputType.number,
+                              borderColor: Colors.grey,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+                          ],
+                        ),
+                        isActive: _currentStep >= 1,
+                        // stepStyle: StepStyle(
+                        //     color: _currentStep >= 1
+                        //         ? AppColors.mainAppColor
+                        //         : null),
+                        state: _currentStep == 1
+                            ? StepState.editing
+                            : StepState.complete,
+                      ),
+                      Step(
+                        title: const CustomText(
+                          text: 'Employment Information',
+                          size: 12,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DropDown(
+                              label: 'Employment Status Type',
+                              hint: "Status",
+                              initialValue: selectedEmploymentStatus,
+                              selectedValue: selectedEmploymentStatus,
+                              items: const [
+                                'Employed',
+                                'Self-Employed',
+                                'Student'
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedEmploymentStatus = value;
+                                });
+                              },
+                            ),
+                            if (selectedEmploymentStatus == 'Employed') ...[
                               CustomTextFormField(
-                                controller: amtPaidController,
-                                hint: 'Enter amount paid',
-                                label: 'Amount Paid',
-                                textInputType: TextInputType.number,
+                                controller: organizationController,
+                                hint: 'Enter Organization Name',
+                                label: 'Organization Name',
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -522,16 +659,13 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
-
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: rentCommencementController,
-                                hint: 'DD/MM/YY',
-                                label: 'Rent Commencement Date',
+                                controller: employerContactController,
+                                hint: 'Enter Employer Contact',
+                                label: 'Employer Contact',
                                 borderColor: Colors.grey,
-                                //: Icons.date_range,
-
-                                readOnly: true,
+                                textInputType: TextInputType.number,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.white,
@@ -540,46 +674,114 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
-
-                              // CustomTextFormField(
-                              //   controller: apartmentTypeController,
-                              //   hint: 'Enter Apartment type',
-                              //   label: 'Apartment Type',
-                              //   textInputType: TextInputType.text,
-                              //   borderColor: Colors.grey,
-                              //   backgroundColor: theme.isDark
-                              //       ? AppColors.darkCardBackgroundColor
-                              //       : AppColors.white,
-                              //   hintColor: !theme.isDark
-                              //       ? AppColors.darkCardBackgroundColor
-                              //       : AppColors.grey,
-                              //   borderRadius: 10,
-                              // ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller:
+                                    organizationLocationContactController,
+                                hint: 'Enter Organization Location',
+                                label: 'Organization Location',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
                               const SizedBox(height: 16),
                               DropDown(
-                                label: 'Space name',
-                                hint: "Select space name",
-                                selectedValue: selectedSpace,
-                                initialValue: selectedSpace,
-                                items: spaceNumbers,
+                                label: 'Position',
+                                hint: "select position",
+                                initialValue: selectedPosition,
+                                selectedValue: selectedPosition,
+                                items: [
+                                  'Manager',
+                                  'Engineer',
+                                  'Teacher',
+                                  'Doctor',
+                                  'Nurse',
+                                  'Lawyer',
+                                  'Accountant',
+                                  'Architect',
+                                  'Scientist',
+                                  'Technician',
+                                  'Police Officer',
+                                  'Firefighter',
+                                  'Pharmacist',
+                                  'Social Worker',
+                                  'Software Developer',
+                                  'Data Analyst',
+                                  'Pilot',
+                                  'Chef',
+                                  'Journalist',
+                                  'Artist',
+                                  'Musician',
+                                  'Athlete',
+                                  'Entrepreneur',
+                                  'Civil Servant',
+                                  'Military Personnel',
+                                  'Office Secretary',
+                                  'Salesperson',
+                                  'Customer Service Representative',
+                                  'Marketing Specialist',
+                                  'Human Resources Specialist',
+                                  'Others'
+                                ],
                                 onChanged: (value) {
                                   setState(() {
-                                    print(ids);
-
-                                    selectedSpace = value;
-                                    int index = spaceNumbers.indexOf(value);
-                                    selectedSpaceId = ids[index];
-                                    selectedSpaceType=spaceTypes[index];
+                                    selectedPosition = value;
                                   });
                                 },
                               ),
-
+                            ],
+                            if (selectedEmploymentStatus == 'Student') ...[
+                              CustomTextFormField(
+                                controller: universityController,
+                                hint: 'Enter University Name',
+                                label: 'University',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: cautionFeeController,
-                                hint: '',
-                                label: 'Mess/Caution Bill Paid',
-                                textInputType: TextInputType.number,
+                                controller: studentIdController,
+                                hint: 'Enter Student ID',
+                                label: 'Student ID',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: departmentController,
+                                hint: 'Enter Department',
+                                label: 'Department',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: facultyController,
+                                hint: 'Enter Faculty',
+                                label: 'Faculty',
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -590,12 +792,68 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                             ],
-                          ),
-                          isActive: _currentStep >= 1,
-                          stepStyle: StepStyle(
-                              color: _currentStep >= 1
-                                  ? AppColors.mainAppColor
-                                  : null)),
+                            if (selectedEmploymentStatus ==
+                                'Self-Employed') ...[
+                              DropDown(
+                                label: 'Nature of Job',
+                                hint: "select the nature of job",
+                                initialValue: natureOfJobController,
+                                selectedValue: natureOfJobController,
+                                items: [
+                                  'Freelancer',
+                                  'Consultant',
+                                  'Business Owner',
+                                  'Artisan',
+                                  'E-commerce',
+                                  'Independent Contractor',
+                                  'Creative Professional',
+                                  'Professional Trainer',
+                                  'Agriculture',
+                                  'Trade Worker',
+                                  'Photographer',
+                                  'Event Planner',
+                                  'Transport Operator',
+                                  'Real Estate Agent',
+                                  'Health Practitioner',
+                                  'Tech Startup Founder',
+                                  'Musician',
+                                  'Writer',
+                                  'Content Creator',
+                                  'Visual Artist',
+                                  'Craftsman',
+                                  'Dancer',
+                                  'Film Maker',
+                                  'Others'
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    natureOfJobController = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: jobDescriptionController,
+                                hint: 'Enter Job Description',
+                                label: 'Job Description',
+                                maxLines: 3,
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+                            ],
+                          ],
+                        ),
+                        isActive: _currentStep >= 2,
+                        state: _currentStep == 2
+                            ? StepState.editing
+                            : StepState.complete,
+                      ),
                       Step(
                           title: const CustomText(
                             text: 'Overview',
@@ -630,7 +888,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                   );
                 default:
                   return Stepper(
-                    type: StepperType.horizontal,
+                    type: StepperType.vertical,
                     currentStep: _currentStep,
                     onStepTapped: (int step) {
                       setState(() {
@@ -638,7 +896,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       });
                     },
                     onStepContinue: () {
-                      if (_currentStep < 2) {
+                      if (_currentStep < 3) {
+                        // Adjusted the final step check
                         setState(() {
                           _currentStep += 1;
                         });
@@ -878,44 +1137,182 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                             : StepState.complete,
                       ),
                       Step(
-                          title: const CustomText(
-                            text: 'Rent Information',
-                            size: 12,
-                          ),
-                          content: Column(
-                            children: [
-                              DropDown(
-                                label: 'Rent Due Timeline',
-                                hint: "Select Rent Due Timeline",
-                                selectedValue: selectedPaymnetDueTimeline,
-                                initialValue: selectedPaymnetDueTimeline,
-                                items: const ['Weekly', 'Monthly', "Yearly"],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymnetDueTimeline = value;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              DropDown(
-                                label: 'Rent Payment Status',
-                                hint: "Select Rent Payment Status",
-                                selectedValue: selectedPaymnetStatus,
-                                initialValue: selectedPaymnetStatus,
-                                items: const ['Paid', 'Pending'],
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymnetStatus = value;
-                                  });
-                                },
+                        title: const CustomText(
+                          text: 'Rent Information',
+                          size: 12,
+                        ),
+                        content: Column(
+                          children: [
+                            DropDown(
+                              label: 'Rent Due Timeline',
+                              hint: "Select Rent Due Timeline",
+                              selectedValue: selectedPaymnetDueTimeline,
+                              initialValue: selectedPaymnetDueTimeline,
+                              items: const ['Weekly', 'Monthly', "Yearly"],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedPaymnetDueTimeline = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DropDown(
+                              label: 'Rent Payment Status',
+                              hint: "Select Rent Payment Status",
+                              selectedValue: selectedPaymnetStatus,
+                              initialValue: selectedPaymnetStatus,
+                              items: const ['Paid', 'Pending'],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedPaymnetStatus = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: amtPaidController,
+                              hint: 'Enter amount paid',
+                              label: 'Amount Paid',
+                              textInputType: TextInputType.number,
+                              borderColor: Colors.grey,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: rentCommencementController,
+                              hint: 'DD/MM/YY',
+                              label: 'Rent Commencement Date',
+                              borderColor: Colors.grey,
+                              //: Icons.date_range,
+
+                              readOnly: true,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+                            const SizedBox(height: 16),
+                            // DropDown(
+                            //   label: 'Apartment Type',
+                            //   hint: "Select apartment type",
+                            //   selectedValue: selectedApartmentType,
+                            //   initialValue: selectedApartmentType,
+                            //   items: const [
+                            //
+                            //   ],
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       selectedApartmentType = value;
+                            //     });
+                            //   },
+                            // ),
+                            // CustomTextFormField(
+                            //   controller: apartmentTypeController,
+                            //   hint: 'Enter Apartment type',
+                            //   label: 'Apartment Type',
+                            //   textInputType: TextInputType.text,
+                            //   borderColor: Colors.grey,
+                            //   backgroundColor: theme.isDark
+                            //       ? AppColors.darkCardBackgroundColor
+                            //       : AppColors.white,
+                            //   hintColor: !theme.isDark
+                            //       ? AppColors.darkCardBackgroundColor
+                            //       : AppColors.grey,
+                            //   borderRadius: 10,
+                            // ),
+                            const SizedBox(height: 16),
+                            DropDown(
+                              label: 'Space name',
+                              hint: "Select space name",
+                              selectedValue: selectedSpace,
+                              initialValue: selectedSpace,
+                              items: spaceNumbers,
+                              onChanged: (value) {
+                                setState(() {
+                                  print(ids);
+                                  selectedSpace = value;
+                                  int index = spaceNumbers.indexOf(value);
+                                  selectedSpaceId = ids[index];
+                                  selectedSpaceType = spaceTypes[index];
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            CustomTextFormField(
+                              controller: cautionFeeController,
+                              hint: '',
+                              label: 'Mess/Caution Bill Paid',
+                              textInputType: TextInputType.text,
+                              borderColor: Colors.grey,
+                              backgroundColor: theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.white,
+                              hintColor: !theme.isDark
+                                  ? AppColors.darkCardBackgroundColor
+                                  : AppColors.grey,
+                              borderRadius: 10,
+                            ),
+                          ],
+                        ),
+                        isActive: _currentStep >= 1,
+                        state: _currentStep == 1
+                            ? StepState.editing
+                            : StepState.complete,
+                      ),
+                      Step(
+                        title: const CustomText(
+                          text: 'Employment Information',
+                          size: 12,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DropDown(
+                              label: 'Employment Status Type',
+                              hint: "Status",
+                              initialValue: selectedEmploymentStatus,
+                              selectedValue: selectedEmploymentStatus,
+                              items: const [
+                                'Employed',
+                                'Self-Employed',
+                                'Student'
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedEmploymentStatus = value;
+                                });
+                              },
+                            ),
+                            if (selectedEmploymentStatus == 'Employed') ...[
+                              CustomTextFormField(
+                                controller: organizationController,
+                                hint: 'Enter Organization Name',
+                                label: 'Organization Name',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: amtPaidController,
-                                hint: 'Enter amount paid',
-                                label: 'Amount Paid',
+                                controller: employerContactController,
+                                hint: 'Enter Employer Contact',
+                                label: 'Employer Contact',
+                                borderColor: Colors.grey,
                                 textInputType: TextInputType.number,
-                                borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.white,
@@ -926,13 +1323,11 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: rentCommencementController,
-                                hint: 'DD/MM/YY',
-                                label: 'Rent Commencement Date',
+                                controller:
+                                    organizationLocationContactController,
+                                hint: 'Enter Organization Location',
+                                label: 'Organization Location',
                                 borderColor: Colors.grey,
-                                //: Icons.date_range,
-
-                                readOnly: true,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
                                     : AppColors.white,
@@ -942,58 +1337,98 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                               const SizedBox(height: 16),
-                              // DropDown(
-                              //   label: 'Apartment Type',
-                              //   hint: "Select apartment type",
-                              //   selectedValue: selectedApartmentType,
-                              //   initialValue: selectedApartmentType,
-                              //   items: const [
-                              //
-                              //   ],
-                              //   onChanged: (value) {
-                              //     setState(() {
-                              //       selectedApartmentType = value;
-                              //     });
-                              //   },
-                              // ),
-                              // CustomTextFormField(
-                              //   controller: apartmentTypeController,
-                              //   hint: 'Enter Apartment type',
-                              //   label: 'Apartment Type',
-                              //   textInputType: TextInputType.text,
-                              //   borderColor: Colors.grey,
-                              //   backgroundColor: theme.isDark
-                              //       ? AppColors.darkCardBackgroundColor
-                              //       : AppColors.white,
-                              //   hintColor: !theme.isDark
-                              //       ? AppColors.darkCardBackgroundColor
-                              //       : AppColors.grey,
-                              //   borderRadius: 10,
-                              // ),
-                              const SizedBox(height: 16),
                               DropDown(
-                                label: 'Space name',
-                                hint: "Select space name",
-                                selectedValue: selectedSpace,
-                                initialValue: selectedSpace,
-                                items: spaceNumbers,
+                                label: 'Position',
+                                hint: "select position",
+                                initialValue: selectedPosition,
+                                selectedValue: selectedPosition,
+                                items: [
+                                  'Manager',
+                                  'Engineer',
+                                  'Teacher',
+                                  'Doctor',
+                                  'Nurse',
+                                  'Lawyer',
+                                  'Accountant',
+                                  'Architect',
+                                  'Scientist',
+                                  'Technician',
+                                  'Police Officer',
+                                  'Firefighter',
+                                  'Pharmacist',
+                                  'Social Worker',
+                                  'Software Developer',
+                                  'Data Analyst',
+                                  'Pilot',
+                                  'Chef',
+                                  'Journalist',
+                                  'Artist',
+                                  'Musician',
+                                  'Athlete',
+                                  'Entrepreneur',
+                                  'Civil Servant',
+                                  'Military Personnel',
+                                  'Office Secretary',
+                                  'Salesperson',
+                                  'Customer Service Representative',
+                                  'Marketing Specialist',
+                                  'Human Resources Specialist',
+                                  'Others'
+                                ],
                                 onChanged: (value) {
                                   setState(() {
-                                    print(ids);
-                                    selectedSpace = value;
-                                    int index = spaceNumbers.indexOf(value);
-                                    selectedSpaceId = ids[index];
-                                    selectedSpaceType=spaceTypes[index];
-
+                                    selectedPosition = value;
                                   });
                                 },
                               ),
+                            ],
+                            if (selectedEmploymentStatus == 'Student') ...[
+                              CustomTextFormField(
+                                controller: universityController,
+                                hint: 'Enter University Name',
+                                label: 'University',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
                               const SizedBox(height: 16),
                               CustomTextFormField(
-                                controller: cautionFeeController,
-                                hint: '',
-                                label: 'Mess/Caution Bill Paid',
-                                textInputType: TextInputType.text,
+                                controller: studentIdController,
+                                hint: 'Enter Student ID',
+                                label: 'Student ID',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: departmentController,
+                                hint: 'Enter Department',
+                                label: 'Department',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: facultyController,
+                                hint: 'Enter Faculty',
+                                label: 'Faculty',
                                 borderColor: Colors.grey,
                                 backgroundColor: theme.isDark
                                     ? AppColors.darkCardBackgroundColor
@@ -1004,12 +1439,68 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                 borderRadius: 10,
                               ),
                             ],
-                          ),
-                          isActive: _currentStep >= 1,
-                          stepStyle: StepStyle(
-                              color: _currentStep >= 1
-                                  ? AppColors.mainAppColor
-                                  : null)),
+                            if (selectedEmploymentStatus ==
+                                'Self-Employed') ...[
+                              DropDown(
+                                label: 'Nature of Job',
+                                hint: "select the nature of job",
+                                initialValue: natureOfJobController,
+                                selectedValue: natureOfJobController,
+                                items: [
+                                  'Freelancer',
+                                  'Consultant',
+                                  'Business Owner',
+                                  'Artisan',
+                                  'E-commerce',
+                                  'Independent Contractor',
+                                  'Creative Professional',
+                                  'Professional Trainer',
+                                  'Agriculture',
+                                  'Trade Worker',
+                                  'Photographer',
+                                  'Event Planner',
+                                  'Transport Operator',
+                                  'Real Estate Agent',
+                                  'Health Practitioner',
+                                  'Tech Startup Founder',
+                                  'Musician',
+                                  'Writer',
+                                  'Content Creator',
+                                  'Visual Artist',
+                                  'Craftsman',
+                                  'Dancer',
+                                  'Film Maker',
+                                  'Others'
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    natureOfJobController = value;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTextFormField(
+                                controller: jobDescriptionController,
+                                hint: 'Enter Job Description',
+                                label: 'Job Description',
+                                borderColor: Colors.grey,
+                                backgroundColor: theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.white,
+                                hintColor: !theme.isDark
+                                    ? AppColors.darkCardBackgroundColor
+                                    : AppColors.grey,
+                                borderRadius: 10,
+                                maxLines: 3,
+                              ),
+                            ],
+                          ],
+                        ),
+                        isActive: _currentStep >= 2,
+                        state: _currentStep == 2
+                            ? StepState.editing
+                            : StepState.complete,
+                      ),
                       Step(
                           title: const CustomText(
                             text: 'Overview',
@@ -1028,9 +1519,9 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               moreDetailsContainer(context: context)
                             ],
                           ),
-                          isActive: _currentStep >= 2,
+                          isActive: _currentStep >= 3,
                           stepStyle: StepStyle(
-                              color: _currentStep >= 2
+                              color: _currentStep >= 3
                                   ? AppColors.mainAppColor
                                   : null)),
                     ],
@@ -1108,7 +1599,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       ),
                       CustomText(
                         text: ' ${selectedMaritalStatus}  ',
-                        size: 13,
+                        size: 12,
                         maxLines: 3,
                       ),
                     ],
@@ -1118,12 +1609,12 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       CustomText(
                         text: "Employment Status:",
                         color: AppColors.black,
-                        size: 13,
+                        size: 12,
                         weight: FontWeight.bold,
                       ),
                       CustomText(
                         text: '  ${selectedEmploymentStatus}',
-                        size: 13,
+                        size: 12,
                         maxLines: 3,
                       ),
                     ],
@@ -1141,7 +1632,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 120,
+        height: 230,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.grey.withOpacity(0.2),
@@ -1150,6 +1641,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1256,6 +1748,72 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                   ),
                 ],
               ),
+              SizedBox(height: 20,),
+              if (selectedEmploymentStatus.toLowerCase() == 'employed')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Employment Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'Organization: ${organizationController.text ?? "N/A"}'),
+                    Text(
+                        'Position: ${selectedPosition ?? "N/A"}'),
+                    Text(
+                        'Employer Contact: ${employerContactController.text ?? "N/A"}'),
+                    Text(
+                        'Organization Location: ${organizationLocationContactController.text ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
+              // Display Student Information if Occupant is a Student
+              if (selectedEmploymentStatus.toLowerCase() == 'student')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Student Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'University: ${universityController.text ?? "N/A"}'),
+                    Text(
+                        'Student ID: ${studentIdController.text ?? "N/A"}'),
+                    Text(
+                        'Department: ${departmentController.text ?? "N/A"}'),
+                    Text(
+                        'Course of Study: ${facultyController.text ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
+              // Display Self-Employed Information if Occupant is Self-Employed
+              if (selectedEmploymentStatus.toLowerCase() ==
+                  'self-employed')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Self-Employed Information:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        'Nature of Job: ${natureOfJobController ?? "N/A"}'),
+                    Text(
+                        'Job Description: ${jobDescriptionController.text ?? "N/A"}'),
+                    const SizedBox(height: 15),
+                  ],
+                ),
             ],
           ),
         ),
@@ -1355,6 +1913,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   }
 
   void _saveOccupant() {
+    // Validate required fields
     if (occupantNameController.text.isEmpty ||
         occupantEmailController.text.isEmpty ||
         occupantPhoneNumberController.text.isEmpty ||
@@ -1372,51 +1931,93 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         selectedPaymnetDueTimeline.isEmpty ||
         imageFileList == null ||
         imageFileList!.isEmpty) {
-      print(occupantEmailController.text);
-      print(occupantPhoneNumberController.text);
-      print(dobController.text);
-      print(rentCommencementController.text);
-      print(cautionFeeController.text.isEmpty);
-      print(selectedGender);
-      print(selectedEmploymentStatus);
-      print(selectedMaritalStatus);
-      print(selectedPaymnetStatus);
-      print(selectedPaymnetDueTimeline);
-      print(selectedSpace);
-      print(selectedSpace);
-      print(occupantNameController.text);
       MSG.warningSnackBar(context, 'Please fill in all required fields.');
-    } else {
-      final Map<String, String> formData = {
-        'full_name': occupantNameController.text,
-        'email': occupantEmailController.text,
-        'title': 'mr',
-        'dob': dobController.text,
-        'mobile_phone': '+234${occupantPhoneNumberController.text}',
-        'state': selectedState,
-        'local_government': lgaController.text,
-        'country': 'Nigeria',
-        'space_number': selectedSpace,
-        'space_type': selectedSpaceType,
-        'rent_commencement_date': rentCommencementController.text,
-        //'rent_expiration_date': rentExpirationController.text,
-        'rent_paid': amtPaidController.text,
-        'mesh_bill_paid': cautionFeeController.text,
-        'relationship': selectedMaritalStatus,
-        'occupation_status': selectedEmploymentStatus,
-        'rent_timeline': selectedPaymnetDueTimeline.toLowerCase(),
-        'apartment_type': selectedApartmentType,
-        'payment_status': selectedPaymnetStatus,
-        'gender': selectedGender,
-      };
-      print(formData);
-      if (widget.isEdit) {
-        propertyBloc.add(UpdateOccupantEvent(formData, imageFileList![0],
-            widget.property.id.toString(), widget.occupant!.id.toString()));
-      } else {
-        propertyBloc.add(AddOccupantEvent(formData, imageFileList![0],
-            widget.property.id.toString(), selectedSpaceId));
+      return;
+    }
+
+    // Build form data
+    final Map<String, String> formData = {
+      'full_name': occupantNameController.text,
+      'email': occupantEmailController.text,
+      'title': 'mr', // Assuming 'title' is static
+      'dob': dobController.text,
+      'mobile_phone': '+234${occupantPhoneNumberController.text}',
+      'state': selectedState,
+      'local_government': lgaController.text,
+      'country': 'Nigeria',
+      'space_number': selectedSpace,
+      'space_type': selectedSpaceType,
+      'rent_commencement_date': rentCommencementController.text,
+      //'rent_expiration_date': rentExpirationController.text,
+      'rent_paid': amtPaidController.text,
+      'mesh_bill_paid': cautionFeeController.text,
+      'relationship': selectedMaritalStatus,
+      'occupation_status': selectedEmploymentStatus,
+      'rent_timeline': selectedPaymnetDueTimeline.toLowerCase(),
+      'payment_status': selectedPaymnetStatus,
+      'gender': selectedGender,
+    };
+
+    // Add dynamic fields based on occupation status
+    if (selectedEmploymentStatus == 'Employed') {
+      if (organizationController.text.isEmpty ||
+          employerContactController.text.isEmpty ||
+          organizationLocationContactController.text.isEmpty ||
+          selectedPosition == null) {
+        MSG.warningSnackBar(context, 'Please fill in all employment details.');
+        return;
       }
+      formData.addAll({
+        'position': selectedPosition!,
+        'organisation': organizationController.text,
+        'employer_contact': employerContactController.text,
+        'organisation_location': organizationLocationContactController.text,
+      });
+    } else if (selectedEmploymentStatus == 'Student') {
+      if (universityController.text.isEmpty ||
+          studentIdController.text.isEmpty ||
+          departmentController.text.isEmpty ||
+          facultyController.text.isEmpty) {
+        MSG.warningSnackBar(context, 'Please fill in all student details.');
+        return;
+      }
+      formData.addAll({
+        'university': universityController.text,
+        'student_id': studentIdController.text,
+        'department': departmentController.text,
+        'course_of_study': facultyController.text,
+      });
+    } else if (selectedEmploymentStatus == 'Self-Employed') {
+      if (natureOfJobController.isEmpty ||
+          jobDescriptionController.text.isEmpty) {
+        MSG.warningSnackBar(
+            context, 'Please fill in all self-employment details.');
+        return;
+      }
+      formData.addAll({
+        'nature_of_job': natureOfJobController,
+        'job_description': jobDescriptionController.text,
+      });
+    }
+
+    // Debugging: Log formData
+    print(formData);
+
+    // Trigger Bloc events for Add or Update
+    if (widget.isEdit) {
+      propertyBloc.add(UpdateOccupantEvent(
+        formData,
+        imageFileList![0],
+        widget.property.id.toString(),
+        widget.occupant!.id.toString(),
+      ));
+    } else {
+      propertyBloc.add(AddOccupantEvent(
+        formData,
+        imageFileList![0],
+        widget.property.id.toString(),
+        selectedSpaceId,
+      ));
     }
   }
 }
