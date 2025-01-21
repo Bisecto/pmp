@@ -138,34 +138,35 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-    //try {
-    var singlePropertyResponse = await appRepository.getRequestWithToken(
-        accessToken, AppApis.singlePropertyApi + event.propertyId);
-    // var res = await appRepository.appGetRequest(
-    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
-    //   accessToken: accessToken,
-    // );
-    //print(res.body);
-    print(" status Code ${singlePropertyResponse.statusCode}");
-    print(" Data ${singlePropertyResponse.body}");
-    print(json.decode(singlePropertyResponse.body));
-    if (singlePropertyResponse.statusCode == 200 ||
-        singlePropertyResponse.statusCode == 201) {
-      Property property =
-          Property.fromJson(json.decode(singlePropertyResponse.body));
-
-      print(property);
-      emit(
-          SinglePropertySuccessState(property)); // Emit success state with data
-    } else {
-      emit(PropertyErrorState(AppUtils.getAllErrorMessages(
-          json.decode(singlePropertyResponse.body))));
+    try {
+      var singlePropertyResponse = await appRepository.getRequestWithToken(
+          accessToken, AppApis.singlePropertyApi + event.propertyId);
+      // var res = await appRepository.appGetRequest(
+      //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+      //   accessToken: accessToken,
+      // );
+      //print(res.body);
+      print(" status Code ${singlePropertyResponse.statusCode}");
+      print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
+      if (singlePropertyResponse.statusCode == 200 ||
+          singlePropertyResponse.statusCode == 201) {
+        Property property =
+            Property.fromJson(json.decode(singlePropertyResponse.body));
+
+        print(property);
+        emit(SinglePropertySuccessState(
+            property)); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(singlePropertyResponse.body))));
+        print(json.decode(singlePropertyResponse.body));
+      }
+    } catch (e) {
+      emit(PropertyErrorState(
+          "An error occurred while fetching property detail."));
+      print(e);
     }
-    // } catch (e) {
-    //   emit(PropertyErrorState("An error occurred while fetching property detail."));
-    //   print(e);
-    // }
   }
 
   FutureOr<void> addOccupantEvent(
@@ -373,34 +374,35 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-    //try {
-    var singlePropertyResponse = await appRepository.getRequestWithToken(
-        accessToken, AppApis.singlePropertyApi + event.propertyId);
-    // var res = await appRepository.appGetRequest(
-    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
-    //   accessToken: accessToken,
-    // );
-    //print(res.body);
-    print(" status Code ${singlePropertyResponse.statusCode}");
-    print(" Data ${singlePropertyResponse.body}");
-    print(json.decode(singlePropertyResponse.body));
-    if (singlePropertyResponse.statusCode == 200 ||
-        singlePropertyResponse.statusCode == 201) {
-      Property property =
-          Property.fromJson(json.decode(singlePropertyResponse.body));
-
-      print(property);
-      emit(
-          SinglePropertySuccessState(property)); // Emit success state with data
-    } else {
-      emit(PropertyErrorState(AppUtils.getAllErrorMessages(
-          json.decode(singlePropertyResponse.body))));
+    try {
+      var singlePropertyResponse = await appRepository.getRequestWithToken(
+          accessToken, AppApis.singlePropertyApi + event.propertyId);
+      // var res = await appRepository.appGetRequest(
+      //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+      //   accessToken: accessToken,
+      // );
+      //print(res.body);
+      print(" status Code ${singlePropertyResponse.statusCode}");
+      print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
+      if (singlePropertyResponse.statusCode == 200 ||
+          singlePropertyResponse.statusCode == 201) {
+        Property property =
+            Property.fromJson(json.decode(singlePropertyResponse.body));
+
+        print(property);
+        emit(SinglePropertySuccessState(
+            property)); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(singlePropertyResponse.body))));
+        print(json.decode(singlePropertyResponse.body));
+      }
+    } catch (e) {
+      emit(PropertyErrorState(
+          "An error occurred while fetching occupant detail."));
+      print(e);
     }
-    // } catch (e) {
-    //   emit(PropertyErrorState("An error occurred while fetching property detail."));
-    //   print(e);
-    // }
   }
 
   FutureOr<void> getSingleSpaceEvent(
@@ -410,33 +412,34 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-    //try {
-    var singleSpaceResponse = await appRepository.getRequestWithToken(
-        accessToken,
-        "${AppApis.singleSpaceApi}${event.propertyid}/spaces/${event.spaceId}/");
-    // var res = await appRepository.appGetRequest(
-    //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
-    //   accessToken: accessToken,
-    // );
-    //print(res.body);
-    print(" status Code ${singleSpaceResponse.statusCode}");
-    print(" Data ${singleSpaceResponse.body}");
-    print(json.decode(singleSpaceResponse.body));
-    if (singleSpaceResponse.statusCode == 200 ||
-        singleSpaceResponse.statusCode == 201) {
-      Space space = Space.fromJson(json.decode(singleSpaceResponse.body));
-
-      print(space);
-      emit(SingleSpaceSuccessState(space)); // Emit success state with data
-    } else {
-      emit(PropertyErrorState(
-          AppUtils.getAllErrorMessages(json.decode(singleSpaceResponse.body))));
+    try {
+      var singleSpaceResponse = await appRepository.getRequestWithToken(
+          accessToken,
+          "${AppApis.singleSpaceApi}${event.propertyid}/spaces/${event.spaceId}/");
+      // var res = await appRepository.appGetRequest(
+      //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
+      //   accessToken: accessToken,
+      // );
+      //print(res.body);
+      print(" status Code ${singleSpaceResponse.statusCode}");
+      print(" Data ${singleSpaceResponse.body}");
       print(json.decode(singleSpaceResponse.body));
+      if (singleSpaceResponse.statusCode == 200 ||
+          singleSpaceResponse.statusCode == 201) {
+        Space space = Space.fromJson(json.decode(singleSpaceResponse.body));
+
+        print(space);
+        emit(SingleSpaceSuccessState(space)); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(singleSpaceResponse.body))));
+        print(json.decode(singleSpaceResponse.body));
+      }
+    } catch (e) {
+      emit(
+          PropertyErrorState("An error occurred while fetching space detail."));
+      print(e);
     }
-    // } catch (e) {
-    //   emit(PropertyErrorState("An error occurred while fetching property detail."));
-    //   print(e);
-    // }
   }
 
   FutureOr<void> deleteSpaceEvent(
