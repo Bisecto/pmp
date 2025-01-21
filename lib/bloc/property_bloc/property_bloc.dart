@@ -21,6 +21,7 @@ part 'property_state.dart';
 class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   PropertyBloc() : super(PropertyInitial()) {
     on<GetSinglePropertyEvent>(getSinglePropertyEvent);
+    on<GetSingleOccupantEvent>(getSingleOccupantEvent);
     on<GetSingleSpaceEvent>(getSingleSpaceEvent);
     on<GetSinglePropertyOccupantsEvent>(getSinglePropertyOccupantsEvent);
     on<DeletePropertyEvent>(deletePropertyEvent);
@@ -446,15 +447,15 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
     try {
-
       var singlePropertyResponse = await appRepository.deleteRequestWithToken(
-          accessToken, '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/');
+          accessToken,
+          '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/');
 
       print(" status Code ${singlePropertyResponse.statusCode}");
       //print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
-          singlePropertyResponse.statusCode == 204||
+          singlePropertyResponse.statusCode == 204 ||
           singlePropertyResponse.statusCode == 201) {
         //print(property);
         emit(DeleteSpaceSuccessState()); // Emit success state with data
@@ -469,22 +470,26 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     }
   }
 
-  FutureOr<void> updateSpaceEvent(UpdateSpaceEvent event, Emitter<PropertyState> emit) async {
+  FutureOr<void> updateSpaceEvent(
+      UpdateSpaceEvent event, Emitter<PropertyState> emit) async {
     emit(
         PropertyLoadingState()); // Emit loading state at the start of the event
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
     try {
-
-      var singlePropertyResponse = await appRepository.appPutRequestWithMultipleImages(event.formData,
-           '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/',event.images,accessToken);
+      var singlePropertyResponse =
+          await appRepository.appPutRequestWithMultipleImages(
+              event.formData,
+              '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/',
+              event.images,
+              accessToken);
 
       print(" status Code ${singlePropertyResponse.statusCode}");
       //print(" Data ${singlePropertyResponse.body}");
       print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
-          singlePropertyResponse.statusCode == 204||
+          singlePropertyResponse.statusCode == 204 ||
           singlePropertyResponse.statusCode == 201) {
         //print(property);
         emit(AddPropertySuccessState()); // Emit success state with data
@@ -528,4 +533,37 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   //     print(e);
   //   }
   // }
+
+  FutureOr<void> getSingleOccupantEvent(
+      GetSingleOccupantEvent event, Emitter<PropertyState> emit) async {
+    emit(
+        PropertyLoadingState()); // Emit loading state at the start of the event
+
+    AppRepository appRepository = AppRepository();
+    String accessToken = await SharedPref.getString('access-token');
+    try {
+      var singleOccupantResponse = await appRepository.getRequestWithToken(
+          accessToken, AppApis.singleOccupantApi + event.occupantId);
+      print(" status Code ${singleOccupantResponse.statusCode}");
+      print(" Data ${singleOccupantResponse.body}");
+      print(json.decode(singleOccupantResponse.body));
+      if (singleOccupantResponse.statusCode == 200 ||
+          singleOccupantResponse.statusCode == 201) {
+        Occupant occupant =
+            Occupant.fromJson(json.decode(singleOccupantResponse.body));
+
+        print(occupant);
+        emit(SingleOccupantSuccessState(
+            occupant)); // Emit success state with data
+      } else {
+        emit(PropertyErrorState(AppUtils.getAllErrorMessages(
+            json.decode(singleOccupantResponse.body))));
+        print(json.decode(singleOccupantResponse.body));
+      }
+    } catch (e) {
+      emit(PropertyErrorState(
+          "An error occurred while fetching property detail."));
+      print(e);
+    }
+  }
 }

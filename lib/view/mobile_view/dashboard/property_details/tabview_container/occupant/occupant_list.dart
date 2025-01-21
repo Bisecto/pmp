@@ -57,13 +57,16 @@ class _OccupantListState extends State<OccupantList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              print(widget.occupants[index].rentExpirationDate.toString());
+              //print(widget.occupants[index].rentExpirationDate.toString());
+              print(widget.occupants[index].selfEmployedProfile);
+              print(widget.occupants[index].employedProfile);
+              print(widget.occupants[index].studentProfile);
               bool isDelete = await AppNavigator.pushAndStackPage(context,
                   page: ViewOccupant(
                     occupant: widget.occupants[index],
                     property: widget.property,
                     userModel: widget.userModel,
-                  ));
+                  ))??false;
               if (isDelete) {
                 widget.propertyBloc
                     .add(GetSinglePropertyEvent(widget.property.id.toString()));

@@ -25,6 +25,12 @@ class SinglePropertySuccessState extends PropertyState {
   SinglePropertySuccessState(this.property);
 }
 
+class SingleOccupantSuccessState extends PropertyState {
+  final Occupant occupant;
+
+  SingleOccupantSuccessState(this.occupant);
+}
+
 class SingleSpaceSuccessState extends PropertyState {
   final Space space;
 

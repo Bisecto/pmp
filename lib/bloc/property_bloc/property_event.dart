@@ -11,6 +11,10 @@ class GetSinglePropertyEvent extends PropertyEvent {
   final String propertyId;
 
   GetSinglePropertyEvent(this.propertyId);
+}class GetSingleOccupantEvent extends PropertyEvent {
+  final String occupantId;
+
+  GetSingleOccupantEvent(this.occupantId);
 }
 
 class GetSingleSpaceEvent extends PropertyEvent {

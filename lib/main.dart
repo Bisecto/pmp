@@ -28,7 +28,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Upgrader.clearSavedSettings();
+  //await Upgrader.clearSavedSettings();
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
