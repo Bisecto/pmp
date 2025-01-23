@@ -55,12 +55,17 @@ class _ViewOccupantState extends State<ViewOccupant> {
   Future<Uint8List> _fetchOrDefaultImage(
       String url, String defaultAssetPath) async {
     try {
+      AppUtils().debuglog('Fetching image from: $url');
       final http.Response response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
+        AppUtils().debuglog('Image fetched successfully from: $url');
         return response.bodyBytes;
+      } else {
+        AppUtils().debuglog(
+            'Failed to fetch image. Status: ${response.statusCode}, URL: $url');
       }
     } catch (e) {
-      AppUtils().debuglog("Error fetching image from $url: $e");
+      AppUtils().debuglog('Error fetching image from $url: $e');
     }
     return _loadAssetImage(defaultAssetPath);
   }
@@ -76,28 +81,26 @@ class _ViewOccupantState extends State<ViewOccupant> {
     // TODO: implement initState
     occupantBloc.add(GetSingleOccupantEvent(widget.occupant.id.toString()));
     super.initState();
-    _preloadImages();
   }
 
   Future<void> _preloadImages() async {
     try {
-      // Load logo and company images
       logoImage = await _loadAssetImage(AppImages.logo);
       companyImage = await _loadAssetImage(AppImages.companyLogo);
 
-      // Fetch student image
       studentImageBytes = await _fetchOrDefaultImage(
         widget.occupant.profilePic,
         AppImages.person,
       );
 
-      // Fetch QR code image
       qrCodeImageBytes = await _fetchOrDefaultImage(
         AppApis.appBaseUrl + widget.occupant.qrCodeImage,
         AppImages.defaultQrCode,
       );
+      setState(() {
+        isImageLoaded = true;
+      });
     } catch (e) {
-      // Handle any errors during preloading
       AppUtils().debuglog("Error preloading images: $e");
     }
   }
@@ -142,7 +145,12 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
-                    pw.Image(pw.MemoryImage(qrCodeImageBytes), width: 70),
+                    pw.Image(
+                      pw.MemoryImage(
+                        qrCodeImageBytes,
+                      ),
+                      width: 70,
+                    ),
                     pw.Text("Scan to get information about the property owner"),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.center,
@@ -450,6 +458,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
     }
   }
 
+  bool isImageLoaded = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -461,6 +471,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
               buildWhen: (previous, current) => current is! PropertyInitial,
               listener: (context, state) {
                 if (state is SingleOccupantSuccessState) {
+                  _preloadImages();
                   //MSG.snackBar(context, state.msg);
 
                   // AppNavigator.pushAndRemovePreviousPages(context,
@@ -501,83 +512,97 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                   size: 18,
                                   weight: FontWeight.w700,
                                 ),
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          AppNavigator.pushAndStackPage(context,
-                                              page: AddOccupantScreen(
-                                                userModel: widget.userModel,
-                                                property: widget.property,
-                                                isEdit: true,
-                                                occupant: widget.occupant,
-                                                spaces: widget.property.spaces,
-                                              ));
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppSvgImages.edit,
-                                          height: 25,
-                                          width: 25,
-                                        )),
-                                    //const Icon(Icons.edit),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    GestureDetector(
-                                        onTap: () async {
-                                          String accessToken =
-                                              await SharedPref.getString(
-                                                  'access-token');
-                                          showDeleteConfirmationModal(context,
-                                              () {
-                                            deleteOccupant(
-                                              accessToken: accessToken,
-                                              occupantId: widget.occpuantId,
-                                              apiUrl: AppApis.singleOccupantApi,
-                                              onSuccess: () {
-                                                MSG.snackBar(context,
-                                                    'Occupant deleted successfully!');
+                                Container(
+                                  width: AppUtils.deviceScreenSize(context).width/3,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (isImageLoaded)
+                                        GestureDetector(
+                                            onTap: () async {
+                                              final pdfData = await generatePdf();
+                                              await Printing.layoutPdf(
+                                                  onLayout: (PdfPageFormat
+                                                          format) async =>
+                                                      pdfData,
+                                                  dynamicLayout: false,
+                                                  name:
+                                                      "${widget.occupant.fullName}OCCUPANT_INFO");
+                                            },
+                                            child: SvgPicture.asset(
+                                              AppSvgImages.download,
+                                              height: 25,
+                                              width: 25,
+                                            )),
 
-                                                Navigator.pop(context, true);
-                                              },
-                                              onError: (error) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                      content: Text(
-                                                          'Error: $error')),
-                                                );
-                                              },
-                                            );
-                                          });
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppSvgImages.delete,
-                                          height: 25,
-                                          width: 25,
-                                        )),
-                                  ],
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                  //                                       FormButton(
+                                  // ,
+                                  //                                         text: "Download",
+                                  //                                         isIcon: true,
+                                  //                                         borderRadius: 10,
+                                  //                                         bgColor: AppColors.blue,
+                                  //                                         iconWidget: Icons.download,
+                                  //                                       ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            AppNavigator.pushAndStackPage(context,
+                                                page: AddOccupantScreen(
+                                                  userModel: widget.userModel,
+                                                  property: widget.property,
+                                                  isEdit: true,
+                                                  occupant: widget.occupant,
+                                                  spaces: widget.property.spaces,
+                                                ));
+                                          },
+                                          child: SvgPicture.asset(
+                                            AppSvgImages.edit,
+                                            height: 25,
+                                            width: 25,
+                                          )),
+                                      //const Icon(Icons.edit),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      GestureDetector(
+                                          onTap: () async {
+                                            String accessToken =
+                                                await SharedPref.getString(
+                                                    'access-token');
+                                            showDeleteConfirmationModal(context,
+                                                () {
+                                              deleteOccupant(
+                                                accessToken: accessToken,
+                                                occupantId: widget.occpuantId,
+                                                apiUrl: AppApis.singleOccupantApi,
+                                                onSuccess: () {
+                                                  MSG.snackBar(context,
+                                                      'Occupant deleted successfully!');
+
+                                                  Navigator.pop(context, true);
+                                                },
+                                                onError: (error) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(
+                                                            'Error: $error')),
+                                                  );
+                                                },
+                                              );
+                                            });
+                                          },
+                                          child: SvgPicture.asset(
+                                            AppSvgImages.delete,
+                                            height: 25,
+                                            width: 25,
+                                          )),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            FormButton(
-                              onPressed: () async {
-                                final pdfData = await generatePdf();
-                                await Printing.layoutPdf(
-                                    onLayout: (PdfPageFormat format) async =>
-                                        pdfData,
-                                    dynamicLayout: false,
-                                    name:
-                                        "${widget.occupant.fullName}OCCUPANT_INFO");
-                              },
-                              text: "Download",
-                              isIcon: true,
-                              borderRadius: 10,
-                              bgColor: AppColors.blue,
-                              iconWidget: Icons.download,
                             ),
                             const SizedBox(
                               height: 15,
