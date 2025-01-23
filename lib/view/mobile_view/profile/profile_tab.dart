@@ -15,7 +15,6 @@ import '../../important_pages/dialog_box.dart';
 import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 import 'contact_us_page.dart';
-import 'package:http/http.dart' as http;
 
 class ProfileTab extends StatefulWidget {
   final UserModel userModel;
@@ -27,34 +26,6 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
-  Future<void> deleteProfile({
-    required String accessToken,
-    required String apiUrl,
-    required VoidCallback onSuccess,
-    required Function(String error) onError,
-  }) async {
-    final String url = apiUrl;
-
-    try {
-      final response = await http.delete(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        onSuccess(); // Notify that the delete is complete
-      } else {
-        final errorDetail =
-            json.decode(response.body)['detail'] ?? 'Unknown error';
-        onError(errorDetail); // Notify about the error
-      }
-    } catch (e) {
-      onError('An error occurred while deleting the occupant: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,74 +85,10 @@ class _ProfileTabState extends State<ProfileTab> {
               text: "Logout",
               bgColor: AppColors.blue.withOpacity(0.9),
               textColor: AppColors.white,
-              width: AppUtils.deviceScreenSize(context).width/2,
-            ),
-            FormButton(
-              onPressed: () async {
-                String accessToken =
-                    await SharedPref.getString('access-token');
-                showDeleteConfirmationModal(context, () {
-                  deleteProfile(
-                    accessToken: accessToken,
-                    apiUrl: AppApis.deleteProfile,
-                    onSuccess: () {
-                      MSG.snackBar(context, 'Occupant deleted successfully!');
-
-
-                      Navigator.pop(context, true);
-                    },
-                    onError: (error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $error')),
-                      );
-                    },
-                  );
-                });
-              },
-              text: "Delete Account",
-              bgColor: AppColors.red,
-              textColor: AppColors.white,
-              width: AppUtils.deviceScreenSize(context).width/2,
-
             ),
           ],
         ),
       ),
-    );
-  }
-  void showDeleteConfirmationModal(
-      BuildContext context, VoidCallback onConfirm) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Profile'),
-          content: const Text(
-              'Are you sure you want to delete your profile? This action cannot be undone.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the modal
-              },
-              child:
-              const Text('Cancel', style: TextStyle(color: Colors.black)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the modal
-                onConfirm(); // Trigger the confirm action
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: const CustomText(
-                text: 'Delete',
-                color: AppColors.white,
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 
