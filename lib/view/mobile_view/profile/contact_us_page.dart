@@ -4,6 +4,7 @@ import 'package:pim/res/app_images.dart';
 import 'package:pim/view/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../utills/app_utils.dart';
 import '../../widgets/app_custom_text.dart';
 
 class ContactUsPage extends StatelessWidget {
@@ -53,10 +54,12 @@ class ContactUsPage extends StatelessWidget {
               icon: FontAwesomeIcons.whatsapp,
               text: '+234 705 602 0452',
               onTap: () => _launchWhatsApp('+2347056020452'),
-            ),ContactInfoRow(
+            ),
+            ContactInfoRow(
               icon: FontAwesomeIcons.globe,
               text: 'https://property.appleadng.net',
-              onTap: () => _launchWhatsApp('https://property.appleadng.net/contact/'),
+              onTap: () =>
+                  _launchWhatsApp('https://property.appleadng.net/contact/'),
             ),
             ContactInfoRow(
               icon: FontAwesomeIcons.instagram,
@@ -84,7 +87,7 @@ class ContactUsPage extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      print('Could not launch $uri');
+      AppUtils().debuglog('Could not launch $uri');
     }
   }
 
@@ -93,7 +96,7 @@ class ContactUsPage extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      print('Could not launch $uri');
+      AppUtils().debuglog('Could not launch $uri');
     }
   }
 
@@ -105,17 +108,17 @@ class ContactUsPage extends StatelessWidget {
       if (!launched) {
         // Handle the case where the URL couldn't be launched
         // You might want to display an error message to the user
-        print('Could not launch $uri');
+        AppUtils().debuglog('Could not launch $uri');
         // Or try opening in a browser:
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.platformDefault);
         } else {
-          print('Could not launch $uri in a browser either');
+          AppUtils().debuglog('Could not launch $uri in a browser either');
         }
       }
     } catch (e) {
       // Handle any potential errors during launch
-      print('Error launching URL: $e');
+      AppUtils().debuglog('Error launching URL: $e');
     }
   }
 }

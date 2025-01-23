@@ -153,7 +153,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     selectedPaymnetDueTimeline = widget.occupant!.rentTimeline.capitalize();
     selectedPaymnetStatus = widget.occupant!.paymentStatus.capitalize();
     selectedSpace = widget.occupant!.spaceNumber.capitalize();
-    print(widget.occupant!.profilePic);
+    AppUtils().debuglog(widget.occupant!.profilePic);
     // for (String imageUrl in widget.occupant!) {
     try {
       File imageFile = await downloadImage(widget.occupant!.profilePic);
@@ -162,7 +162,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         // _selectedImage=XFile(imageFile.path);
       });
     } catch (e) {
-      print('Error downloading image: $e');
+      AppUtils().debuglog('Error downloading image: $e');
     }
     // }
     // });
@@ -225,7 +225,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
         });
       }
     } catch (e) {
-      print('Error picking image: $e');
+      AppUtils().debuglog('Error picking image: $e');
     }
   }
 
@@ -585,7 +585,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               items: spaceNumbers,
                               onChanged: (value) {
                                 setState(() {
-                                  print(ids);
+                                  AppUtils().debuglog(ids);
 
                                   selectedSpace = value;
                                   int index = spaceNumbers.indexOf(value);
@@ -1239,7 +1239,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                               items: spaceNumbers,
                               onChanged: (value) {
                                 setState(() {
-                                  print(ids);
+                                  AppUtils().debuglog(ids);
                                   selectedSpace = value;
                                   int index = spaceNumbers.indexOf(value);
                                   selectedSpaceId = ids[index];
@@ -1998,7 +1998,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
     }
 
     // Debugging: Log formData
-    print(formData);
+    AppUtils().debuglog(formData);
 
     // Trigger Bloc events for Add or Update
     if (widget.isEdit) {

@@ -53,27 +53,27 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
       // );
-      //print(res.body);
-      print(" status Code ${listPropertyResponse.statusCode}");
-      print(" Data ${listPropertyResponse.body}");
-      print(json.decode(listPropertyResponse.body));
+      //AppUtils().debuglog(res.body);
+      AppUtils().debuglog(" status Code ${listPropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${listPropertyResponse.body}");
+      AppUtils().debuglog(json.decode(listPropertyResponse.body));
       if (listPropertyResponse.statusCode == 200 ||
           listPropertyResponse.statusCode == 201) {
         PropertiesModel propertiesModel =
             PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
 
         //updateData(customerProfile);
-        print(propertiesModel);
+        AppUtils().debuglog(propertiesModel);
         emit(PropertySuccessState(
             propertiesModel)); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(listPropertyResponse.body))));
-        print(json.decode(listPropertyResponse.body));
+        AppUtils().debuglog(json.decode(listPropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while fetching property."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -98,7 +98,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'price_range_start': event.priceRangeStart!,
         'price': event.price.toString(),
       };
-      print(formData);
+      AppUtils().debuglog(formData);
       var addPropertyResponse =
           await appRepository.appPostRequestWithMultipleImages(
         formData,
@@ -107,27 +107,27 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         accessToken,
       );
 
-      print(" status Code ${addPropertyResponse.statusCode}");
-      print(" Data ${addPropertyResponse.body}");
-      print(json.decode(addPropertyResponse.body));
+      AppUtils().debuglog(" status Code ${addPropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${addPropertyResponse.body}");
+      AppUtils().debuglog(json.decode(addPropertyResponse.body));
       if (addPropertyResponse.statusCode == 200 ||
           addPropertyResponse.statusCode == 201) {
         // PropertiesModel propertiesModel =
         //     PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
 
         //updateData(customerProfile);
-        print(addPropertyResponse);
+        AppUtils().debuglog(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(addPropertyResponse.body))));
-        print(json.decode(addPropertyResponse.body));
+        AppUtils().debuglog(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while adding property."));
       emit(PropertyInitial());
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -145,27 +145,27 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
       // );
-      //print(res.body);
-      print(" status Code ${singlePropertyResponse.statusCode}");
-      print(" Data ${singlePropertyResponse.body}");
-      print(json.decode(singlePropertyResponse.body));
+      //AppUtils().debuglog(res.body);
+      AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+      AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 201) {
         Property property =
             Property.fromJson(json.decode(singlePropertyResponse.body));
 
-        print(property);
+        AppUtils().debuglog(property);
         emit(SinglePropertySuccessState(
             property)); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singlePropertyResponse.body))));
-        print(json.decode(singlePropertyResponse.body));
+        AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState(
           "An error occurred while fetching property detail."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -185,23 +185,23 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         accessToken,
       );
 
-      print(" status Code ${addPropertyResponse.statusCode}");
-      print(" Data ${addPropertyResponse.body}");
-      print(json.decode(addPropertyResponse.body));
+      AppUtils().debuglog(" status Code ${addPropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${addPropertyResponse.body}");
+      AppUtils().debuglog(json.decode(addPropertyResponse.body));
       if (addPropertyResponse.statusCode == 200 ||
           addPropertyResponse.statusCode == 201) {
-        print(addPropertyResponse);
+        AppUtils().debuglog(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(addPropertyResponse.body))));
-        print(json.decode(addPropertyResponse.body));
+        AppUtils().debuglog(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while adding occupant."));
       emit(PropertyInitial());
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -235,27 +235,27 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         accessToken,
       );
 
-      print(" status Code ${addPropertyResponse.statusCode}");
-      print(" Data ${addPropertyResponse.body}");
-      print(json.decode(addPropertyResponse.body));
+      AppUtils().debuglog(" status Code ${addPropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${addPropertyResponse.body}");
+      AppUtils().debuglog(json.decode(addPropertyResponse.body));
       if (addPropertyResponse.statusCode == 200 ||
           addPropertyResponse.statusCode == 201) {
         // PropertiesModel propertiesModel =
         //     PropertiesModel.fromJson(json.decode(listPropertyResponse.body));
 
         //updateData(customerProfile);
-        print(addPropertyResponse);
+        AppUtils().debuglog(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(addPropertyResponse.body))));
-        print(json.decode(addPropertyResponse.body));
+        AppUtils().debuglog(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while updating property."));
       emit(PropertyInitial());
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -275,23 +275,23 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         accessToken,
       );
 
-      print(" status Code ${addPropertyResponse.statusCode}");
-      print(" Data ${addPropertyResponse.body}");
-      print(json.decode(addPropertyResponse.body));
+      AppUtils().debuglog(" status Code ${addPropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${addPropertyResponse.body}");
+      AppUtils().debuglog(json.decode(addPropertyResponse.body));
       if (addPropertyResponse.statusCode == 200 ||
           addPropertyResponse.statusCode == 201) {
-        print(addPropertyResponse);
+        AppUtils().debuglog(addPropertyResponse);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(addPropertyResponse.body))));
-        print(json.decode(addPropertyResponse.body));
+        AppUtils().debuglog(json.decode(addPropertyResponse.body));
         emit(PropertyInitial());
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while updating occupant."));
       emit(PropertyInitial());
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -311,22 +311,22 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
       // );
-      //print(res.body);
-      print(" status Code ${singlePropertyResponse.statusCode}");
-      //print(" Data ${singlePropertyResponse.body}");
-      //print(json.decode(singlePropertyResponse.body));
+      //AppUtils().debuglog(res.body);
+      AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+      //AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+      //AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 204) {
-        //print(property);
+        //AppUtils().debuglog(property);
         emit(DeletePropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singlePropertyResponse.body))));
-        print(json.decode(singlePropertyResponse.body));
+        AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while deleting property."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -345,24 +345,24 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   //     //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
   //     //   accessToken: accessToken,
   //     // );
-  //     //print(res.body);
-  //     print(" status Code ${singlePropertyResponse.statusCode}");
-  //     //print(" Data ${singlePropertyResponse.body}");
-  //     print(json.decode(singlePropertyResponse.body));
+  //     //AppUtils().debuglog(res.body);
+  //     AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+  //     //AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+  //     AppUtils().debuglog(json.decode(singlePropertyResponse.body));
   //     if (singlePropertyResponse.statusCode == 200 ||
   //         singlePropertyResponse.statusCode == 204) {
   //
-  //       //print(property);
+  //       //AppUtils().debuglog(property);
   //       emit(
   //           DeletePropertySuccessState()); // Emit success state with data
   //     } else {
   //       emit(PropertyErrorState(AppUtils.getAllErrorMessages(
   //           json.decode(singlePropertyResponse.body))));
-  //       print(json.decode(singlePropertyResponse.body));
+  //       AppUtils().debuglog(json.decode(singlePropertyResponse.body));
   //     }
   //   } catch (e) {
   //     emit(PropertyErrorState("An error occurred while deleting property."));
-  //     print(e);
+  //     AppUtils().debuglog(e);
   //   }
   // }
 
@@ -381,27 +381,27 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
       // );
-      //print(res.body);
-      print(" status Code ${singlePropertyResponse.statusCode}");
-      print(" Data ${singlePropertyResponse.body}");
-      print(json.decode(singlePropertyResponse.body));
+      //AppUtils().debuglog(res.body);
+      AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+      AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+      AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 201) {
         Property property =
             Property.fromJson(json.decode(singlePropertyResponse.body));
 
-        print(property);
+        AppUtils().debuglog(property);
         emit(SinglePropertySuccessState(
             property)); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singlePropertyResponse.body))));
-        print(json.decode(singlePropertyResponse.body));
+        AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState(
           "An error occurred while fetching occupant detail."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -420,25 +420,25 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       //   '${AppApis.listProduct}?page=${event.page}&pageSize=${event.pageSize}',
       //   accessToken: accessToken,
       // );
-      //print(res.body);
-      print(" status Code ${singleSpaceResponse.statusCode}");
-      print(" Data ${singleSpaceResponse.body}");
-      print(json.decode(singleSpaceResponse.body));
+      //AppUtils().debuglog(res.body);
+      AppUtils().debuglog(" status Code ${singleSpaceResponse.statusCode}");
+      AppUtils().debuglog(" Data ${singleSpaceResponse.body}");
+      AppUtils().debuglog(json.decode(singleSpaceResponse.body));
       if (singleSpaceResponse.statusCode == 200 ||
           singleSpaceResponse.statusCode == 201) {
         Space space = Space.fromJson(json.decode(singleSpaceResponse.body));
-
-        print(space);
+//AppUtils().debuglog();
+        AppUtils().debuglog(space);
         emit(SingleSpaceSuccessState(space)); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singleSpaceResponse.body))));
-        print(json.decode(singleSpaceResponse.body));
+        AppUtils().debuglog(json.decode(singleSpaceResponse.body));
       }
     } catch (e) {
       emit(
           PropertyErrorState("An error occurred while fetching space detail."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -454,22 +454,18 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           accessToken,
           '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/');
 
-      print(" status Code ${singlePropertyResponse.statusCode}");
-      //print(" Data ${singlePropertyResponse.body}");
-      print(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 204 ||
           singlePropertyResponse.statusCode == 201) {
-        //print(property);
+        //AppUtils().debuglog(property);
         emit(DeleteSpaceSuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singlePropertyResponse.body))));
-        print(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while deleting property."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -488,22 +484,22 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
               event.images,
               accessToken);
 
-      print(" status Code ${singlePropertyResponse.statusCode}");
-      //print(" Data ${singlePropertyResponse.body}");
-      print(json.decode(singlePropertyResponse.body));
+      AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+      //AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+      AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       if (singlePropertyResponse.statusCode == 200 ||
           singlePropertyResponse.statusCode == 204 ||
           singlePropertyResponse.statusCode == 201) {
-        //print(property);
+        //AppUtils().debuglog(property);
         emit(AddPropertySuccessState()); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singlePropertyResponse.body))));
-        print(json.decode(singlePropertyResponse.body));
+        AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState("An error occurred while deleting property."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 
@@ -518,22 +514,22 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
   //     var singlePropertyResponse = await appRepository.appPostRequestWithMultipleImages(event.formData,
   //         '${AppApis.singleSpaceApi}${event.propertyId}/spaces/${event.spaceId}/',event.images,accessToken);
   //
-  //     print(" status Code ${singlePropertyResponse.statusCode}");
-  //     //print(" Data ${singlePropertyResponse.body}");
-  //     print(json.decode(singlePropertyResponse.body));
+  //     AppUtils().debuglog(" status Code ${singlePropertyResponse.statusCode}");
+  //     //AppUtils().debuglog(" Data ${singlePropertyResponse.body}");
+  //     AppUtils().debuglog(json.decode(singlePropertyResponse.body));
   //     if (singlePropertyResponse.statusCode == 200 ||
   //         singlePropertyResponse.statusCode == 204||
   //         singlePropertyResponse.statusCode == 201) {
-  //       //print(property);
+  //       //AppUtils().debuglog(property);
   //       emit(AddPropertySuccessState()); // Emit success state with data
   //     } else {
   //       emit(PropertyErrorState(AppUtils.getAllErrorMessages(
   //           json.decode(singlePropertyResponse.body))));
-  //       print(json.decode(singlePropertyResponse.body));
+  //       AppUtils().debuglog(json.decode(singlePropertyResponse.body));
   //     }
   //   } catch (e) {
   //     emit(PropertyErrorState("An error occurred while deleting property."));
-  //     print(e);
+  //     AppUtils().debuglog(e);
   //   }
   // }
 
@@ -547,26 +543,26 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     try {
       var singleOccupantResponse = await appRepository.getRequestWithToken(
           accessToken, AppApis.singleOccupantApi + event.occupantId);
-      print(" status Code ${singleOccupantResponse.statusCode}");
-      print(" Data ${singleOccupantResponse.body}");
-      print(json.decode(singleOccupantResponse.body));
+      AppUtils().debuglog(" status Code ${singleOccupantResponse.statusCode}");
+      AppUtils().debuglog(" Data ${singleOccupantResponse.body}");
+      AppUtils().debuglog(json.decode(singleOccupantResponse.body));
       if (singleOccupantResponse.statusCode == 200 ||
           singleOccupantResponse.statusCode == 201) {
         Occupant occupant =
             Occupant.fromJson(json.decode(singleOccupantResponse.body));
 
-        print(occupant);
+        AppUtils().debuglog(occupant);
         emit(SingleOccupantSuccessState(
             occupant)); // Emit success state with data
       } else {
         emit(PropertyErrorState(AppUtils.getAllErrorMessages(
             json.decode(singleOccupantResponse.body))));
-        print(json.decode(singleOccupantResponse.body));
+        AppUtils().debuglog(json.decode(singleOccupantResponse.body));
       }
     } catch (e) {
       emit(PropertyErrorState(
           "An error occurred while fetching property detail."));
-      print(e);
+      AppUtils().debuglog(e);
     }
   }
 }

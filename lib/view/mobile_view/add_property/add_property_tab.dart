@@ -62,7 +62,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   //Property? property;
   void handleUpdate() async {
-    print('Updating property details...');
+    AppUtils().debuglog('Updating property details...');
 
     // Update controllers outside setState
     propertyNameController.text = widget.property.propertyName;
@@ -79,16 +79,16 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
     descriptionController.text = widget.property.description;
     isToggled = widget.property.advertise;
-    print('Image URLs: ${widget.property.imageUrls}');
+    AppUtils().debuglog('Image URLs: ${widget.property.imageUrls}');
     List<String> urls = widget.property.imageUrls
             .map((imageUrl) => AppApis.appBaseUrl + imageUrl.url)
             .toList() ??
         [];
-    print('Extracted URLs: $urls');
+    AppUtils().debuglog('Extracted URLs: $urls');
 
     // Download images
     for (String imageUrl in urls) {
-      print('Downloading image from: $imageUrl');
+      AppUtils().debuglog('Downloading image from: $imageUrl');
       try {
         File imageFile = await downloadImage(imageUrl);
         setState(() {
@@ -96,7 +96,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           imageFileList!.add(XFile(imageFile.path));
         });
       } catch (e) {
-        print('Error downloading image: $e');
+        AppUtils().debuglog('Error downloading image: $e');
       }
     }
   }
@@ -104,8 +104,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    print(widget.property.propertyName);
-    print(widget.property.propertyType);
+    AppUtils().debuglog(widget.property.propertyName);
+    AppUtils().debuglog(widget.property.propertyType);
     if (widget.isEdit) {
       handleUpdate();
     }

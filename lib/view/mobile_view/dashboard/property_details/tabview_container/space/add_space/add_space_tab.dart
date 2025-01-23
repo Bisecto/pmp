@@ -60,7 +60,7 @@ class _AddSpaceState extends State<AddSpace> {
 
   //Property? property;
   void handleUpdate() async {
-    print('Updating property details...');
+    AppUtils().debuglog('Updating property details...');
 
     // Update controllers outside setState
     spaceNumberController.text = widget.space.spaceNumber;
@@ -71,14 +71,14 @@ class _AddSpaceState extends State<AddSpace> {
     descriptionController.text = widget.space.description;
     isToggled = widget.space.advertise;
     // isOccupied = widget.space.isOccupied;
-    print('Image URLs: ${widget.space.imageUrls}');
+    AppUtils().debuglog('Image URLs: ${widget.space.imageUrls}');
     List<String> urls = widget.space.imageUrls;
-    print('Extracted URLs: $urls');
+    AppUtils().debuglog('Extracted URLs: $urls');
 
     // Download images
     for (String imageUrl in urls) {
       isImagesDownloaded=false;
-      print('Downloading image from: $imageUrl');
+      AppUtils().debuglog('Downloading image from: $imageUrl');
       try {
         File imageFile = await downloadImage(AppApis.appBaseUrl +imageUrl);
         setState(() {
@@ -86,7 +86,7 @@ class _AddSpaceState extends State<AddSpace> {
           imageFileList!.add(XFile(imageFile.path));
         });
       } catch (e) {
-        print('Error downloading image: $e');
+        AppUtils().debuglog('Error downloading image: $e');
       }
     }
     isImagesDownloaded=true;
@@ -1120,7 +1120,7 @@ class _AddSpaceState extends State<AddSpace> {
       "advertise": isToggled,
     };
 
-    print('Form Data: $formData');
+    AppUtils().debuglog('Form Data: $formData');
 
     // Dispatch the appropriate event
     if (widget.isEdit) {

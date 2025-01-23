@@ -42,7 +42,7 @@ class _SpaceListState extends State<SpaceList> {
   @override
   void initState() {
     // TODO: implement initState
-    print(AppApis.appBaseUrl + widget.property.firstImage);
+    AppUtils().debuglog(AppApis.appBaseUrl + widget.property.firstImage);
     super.initState();
   }
 

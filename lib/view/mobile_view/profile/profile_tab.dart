@@ -43,9 +43,7 @@ class _ProfileTabState extends State<ProfileTab> {
           'Content-Type': 'application/json',
         },
       );
-      print(url);
-      print(response.statusCode);
-      print(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 204) {
         onSuccess(); // Notify that the delete is complete
       } else {

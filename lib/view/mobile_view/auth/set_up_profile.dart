@@ -19,6 +19,7 @@ import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../res/app_colors.dart';
 import '../../../res/app_images.dart';
 import '../../../utills/app_navigator.dart';
+import '../../../utills/app_utils.dart';
 import '../../../utills/app_validator.dart';
 import '../../../utills/custom_theme.dart';
 import '../../important_pages/dialog_box.dart';
@@ -31,6 +32,7 @@ import 'forgot_password/password_reset_request.dart';
 
 class SetUpProfile extends StatefulWidget {
   final String userName;
+
   const SetUpProfile({super.key, required this.userName});
 
   @override
@@ -65,7 +67,7 @@ class _SetUpProfileState extends State<SetUpProfile> {
         imageFileList = [
           selectedImage
         ]; // Replace the list with the newly selected image
-        print("Selected Image Path: ${selectedImage.name}");
+        AppUtils().debuglog("Selected Image Path: ${selectedImage.name}");
       } else {
         MSG.warningSnackBar(context, 'Selected image not supported');
       }
@@ -275,7 +277,8 @@ class _SetUpProfileState extends State<SetUpProfile> {
                                                       _lastNameController.text,
                                                       _phoneNumberController
                                                           .text,
-                                                      imageFileList![0],widget.userName));
+                                                      imageFileList![0],
+                                                      widget.userName));
                                             } else {
                                               MSG.infoSnackBar(context,
                                                   'Please select a profile image');

@@ -23,7 +23,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import '../../../../../../model/space_model.dart';
 import '../../../../../../res/apis.dart';
 import '../../../../../../res/app_colors.dart';
@@ -92,8 +91,7 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                     final singleSpaceSuccessState =
                         state as SingleSpaceSuccessState;
                     images = singleSpaceSuccessState.space.imageUrls
-                            .map(
-                                (imageUrl) => AppApis.appBaseUrl + imageUrl)
+                            .map((imageUrl) => AppApis.appBaseUrl + imageUrl)
                             .toList() ??
                         [];
                     return Padding(
@@ -148,12 +146,10 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                                             showDeleteConfirmationModal(context,
                                                 () {
                                               spaceBloc.add(DeleteSpaceEvent(
-                                                  widget.property.id
-                                                      .toString(),
-                                                  singleSpaceSuccessState
-                                                      .space.id
-                                                      .toString(),
-                                                  ));
+                                                widget.property.id.toString(),
+                                                singleSpaceSuccessState.space.id
+                                                    .toString(),
+                                              ));
                                             });
                                           },
                                           child: SvgPicture.asset(

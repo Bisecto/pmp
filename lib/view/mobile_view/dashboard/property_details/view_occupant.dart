@@ -60,7 +60,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
         return response.bodyBytes;
       }
     } catch (e) {
-      print("Error fetching image from $url: $e");
+      AppUtils().debuglog("Error fetching image from $url: $e");
     }
     return _loadAssetImage(defaultAssetPath);
   }
@@ -98,7 +98,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
       );
     } catch (e) {
       // Handle any errors during preloading
-      print("Error preloading images: $e");
+      AppUtils().debuglog("Error preloading images: $e");
     }
   }
 
@@ -435,9 +435,9 @@ class _ViewOccupantState extends State<ViewOccupant> {
           'Content-Type': 'application/json',
         },
       );
-      print(url);
-      print(response.statusCode);
-      print(response.body);
+      AppUtils().debuglog(url);
+      AppUtils().debuglog(response.statusCode);
+      AppUtils().debuglog(response.body);
       if (response.statusCode == 200 || response.statusCode == 204) {
         onSuccess(); // Notify that the delete is complete
       } else {

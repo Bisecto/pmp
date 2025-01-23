@@ -42,7 +42,7 @@ class _OccupantListState extends State<OccupantList> {
   @override
   void initState() {
     // TODO: implement initState
-    print(AppApis.appBaseUrl + widget.occupants[0].profilePic);
+    AppUtils().debuglog(AppApis.appBaseUrl + widget.occupants[0].profilePic);
     super.initState();
   }
 
@@ -57,10 +57,10 @@ class _OccupantListState extends State<OccupantList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              //print(widget.occupants[index].rentExpirationDate.toString());
-              print(widget.occupants[index].selfEmployedProfile);
-              print(widget.occupants[index].employedProfile);
-              print(widget.occupants[index].studentProfile);
+              //AppUtils().debuglog(widget.occupants[index].rentExpirationDate.toString());
+              AppUtils().debuglog(widget.occupants[index].selfEmployedProfile);
+              AppUtils().debuglog(widget.occupants[index].employedProfile);
+              AppUtils().debuglog(widget.occupants[index].studentProfile);
               bool isDelete = await AppNavigator.pushAndStackPage(context,
                   page: ViewOccupant(
                     occupant: widget.occupants[index],
@@ -273,17 +273,17 @@ class _OccupantListState extends State<OccupantList> {
   //     queryParameters: {'body': message},
   //   );
   //
-  //   print('Attempting to launch: $smsUri');
+  //   AppUtils().debuglog('Attempting to launch: $smsUri');
   //
   //   if (await canLaunchUrl(smsUri)) {
   //     try {
   //       await launchUrl(smsUri);
-  //       print('SMS sent successfully.');
+  //       AppUtils().debuglog('SMS sent successfully.');
   //     } catch (e) {
-  //       print('Error launching SMS URL: $e');
+  //       AppUtils().debuglog('Error launching SMS URL: $e');
   //     }
   //   } else {
-  //     print('Could not launch SMS URL: $smsUri');
+  //     AppUtils().debuglog('Could not launch SMS URL: $smsUri');
   //     throw 'Could not launch $smsUri';
   //   }
   // }

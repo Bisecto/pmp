@@ -14,7 +14,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +28,7 @@ import '../../../../../../model/property_model.dart';
 import '../../../../../../res/apis.dart';
 import '../../../../../../res/app_colors.dart';
 import '../../../../../../res/app_images.dart';
+import '../../../../../../utills/app_utils.dart';
 import '../../../../../widgets/app_custom_text.dart';
 import 'occupant_list.dart';
 
@@ -63,7 +63,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
       await prepareImage();
     } catch (e) {
       // Handle error gracefully
-      print("Error loading resources: $e");
+      AppUtils().debuglog("Error loading resources: $e");
     }
   }
 
@@ -85,7 +85,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
         throw Exception("Failed to load student image: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error preparing images: $e");
+      AppUtils().debuglog("Error preparing images: $e");
       rethrow; // Propagate the error to the caller
     }
   }
@@ -93,7 +93,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
   Future<Uint8List> generatePdf(Property prop) async {
     final pdf = pw.Document();
 
-    print("Starting PDF generation...");
+    AppUtils().debuglog("Starting PDF generation...");
     final tableHeaders = [
       'Name',
       'State',
@@ -105,13 +105,13 @@ class _OccupantContainerState extends State<OccupantContainer> {
 
     // Verify resources
     if (logoImage == null || companyImage == null) {
-      print("Missing required images for PDF generation");
+      AppUtils().debuglog("Missing required images for PDF generation");
       return Uint8List(0);
     }
 
     // Check occupants data
     if (prop.occupants.isEmpty) {
-      print("No occupants data available in the property model");
+      AppUtils().debuglog("No occupants data available in the property model");
     }
 
     pdf.addPage(
@@ -195,7 +195,7 @@ class _OccupantContainerState extends State<OccupantContainer> {
       ),
     );
 
-    print("PDF generation complete.");
+    AppUtils().debuglog("PDF generation complete.");
     return pdf.save();
   }
 
@@ -286,10 +286,10 @@ class _OccupantContainerState extends State<OccupantContainer> {
                 children: [
                   InkWell(
                       onTap: () async {
-                        print(1);
+                        AppUtils().debuglog(1);
                         final pdfData = await generatePdf(widget.property);
                         if (pdfData.isEmpty) {
-                          print("Generated PDF data is empty!");
+                          AppUtils().debuglog("Generated PDF data is empty!");
                           return;
                         }
 
@@ -299,13 +299,13 @@ class _OccupantContainerState extends State<OccupantContainer> {
                             '${directory.path}/GeneratedProperty.pdf';
                         final file = File(filePath);
                         await file.writeAsBytes(pdfData);
-                        print("PDF saved to: $filePath");
+                        AppUtils().debuglog("PDF saved to: $filePath");
 
                         await Printing.layoutPdf(
                           onLayout: (PdfPageFormat format) async {
-                            print("Generating PDF layout...");
+                            AppUtils().debuglog("Generating PDF layout...");
                             final data = pdfData;
-                            print(
+                            AppUtils().debuglog(
                                 "PDF layout generated. Size: ${data.length} bytes");
                             return data;
                           },
@@ -313,14 +313,14 @@ class _OccupantContainerState extends State<OccupantContainer> {
                           name: "${widget.property.propertyName}_PROPERTY_INFO",
                         );
 
-                        // await Printing.layoutPdf(
+                        // await AppUtils().debugloging.layoutPdf(
                         //     onLayout: (PdfPageFormat
                         //             format) async =>
                         //         pdfData,
                         //     dynamicLayout: false,
                         //     name:
                         //         "${widget.property.propertyName}PROPERTY_INFO");
-                        print(1);
+                        AppUtils().debuglog(1);
                       },
                       child: SvgPicture.asset(
                         AppSvgImages.download,

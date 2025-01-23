@@ -48,8 +48,8 @@ class AppUtils {
     // bool isFirstOpen = (await SharedPref.getBool('isFirstOpen')) ?? true;
     // String userData = await SharedPref.getString('userData');
     // String savedUserpassword = await SharedPref.getString('password');
-    // print(savedUserpassword);
-    //  print(userData);
+    // AppUtils().debuglog(savedUserpassword);
+    //  AppUtils().debuglog(userData);
     // AppUtils().debuglog(password);AppUtils().debuglog(8);
 
     // if (!isFirstOpen) {
@@ -122,8 +122,8 @@ class AppUtils {
       // Format the DateTime object
       String formattedDate = formatter.format(dateTime);
 
-      // Print the formatted date
-      //print(formattedDate);
+      // AppUtils().debuglog the formatted date
+      //AppUtils().debuglog(formattedDate);
 
       return formattedDate;
     } else {

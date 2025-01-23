@@ -17,6 +17,7 @@ import '../../../bloc/auth_bloc/auth_bloc.dart';
 import '../../../res/app_colors.dart';
 import '../../../res/app_images.dart';
 import '../../../utills/app_navigator.dart';
+import '../../../utills/app_utils.dart';
 import '../../../utills/app_validator.dart';
 import '../../../utills/custom_theme.dart';
 import '../../important_pages/dialog_box.dart';
@@ -64,7 +65,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         imageFileList!.add(XFile(imageFile.path));
       });
     } catch (e) {
-      print('Error downloading image: $e');
+      AppUtils().debuglog('Error downloading image: $e');
     }
   }
 
@@ -93,7 +94,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         imageFileList = [
           selectedImage
         ]; // Replace the list with the newly selected image
-        print("Selected Image Path: ${selectedImage.name}");
+        AppUtils().debuglog("Selected Image Path: ${selectedImage.name}");
       } else {
         MSG.warningSnackBar(context, 'Selected image not supported');
       }

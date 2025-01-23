@@ -23,7 +23,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import '../../../../model/property_model.dart';
 import '../../../../res/apis.dart';
 import '../../../../res/app_colors.dart';
@@ -165,7 +164,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   property: singlePropertySuccessState.property,
                                   context: context),
                               Container(
-                                height: (singlePropertySuccessState.property.spaces.length * 135)+150,
+                                height: (singlePropertySuccessState
+                                            .property.spaces.length *
+                                        135) +
+                                    150,
                                 child: DefaultTabController(
                                   length: 2,
                                   initialIndex: 0,
@@ -201,7 +203,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                             Tab(
                                                 text:
                                                     'Spaces(${singlePropertySuccessState.property.spaces.length})'),
-                                             Tab(text: 'Occupants(${singlePropertySuccessState.property.occupants.length})'),
+                                            Tab(
+                                                text:
+                                                    'Occupants(${singlePropertySuccessState.property.occupants.length})'),
                                           ],
                                         ),
                                       ),

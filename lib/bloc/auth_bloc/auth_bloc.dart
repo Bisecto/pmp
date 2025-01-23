@@ -117,7 +117,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       // final response = await authRepository.authPostRequest(
       //     formData, AppApis.requestPasswordResetOtp)
-      print(AppApis.requestPasswordResetOtp);
+      AppUtils().debuglog(AppApis.requestPasswordResetOtp);
       var resetResponse = await http.post(
         Uri.parse(AppApis.requestPasswordResetOtp),
         body: {'email': event.userData},
@@ -158,8 +158,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //AppUtils().debuglog(formData);
 
     try {
-      print(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP);
-      print(event.isNewAccount
+      AppUtils().debuglog(event.isNewAccount ? AppApis.verifyOTP : AppApis.validateOTP);
+      AppUtils().debuglog(event.isNewAccount
           ? {
               'username': event.userData,
               'verification_code': event.otp.toString()
@@ -325,7 +325,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       // final response = await authRepository.authPostRequest(
       //     formData, AppApis.requestPasswordResetOtp)
-      print(event.isNewAccount
+      AppUtils().debuglog(event.isNewAccount
           ? AppApis.emailVerification
           : AppApis.requestPasswordResendOtp);
       var resetResponse = await http.post(
