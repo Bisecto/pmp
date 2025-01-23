@@ -35,7 +35,7 @@ class CustomText extends StatelessWidget {
       maxLines: maxLines,
       softWrap: true,
       overflow: TextOverflow.ellipsis,
-      style:GoogleFonts.roboto(
+      style: GoogleFonts.roboto(
         decoration:
             (underline) ? TextDecoration.underline : TextDecoration.none,
         decorationColor: AppColors.green,
@@ -57,7 +57,6 @@ class TextStyles {
       style: GoogleFonts.redHatDisplay(
         textStyle: TextStyle(
             fontStyle: FontStyle.normal,
-
             color: textColor,
             fontSize: textSize,
             fontWeight: FontWeight.w800),
