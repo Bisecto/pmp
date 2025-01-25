@@ -7,6 +7,7 @@ import 'package:pim/bloc/property_bloc/property_bloc.dart';
 
 import 'package:provider/provider.dart';
 import '../../../model/user_model.dart';
+import '../../../repository/review_helper.dart';
 import '../../../res/app_colors.dart';
 import '../../../res/app_svg_images.dart';
 import '../../../utills/custom_theme.dart';
@@ -36,8 +37,11 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     propertyBloc.add(GetPropertyEvent());
+    reviewHelper.checkAndRequestReview();
+
     super.initState();
   }
+  final ReviewHelper reviewHelper = ReviewHelper();
 
   @override
   Widget build(BuildContext context) {
