@@ -270,9 +270,9 @@ class _OccupantContainerState extends State<OccupantContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: Column(
+    return Container(
+      color: AppColors.white,
+      child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

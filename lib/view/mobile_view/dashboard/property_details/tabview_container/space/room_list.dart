@@ -26,11 +26,12 @@ class SpaceList extends StatefulWidget {
   final UserModel userModel;
   final PropertyBloc propertyBloc;
 
-  SpaceList({super.key,
-    required this.spaces,
-    required this.property,
-    required this.userModel,
-    required this.propertyBloc});
+  SpaceList(
+      {super.key,
+      required this.spaces,
+      required this.property,
+      required this.userModel,
+      required this.propertyBloc});
 
   final List<Space> spaces;
 
@@ -57,13 +58,19 @@ class _SpaceListState extends State<SpaceList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              AppNavigator.pushAndStackPage(context, page: SpaceDetails(
-                  space: widget.spaces[index],
-                  userModel: widget.userModel,
-                  property: widget.property));
+              bool isDeleteUpdate = await  AppNavigator.pushAndStackPage(context,
+                  page: SpaceDetails(
+                      space: widget.spaces[index],
+                      userModel: widget.userModel,
+                      property: widget.property))??false;
+              if (isDeleteUpdate) {
+                widget.propertyBloc
+                    .add(GetSinglePropertyEvent(widget.property.id.toString()));
+              }
+
             },
-            child: spaceContainer(
-                space: widget.spaces[index], context: context),
+            child:
+                spaceContainer(space: widget.spaces[index], context: context),
           );
         },
       ),
@@ -119,9 +126,7 @@ class _SpaceListState extends State<SpaceList> {
                 ),
               ),
               SizedBox(
-                width: AppUtils
-                    .deviceScreenSize(context)
-                    .width,
+                width: AppUtils.deviceScreenSize(context).width,
                 height: 50,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
@@ -158,7 +163,6 @@ class _SpaceListState extends State<SpaceList> {
                           ),
                         ],
                       ),
-
                     ],
                   ),
                 ),
@@ -169,6 +173,4 @@ class _SpaceListState extends State<SpaceList> {
       ),
     );
   }
-
-
 }

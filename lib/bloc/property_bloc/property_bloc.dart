@@ -153,6 +153,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           singlePropertyResponse.statusCode == 201) {
         Property property =
             Property.fromJson(json.decode(singlePropertyResponse.body));
+         //property.occupants=property.occupants+property.occupants+property.occupants+property.occupants+property.occupants+property.occupants+property.occupants;
+        // property.occupants=property.occupants+property.occupants+property.occupants+property.occupants+property.occupants+property.occupants+property.occupants;
 
         AppUtils().debuglog(property);
         emit(SinglePropertySuccessState(
@@ -215,11 +217,13 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       Map<String, String> formData = {
         'property_name': event.propertyName,
         'property_type': event.propertyType,
-        'available_flats_rooms': event.availableFlatsRooms,
+       // 'available_flats_rooms': event.availableFlatsRooms,
         // 'occupied_flats_rooms': event.occupiedRooms,
         'address': event.address,
         'city': event.city,
         'description': event.description,
+        'total_space': event.availableFlatsRooms,
+
         'location': event.location,
         'price_type': event.priceType,
         'price_range_stop': event.priceRangeStop!,
@@ -227,6 +231,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
         'price': event.price.toString(),
         'advertise': event.isToggled ? "True" : "False",
       };
+      print(formData);
       var addPropertyResponse =
           await appRepository.appPutRequestWithMultipleImages(
         formData,
@@ -389,8 +394,8 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
           singlePropertyResponse.statusCode == 201) {
         Property property =
             Property.fromJson(json.decode(singlePropertyResponse.body));
-
         AppUtils().debuglog(property);
+
         emit(SinglePropertySuccessState(
             property)); // Emit success state with data
       } else {

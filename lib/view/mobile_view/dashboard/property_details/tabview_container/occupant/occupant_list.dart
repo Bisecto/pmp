@@ -49,7 +49,7 @@ class _OccupantListState extends State<OccupantList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.occupants.length * 162,
+      height: widget.occupants.length * 150,
       child: ListView.builder(
         itemCount: widget.occupants.length,
         padding: EdgeInsets.zero,
@@ -58,9 +58,7 @@ class _OccupantListState extends State<OccupantList> {
           return GestureDetector(
             onTap: () async {
               //AppUtils().debuglog(widget.occupants[index].rentExpirationDate.toString());
-              AppUtils().debuglog(widget.occupants[index].selfEmployedProfile);
-              AppUtils().debuglog(widget.occupants[index].employedProfile);
-              AppUtils().debuglog(widget.occupants[index].studentProfile);
+
               bool isDelete = await AppNavigator.pushAndStackPage(context,
                   page: ViewOccupant(
                     occupant: widget.occupants[index],

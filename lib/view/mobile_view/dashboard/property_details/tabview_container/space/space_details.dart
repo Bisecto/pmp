@@ -74,9 +74,10 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                   //     page: LandingPage(studentProfile: state.studentProfile));
                 } else if (state is DeleteSpaceSuccessState) {
                   MSG.snackBar(context, "Space has beedn deleted");
-                  AppNavigator.pushAndRemovePreviousPages(context,
-                      page: LandingPage(
-                          selectedIndex: 0, userModel: widget.userModel));
+                  Navigator.pop(context,true);
+                  // AppNavigator.pushAndRemovePreviousPages(context,
+                  //     page: LandingPage(
+                  //         selectedIndex: 0, userModel: widget.userModel));
                 } else if (state is PropertyErrorState) {
                   MSG.warningSnackBar(context, state.error);
                 }

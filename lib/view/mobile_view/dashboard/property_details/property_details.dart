@@ -43,15 +43,35 @@ class PropertyDetails extends StatefulWidget {
   State<PropertyDetails> createState() => _PropertyDetailsState();
 }
 
-class _PropertyDetailsState extends State<PropertyDetails> {
+class _PropertyDetailsState extends State<PropertyDetails>
+    with SingleTickerProviderStateMixin {
   PropertyBloc propertyBloc = PropertyBloc();
   List<String> images = [];
+  late TabController tabController;
 
   @override
   void initState() {
-    // TODO: implement initState
-    propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
     super.initState();
+    propertyBloc.add(GetSinglePropertyEvent(widget.property.id.toString()));
+    tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+
+    tabController.addListener(() {
+      if (tabController.indexIsChanging ||
+          tabController.index != currentIndex) {
+        setState(() {
+          currentIndex = tabController.index; // Update currentIndex
+        });
+      }
+    });
+  }
+
+  int currentIndex = 0;
+
+  @override
+  void dispose() {
+    tabController.removeListener(() {});
+    tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,202 +79,184 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-          child: BlocConsumer<PropertyBloc, PropertyState>(
-              bloc: propertyBloc,
-              listenWhen: (previous, current) => current is! PropertyInitial,
-              buildWhen: (previous, current) => current is! PropertyInitial,
-              listener: (context, state) {
-                if (state is SinglePropertySuccessState) {
-                  //MSG.snackBar(context, state.msg);
-
-                  // AppNavigator.pushAndRemovePreviousPages(context,
-                  //     page: LandingPage(studentProfile: state.studentProfile));
-                } else if (state is DeletePropertySuccessState) {
-                  MSG.snackBar(context, "Property has beedn deleted");
-                  AppNavigator.pushAndRemovePreviousPages(context,
-                      page: LandingPage(
-                          selectedIndex: 0, userModel: widget.userModel));
-                } else if (state is PropertyErrorState) {
-                  MSG.warningSnackBar(context, state.error);
-                }
-              },
-              builder: (context, state) {
-                switch (state.runtimeType) {
-                  // case PostsFetchingState:
-                  //   return const Center(
-                  //     child: CircularProgressIndicator(),
-                  //   );
-                  case SinglePropertySuccessState:
-                    final singlePropertySuccessState =
-                        state as SinglePropertySuccessState;
-                    images = singlePropertySuccessState.property.imageUrls
-                            .map(
-                                (imageUrl) => AppApis.appBaseUrl + imageUrl.url)
-                            .toList() ??
-                        [];
-                    return Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: SingleChildScrollView(
-                          child: Column(
+        child: BlocConsumer<PropertyBloc, PropertyState>(
+          bloc: propertyBloc,
+          listenWhen: (previous, current) => current is! PropertyInitial,
+          buildWhen: (previous, current) => current is! PropertyInitial,
+          listener: (context, state) {
+            if (state is DeletePropertySuccessState) {
+              MSG.snackBar(context, "Property has been deleted");
+              AppNavigator.pushAndRemovePreviousPages(
+                context,
+                page: LandingPage(
+                  selectedIndex: 0,
+                  userModel: widget.userModel,
+                ),
+              );
+            } else if (state is PropertyErrorState) {
+              MSG.warningSnackBar(context, state.error);
+            }
+          },
+          builder: (context, state) {
+            if (state is SinglePropertySuccessState) {
+              final singlePropertySuccessState = state;
+              images = singlePropertySuccessState.property.imageUrls
+                      .map((imageUrl) => AppApis.appBaseUrl + imageUrl.url)
+                      .toList() ??
+                  [];
+              // final tabHeight = currentIndex == 0
+              //     ? (singlePropertySuccessState.property.spaces.length + 0.5) *
+              //         123.0
+              //     : (singlePropertySuccessState.property.occupants.length +
+              //             0.5) *
+              //         165.0;
+              // tabHeight + 35;
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppAppBar(
+                        title: singlePropertySuccessState.property.propertyName,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const CustomText(
+                            text: "Property Details",
+                            size: 16,
+                            weight: FontWeight.w700,
+                          ),
+                          Row(
                             children: [
-                              AppAppBar(
-                                  title: singlePropertySuccessState
-                                      .property.propertyName),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const CustomText(
-                                    text: "Property Details",
-                                    size: 16,
-                                    weight: FontWeight.w700,
-                                  ),
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            AppNavigator.pushAndStackPage(
-                                                context,
-                                                page: AddPropertyScreen(
-                                                  userModel: widget.userModel,
-                                                  isEdit: true,
-                                                  property:
-                                                      singlePropertySuccessState
-                                                          .property,
-                                                ));
-                                          },
-                                          child: SvgPicture.asset(
-                                            AppSvgImages.edit,
-                                            height: 25,
-                                            width: 25,
-                                          )),
-                                      //const Icon(Icons.edit),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      GestureDetector(
-                                          onTap: () {
-                                            showDeleteConfirmationModal(context,
-                                                () {
-                                              propertyBloc.add(
-                                                  DeletePropertyEvent(
-                                                      singlePropertySuccessState
-                                                          .property.id
-                                                          .toString()));
-                                            });
-                                          },
-                                          child: SvgPicture.asset(
-                                            AppSvgImages.delete,
-                                            height: 25,
-                                            width: 25,
-                                          )),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              lodgeContainer(
-                                  property: singlePropertySuccessState.property,
-                                  context: context),
-                              Container(
-                                height: (singlePropertySuccessState
-                                            .property.spaces.length *
-                                        135) +
-                                    150,
-                                child: DefaultTabController(
-                                  length: 2,
-                                  initialIndex: 0,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 60,
-                                        width:
-                                            AppUtils.deviceScreenSize(context)
-                                                .width,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: AppColors.tableBorderColor,
-                                              width: 2),
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                        ),
-                                        child: TabBar(
-                                          indicator: BoxDecoration(
-                                            color: AppColors.mainAppColor,
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                          indicatorSize:
-                                              TabBarIndicatorSize.tab,
-                                          indicatorWeight: 0,
-                                          labelColor: AppColors.white,
-                                          unselectedLabelColor: AppColors.black,
-                                          tabs: [
-                                            Tab(
-                                                text:
-                                                    'Spaces(${singlePropertySuccessState.property.spaces.length})'),
-                                            Tab(
-                                                text:
-                                                    'Occupants(${singlePropertySuccessState.property.occupants.length})'),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TabBarView(
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          children: [
-                                            RoomContainer(
-                                              property:
-                                                  singlePropertySuccessState
-                                                      .property,
-                                              userModel: widget.userModel,
-                                              propertyBloc: propertyBloc,
-                                            ),
-                                            OccupantContainer(
-                                              property:
-                                                  singlePropertySuccessState
-                                                      .property,
-                                              userModel: widget.userModel,
-                                              propertyBloc: propertyBloc,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              GestureDetector(
+                                onTap: () {
+                                  AppNavigator.pushAndStackPage(
+                                    context,
+                                    page: AddPropertyScreen(
+                                      userModel: widget.userModel,
+                                      isEdit: true,
+                                      property:
+                                          singlePropertySuccessState.property,
+                                    ),
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  AppSvgImages.edit,
+                                  height: 25,
+                                  width: 25,
                                 ),
-                              )
+                              ),
+                              const SizedBox(width: 20),
+                              GestureDetector(
+                                onTap: () {
+                                  showDeleteConfirmationModal(context, () {
+                                    propertyBloc.add(
+                                      DeletePropertyEvent(
+                                        singlePropertySuccessState.property.id
+                                            .toString(),
+                                      ),
+                                    );
+                                  });
+                                },
+                                child: SvgPicture.asset(
+                                  AppSvgImages.delete,
+                                  height: 25,
+                                  width: 25,
+                                ),
+                              ),
                             ],
                           ),
-                        ),
+                        ],
                       ),
-                    );
+                      const SizedBox(height: 15),
+                      lodgeContainer(
+                        property: singlePropertySuccessState.property,
+                        context: context,
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: FormButton(
+                              height: 50,
 
-                  case PropertyLoadingState:
-                    return const Column(
-                      children: [
-                        AppLoadingPage("Fetching Property..."),
-                      ],
-                    );
-                  default:
-                    return const Column(
-                      children: [
-                        AppLoadingPage("Fetching Property..."),
-                      ],
-                    );
-                }
-              })),
+                              bgColor: currentIndex == 0
+                                  ? AppColors.mainAppColor
+                                  : AppColors.white,
+
+                              text: 'Spaces (${singlePropertySuccessState.property.spaces.length})',
+                              textColor: currentIndex != 0
+                                  ? AppColors.mainAppColor
+                                  : AppColors.white,
+                              onPressed: () {
+                                setState(() {
+                                  currentIndex = 0;
+                                });
+                              },
+
+                            ),
+                          ),
+                          Expanded(
+                            child: FormButton(
+                              //style: ElevatedButton.styleFrom(
+                              height: 50,
+                              bgColor: currentIndex == 1
+                                  ? AppColors.mainAppColor
+                                  : AppColors.white,
+                              text: 'Occupants (${singlePropertySuccessState.property.occupants.length})',
+                              textColor: currentIndex != 1
+                                  ? AppColors.mainAppColor
+                                  : AppColors.white,
+                              onPressed: () {
+                                setState(() {
+                                  currentIndex = 1;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        //height: tabHeight,
+                        child: currentIndex == 0
+                            ? RoomContainer(
+                                property: singlePropertySuccessState.property,
+                                userModel: widget.userModel,
+                                propertyBloc: propertyBloc,
+                              )
+                            : OccupantContainer(
+                                property: singlePropertySuccessState.property,
+                                userModel: widget.userModel,
+                                propertyBloc: propertyBloc,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            if (state is PropertyLoadingState) {
+              return const Center(
+                child: AppLoadingPage("Fetching Property..."),
+              );
+            }
+
+            return const Center(
+              child: AppLoadingPage("Fetching Property..."),
+            );
+          },
+        ),
+      ),
     );
   }
 
