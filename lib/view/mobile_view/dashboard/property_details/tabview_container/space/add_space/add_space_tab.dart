@@ -54,7 +54,7 @@ class _AddSpaceState extends State<AddSpace> {
   PropertyBloc propertyBloc = PropertyBloc();
   final TextEditingController selectedPropertyType =
       TextEditingController(text: '');
-  bool isImagesDownloaded=true;
+  bool isImagesDownloaded = true;
   final ImagePicker imagePicker = ImagePicker();
   List<XFile>? imageFileList = [];
 
@@ -77,10 +77,10 @@ class _AddSpaceState extends State<AddSpace> {
 
     // Download images
     for (String imageUrl in urls) {
-      isImagesDownloaded=false;
+      isImagesDownloaded = false;
       AppUtils().debuglog('Downloading image from: $imageUrl');
       try {
-        File imageFile = await downloadImage(AppApis.appBaseUrl +imageUrl);
+        File imageFile = await downloadImage(AppApis.appBaseUrl + imageUrl);
         setState(() {
           imageFileList ??= []; // Initialize if null
           imageFileList!.add(XFile(imageFile.path));
@@ -89,7 +89,7 @@ class _AddSpaceState extends State<AddSpace> {
         AppUtils().debuglog('Error downloading image: $e');
       }
     }
-    isImagesDownloaded=true;
+    isImagesDownloaded = true;
   }
 
   @override
@@ -238,10 +238,10 @@ class _AddSpaceState extends State<AddSpace> {
                   //PropertyBloc propertyBloc = PropertyBloc();
                 });
                 MSG.snackBar(context, "Space edit Successful");
-
-                AppNavigator.pushAndRemovePreviousPages(context,
-                    page: LandingPage(
-                        selectedIndex: 0, userModel: widget.userModel));
+                Navigator.pop(context, true);
+                // AppNavigator.pushAndRemovePreviousPages(context,
+                //     page: LandingPage(
+                //         selectedIndex: 0, userModel: widget.userModel));
               } else if (state is PropertyErrorState) {
                 MSG.warningSnackBar(context, state.error);
               }
@@ -272,11 +272,11 @@ class _AddSpaceState extends State<AddSpace> {
                         // if (widget.isEdit) {
                         //   _updateProduct();
                         // } else {
-                        if(isImagesDownloaded){
+                        if (isImagesDownloaded) {
                           _saveSpace();
-
-                        }else{
-                          MSG.warningSnackBar(context, 'Images are been synchronized');
+                        } else {
+                          MSG.warningSnackBar(
+                              context, 'Images are been synchronized');
                         }
                         // }
                       }
@@ -625,11 +625,11 @@ class _AddSpaceState extends State<AddSpace> {
                         // if (widget.isEdit) {
                         //   _updateProduct();
                         // } else {
-                        if(isImagesDownloaded){
+                        if (isImagesDownloaded) {
                           _saveSpace();
-
-                        }else{
-                          MSG.warningSnackBar(context, 'Images are been synchronized');
+                        } else {
+                          MSG.warningSnackBar(
+                              context, 'Images are been synchronized');
                         }
                         // }
                       }

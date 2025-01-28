@@ -331,15 +331,21 @@ class _OccupantContainerState extends State<OccupantContainer> {
                     width: 10,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      AppNavigator.pushAndStackPage(context,
-                          page: AddOccupantScreen(
-                            userModel: widget.userModel,
-                            property: widget.property,
-                            isEdit: false,
-                            occupant: null,
-                            spaces: widget.property.spaces,
-                          ));
+                    onTap: () async {
+                      bool isDeleteEdit =
+                          await AppNavigator.pushAndStackPage(context,
+                                  page: AddOccupantScreen(
+                                    userModel: widget.userModel,
+                                    property: widget.property,
+                                    isEdit: false,
+                                    occupant: null,
+                                    spaces: widget.property.spaces,
+                                  )) ??
+                              false;
+                      if (isDeleteEdit) {
+                        widget.propertyBloc.add(GetSinglePropertyEvent(
+                            widget.property.id.toString()));
+                      }
                     },
                     child: Container(
                       height: 45,

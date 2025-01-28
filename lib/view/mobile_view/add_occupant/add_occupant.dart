@@ -30,6 +30,8 @@ import 'package:path_provider/path_provider.dart';
 class AddOccupantScreen extends StatefulWidget {
   final UserModel userModel;
   final Property property;
+
+  //final PropertyBloc parsed
   final Occupant? occupant;
   final bool isEdit;
   final List<Space> spaces;
@@ -246,10 +248,12 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
             listener: (context, state) {
               if (state is AddPropertySuccessState) {
                 MSG.snackBar(context, "Occupant Upload Successful");
+               // if (widget.isEdit) {
+                  Navigator.pop(context, true);
 
-                AppNavigator.pushAndRemovePreviousPages(context,
-                    page: LandingPage(
-                        selectedIndex: 0, userModel: widget.userModel));
+                // AppNavigator.pushAndRemovePreviousPages(context,
+                //     page: LandingPage(
+                //         selectedIndex: 0, userModel: widget.userModel));
               } else if (state is PropertyErrorState) {
                 MSG.warningSnackBar(context, state.error);
               }
@@ -791,7 +795,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
-
                             ],
                             if (selectedEmploymentStatus ==
                                 'Self-Employed') ...[
@@ -1439,7 +1442,6 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                                     : AppColors.grey,
                                 borderRadius: 10,
                               ),
-
                             ],
                             if (selectedEmploymentStatus ==
                                 'Self-Employed') ...[

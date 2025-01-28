@@ -74,7 +74,7 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                   //     page: LandingPage(studentProfile: state.studentProfile));
                 } else if (state is DeleteSpaceSuccessState) {
                   MSG.snackBar(context, "Space has beedn deleted");
-                  Navigator.pop(context,true);
+                  Navigator.pop(context, true);
                   // AppNavigator.pushAndRemovePreviousPages(context,
                   //     page: LandingPage(
                   //         selectedIndex: 0, userModel: widget.userModel));
@@ -121,8 +121,8 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                                   Row(
                                     children: [
                                       GestureDetector(
-                                          onTap: () {
-                                            AppNavigator.pushAndStackPage(
+                                          onTap: () async {
+                                            bool isDeleteEdit = await  AppNavigator.pushAndStackPage(
                                                 context,
                                                 page: AddSpace(
                                                   userModel: widget.userModel,
@@ -130,7 +130,12 @@ class _SpaceDetailsState extends State<SpaceDetails> {
                                                   space: singleSpaceSuccessState
                                                       .space,
                                                   property: widget.property,
-                                                ));
+                                                )) ??
+                                                false;
+                                            if (isDeleteEdit) {
+                                              spaceBloc.add(GetSingleSpaceEvent(
+                                                  widget.space.id.toString(), widget.property.id.toString()));
+                                            }
                                           },
                                           child: SvgPicture.asset(
                                             AppSvgImages.edit,

@@ -513,14 +513,18 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                   weight: FontWeight.w700,
                                 ),
                                 Container(
-                                  width: AppUtils.deviceScreenSize(context).width/3,
+                                  width:
+                                      AppUtils.deviceScreenSize(context).width /
+                                          3,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       if (isImageLoaded)
                                         GestureDetector(
                                             onTap: () async {
-                                              final pdfData = await generatePdf();
+                                              final pdfData =
+                                                  await generatePdf();
                                               await Printing.layoutPdf(
                                                   onLayout: (PdfPageFormat
                                                           format) async =>
@@ -538,24 +542,41 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                  //                                       FormButton(
-                                  // ,
-                                  //                                         text: "Download",
-                                  //                                         isIcon: true,
-                                  //                                         borderRadius: 10,
-                                  //                                         bgColor: AppColors.blue,
-                                  //                                         iconWidget: Icons.download,
-                                  //                                       ),
+                                      //                                       FormButton(
+                                      // ,
+                                      //                                         text: "Download",
+                                      //                                         isIcon: true,
+                                      //                                         borderRadius: 10,
+                                      //                                         bgColor: AppColors.blue,
+                                      //                                         iconWidget: Icons.download,
+                                      //                                       ),
                                       GestureDetector(
-                                          onTap: () {
-                                            AppNavigator.pushAndStackPage(context,
-                                                page: AddOccupantScreen(
-                                                  userModel: widget.userModel,
-                                                  property: widget.property,
-                                                  isEdit: true,
-                                                  occupant: widget.occupant,
-                                                  spaces: widget.property.spaces,
-                                                ));
+                                          onTap: () async {
+                                            bool isDeleteEdit = await AppNavigator
+                                                    .pushAndStackPage(context,
+                                                        page: AddOccupantScreen(
+                                                          userModel:
+                                                              widget.userModel,
+                                                          property:
+                                                              widget.property,
+                                                          isEdit: true,
+                                                          occupant:
+                                                              widget.occupant,
+                                                          spaces: widget
+                                                              .property.spaces,
+                                                        )) ??
+                                                false;
+                                            if (isDeleteEdit) {
+                                              occupantBloc.add(
+                                                  GetSingleOccupantEvent(widget
+                                                      .occupant.id
+                                                      .toString()));
+
+                                              // widget.propertyBloc.add(
+                                              //     GetSinglePropertyEvent(widget
+                                              //         .property.id
+                                              //         .toString()));
+                                            }
                                           },
                                           child: SvgPicture.asset(
                                             AppSvgImages.edit,
@@ -576,7 +597,8 @@ class _ViewOccupantState extends State<ViewOccupant> {
                                               deleteOccupant(
                                                 accessToken: accessToken,
                                                 occupantId: widget.occpuantId,
-                                                apiUrl: AppApis.singleOccupantApi,
+                                                apiUrl:
+                                                    AppApis.singleOccupantApi,
                                                 onSuccess: () {
                                                   MSG.snackBar(context,
                                                       'Occupant deleted successfully!');
