@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get_common/get_reset.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
@@ -248,8 +247,8 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
             listener: (context, state) {
               if (state is AddPropertySuccessState) {
                 MSG.snackBar(context, "Occupant Upload Successful");
-               // if (widget.isEdit) {
-                  Navigator.pop(context, true);
+                // if (widget.isEdit) {
+                Navigator.pop(context, true);
 
                 // AppNavigator.pushAndRemovePreviousPages(context,
                 //     page: LandingPage(
@@ -1788,7 +1787,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text('University: ${universityController.text ?? "N/A"}'),
+                    Text('University: ${universityController.text}'),
                     Text('Student ID: ${studentIdController.text ?? "N/A"}'),
                     Text('Faculty: ${facultyController.text ?? "N/A"}'),
                     Text('Department: ${departmentController.text ?? "N/A"}'),
@@ -1914,7 +1913,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
   void _saveOccupant() {
     // Validate required fields
     if (occupantNameController.text.isEmpty ||
-        occupantEmailController.text.isEmpty ||
+        //  occupantEmailController.text.isEmpty ||
         occupantPhoneNumberController.text.isEmpty ||
         dobController.text.isEmpty ||
         rentCommencementController.text.isEmpty ||

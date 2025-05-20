@@ -1,7 +1,7 @@
 name: pim
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.5+13
+version: 1.0.6+14
 
 environment:
   sdk: ^3.5.4
@@ -40,7 +40,7 @@ dependencies:
   pdf:
   printing: ^5.10.1
   local_auth:
-  syncfusion_flutter_pdfviewer: ^26.2.8
+  #syncfusion_flutter_pdfviewer: ^26.2.8
   in_app_review: ^2.0.4
   image_picker: ^1.1.2
   mime:
