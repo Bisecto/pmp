@@ -8,11 +8,12 @@ class InitialEvent extends AuthEvent {}
 class SignInEventClick extends AuthEvent {
   final String userData;
   final String password;
+  final String selectedUser;
 
   // final String loginOption;
   // final String accessPin;
 
-  SignInEventClick(this.userData, this.password);
+  SignInEventClick(this.userData, this.password, this.selectedUser);
 }
 
 class SetUpProfileEventClick extends AuthEvent {

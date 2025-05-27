@@ -64,7 +64,7 @@ class _DropDownState extends State<DropDown> {
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: Text(
             widget.label,
-            style: TextStyle(fontSize: widget.textSize, fontWeight: FontWeight.w500, color: widget.labelColor ?? widget.color ?? Colors.black87),
+            style: TextStyle(fontSize: widget.textSize, fontWeight: FontWeight.w400, color: widget.labelColor ?? widget.color ?? Colors.black87),
           ),
         )
             : const SizedBox.shrink(),

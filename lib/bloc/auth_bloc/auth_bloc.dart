@@ -42,19 +42,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(LoadingState());
     AppRepository appRepository = AppRepository();
     AuthRepository authRepository = AuthRepository();
-    Map<String, String> formData = {
-      'username_or_email': event.userData,
-      'password': event.password,
-    };
-    AppUtils().debuglog(formData);
+    Map<String, String> formData = event.selectedUser.toLowerCase() == 'tenant'
+        ? {
+            'username': event.userData,
+            'password': event.password,
+          }
+        : {
+            'username_or_email': event.userData,
+            'password': event.password,
+          };
 
     try {
-      final loginResponse =
-          await authRepository.authPostRequest(formData, AppApis.loginApi);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      print(event.selectedUser);
+      final loginResponse = await authRepository.authPostRequest(
+          formData,
+          event.selectedUser.toLowerCase() == 'tenant'
+              ? AppApis.occupantLoginApi
+              : AppApis.loginApi);
 
       AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
       AppUtils().debuglog('Response body: ${loginResponse.body}');
-      AppUtils().debuglog(loginResponse.statusCode);
+      AppUtils().debuglog(formData);
 
       AppUtils().debuglog(loginResponse.body);
       if (loginResponse.statusCode == 200 || loginResponse.statusCode == 201) {
@@ -64,7 +79,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await SharedPref.putString(
             "access-token", json.decode(loginResponse.body)['access']);
         final profileResponse = await appRepository.getRequestWithToken(
-            json.decode(loginResponse.body)['access'], AppApis.profile);
+            json.decode(loginResponse.body)['access'],
+            event.selectedUser.toLowerCase() == 'tenant'
+                ? AppApis.tenantProfile
+                : AppApis.profile);
         AppUtils().debuglog('Response body: ${profileResponse.body}');
         if (profileResponse.statusCode == 200 ||
             profileResponse.statusCode == 201) {

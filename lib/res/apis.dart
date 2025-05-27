@@ -6,6 +6,7 @@ class AppApis {
   ///Authentication Endpoints
   static String registerApi = "$appBaseUrl/api/register/";
   static String profile = "$appBaseUrl/api/profile/";
+  static String tenantProfile = "$appBaseUrl/api/occupant/profile/";
   static String verifyOTP = "$appBaseUrl/api/verify-email/";
   static String validateOTP = "$appBaseUrl/api/password-reset/validate/";
   static String resendOTP = "$appBaseUrl/api/password-reset/resend-request/";
@@ -20,6 +21,7 @@ class AppApis {
       "$appBaseUrl/api/resend-verification-token/";
   static String resetPassword = "$appBaseUrl/u-auth/reset-password/";
   static String loginApi = "$appBaseUrl/api/login/";
+  static String occupantLoginApi = "$appBaseUrl/api/occupant/login/";
 
 
   static String propertiesListApi = "$appBaseUrl/api/list-of-properties/";

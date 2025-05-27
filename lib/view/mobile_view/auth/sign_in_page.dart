@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pim/view/mobile_view/auth/set_up_profile.dart';
 import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
+import 'package:pim/view/widgets/drop_down.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/repository/auth_repository.dart';
 import 'package:pim/view/mobile_view/auth/verify_user.dart';
@@ -96,6 +97,8 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  String selectedUser = 'Landlord';
+
   @override
   void dispose() {
     _connectivitySubscription?.cancel();
@@ -122,13 +125,16 @@ class _SignInPageState extends State<SignInPage> {
 
                         AppNavigator.pushAndRemovePreviousPages(context,
                             page: LandingPage(
-                              selectedIndex: 0, userModel: state.userModel!,
+                              selectedIndex: 0,
+                              userModel: state.userModel!,
                             ));
                       } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
                       } else if (state is ProfileSetUpState) {
                         AppNavigator.pushAndStackPage(context,
-                            page:  SetUpProfile(userName: _userNameController.text,));
+                            page: SetUpProfile(
+                              userName: _userNameController.text,
+                            ));
                       }
                     },
                     builder: (context, state) {
@@ -189,11 +195,31 @@ class _SignInPageState extends State<SignInPage> {
                                             key: _formKey,
                                             child: Column(
                                               children: [
+                                                DropDown(
+                                                  selectedValue: selectedUser,
+                                                 // initialValue: 'Landlord',
+                                                  items: const [
+                                                    'Landlord',
+                                                    'Agent',
+                                                    'Tenant'
+                                                  ],
+                                                  onChanged: (val){
+                                                    setState(() {
+                                                      selectedUser=val;
+                                                    });
+                                                  },
+                                                  label: "Select User",
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
                                                 CustomTextFormField(
-                                                  hint: 'Enter your email or username',
+                                                  hint:
+                                                      'Enter your email or username',
                                                   label: 'Username/Email',
                                                   borderColor: Colors.black54,
-                                                  controller: _userNameController,
+                                                  controller:
+                                                      _userNameController,
                                                   backgroundColor: theme.isDark
                                                       ? AppColors
                                                           .darkCardBackgroundColor
@@ -278,12 +304,11 @@ class _SignInPageState extends State<SignInPage> {
                                                         .validate()) {
                                                       authBloc.add(
                                                           SignInEventClick(
-                                                            //'Bisect','Qwerty123@'
+                                                              //'Bisect','Qwerty123@'
                                                               _userNameController
                                                                   .text,
                                                               _passwordController
-                                                                  .text
-                                                          ));
+                                                                  .text,selectedUser));
                                                     }
                                                   },
                                                   text: 'Login',
