@@ -52,73 +52,82 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             'password': event.password,
           };
 
-    try {
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      print(event.selectedUser);
-      final loginResponse = await authRepository.authPostRequest(
-          formData,
+    //try {
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    print(event.selectedUser);
+    final loginResponse = await authRepository.authPostRequest(
+        formData,
+        event.selectedUser.toLowerCase() == 'tenant'
+            ? AppApis.occupantLoginApi
+            : AppApis.loginApi);
+
+    AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
+    AppUtils().debuglog('Response body: ${loginResponse.body}');
+    AppUtils().debuglog(formData);
+
+    AppUtils().debuglog(loginResponse.body);
+    if (loginResponse.statusCode == 200 || loginResponse.statusCode == 201) {
+      await SharedPref.putString(
+          "refresh-token", json.decode(loginResponse.body)['refresh']);
+
+      await SharedPref.putString(
+          "access-token", json.decode(loginResponse.body)['access']);
+      final profileResponse = await appRepository.getRequestWithToken(
+          json.decode(loginResponse.body)['access'],
           event.selectedUser.toLowerCase() == 'tenant'
-              ? AppApis.occupantLoginApi
-              : AppApis.loginApi);
-
-      AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
-      AppUtils().debuglog('Response body: ${loginResponse.body}');
-      AppUtils().debuglog(formData);
-
-      AppUtils().debuglog(loginResponse.body);
-      if (loginResponse.statusCode == 200 || loginResponse.statusCode == 201) {
-        await SharedPref.putString(
-            "refresh-token", json.decode(loginResponse.body)['refresh']);
-
-        await SharedPref.putString(
-            "access-token", json.decode(loginResponse.body)['access']);
-        final profileResponse = await appRepository.getRequestWithToken(
-            json.decode(loginResponse.body)['access'],
-            event.selectedUser.toLowerCase() == 'tenant'
-                ? AppApis.tenantProfile
-                : AppApis.profile);
-        AppUtils().debuglog('Response body: ${profileResponse.body}');
-        if (profileResponse.statusCode == 200 ||
-            profileResponse.statusCode == 201) {
-          UserModel userModel =
-              UserModel.fromJson(json.decode(profileResponse.body));
-          emit(SuccessState("Login Successful", userModel));
-        } else if (profileResponse.statusCode == 404) {
-          emit(ProfileSetUpState("Complete Profile Set up"));
-        } else {
-          emit(ErrorState("There was a problem fetching your profile"));
-          emit(AuthInitial());
-        }
-      } else if (loginResponse.statusCode == 500 ||
-          loginResponse.statusCode == 501) {
-        emit(ErrorState(
-            "There was a problem logging user in please try again later."));
-        emit(AuthInitial());
+              ? AppApis.tenantProfile
+              : AppApis.profile);
+      AppUtils().debuglog('Response body: ${profileResponse.body}');
+      if (profileResponse.statusCode == 200 ||
+          profileResponse.statusCode == 201) {
+        UserModel userModel =
+            UserModel.fromJson(json.decode(profileResponse.body));
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails!.spaceType);
+        print(userModel.occupiedSpaces[0].propertySpaceDetails!.propertySpaceImages);
+        emit(SuccessState("Login Successful", userModel,
+            event.selectedUser.toLowerCase() == 'tenant'));
+      } else if (profileResponse.statusCode == 404) {
+        emit(ProfileSetUpState("Complete Profile Set up"));
       } else {
-        emit(ErrorState(json
-            .decode(loginResponse.body)['non_field_errors'][0]
-            .toString()
-            .replaceAll('{', '')
-            .replaceAll('}', '')
-            .replaceAll('\'', '')));
-        //AppUtils().debuglog(event.password);
-        AppUtils().debuglog(json.decode(loginResponse.body));
+        emit(ErrorState("There was a problem fetching your profile"));
         emit(AuthInitial());
       }
-    } catch (e) {
-      AppUtils().debuglog(e);
-      emit(ErrorState("There was a problem login you in please try again."));
-
-      AppUtils().debuglog(e);
+    } else if (loginResponse.statusCode == 500 ||
+        loginResponse.statusCode == 501) {
+      emit(ErrorState(
+          "There was a problem logging user in please try again later."));
       emit(AuthInitial());
-      AppUtils().debuglog(12345678);
+    } else {
+      emit(ErrorState(json
+          .decode(loginResponse.body)['non_field_errors'][0]
+          .toString()
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .replaceAll('\'', '')));
+      //AppUtils().debuglog(event.password);
+      AppUtils().debuglog(json.decode(loginResponse.body));
+      emit(AuthInitial());
     }
+    // } catch (e) {
+    //   AppUtils().debuglog(e);
+    //   emit(ErrorState("There was a problem login you in please try again."));
+    //
+    //   AppUtils().debuglog(e);
+    //   emit(AuthInitial());
+    //   AppUtils().debuglog(12345678);
+    // }
   }
 
   FutureOr<void> initialEvent(InitialEvent event, Emitter<AuthState> emit) {
@@ -311,7 +320,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (registerResponse.statusCode == 200 ||
           registerResponse.statusCode == 201) {
-        emit(SuccessState("Sign up Successful", null));
+        emit(SuccessState("Sign up Successful", null, false));
       } else if (registerResponse.statusCode == 500 ||
           registerResponse.statusCode == 501) {
         emit(ErrorState(
@@ -408,7 +417,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        emit(SuccessState("Profile Updated Successful", userModel));
+        emit(SuccessState("Profile Updated Successful", userModel, false));
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
         emit(ErrorState("There was a problem completing profile set up."));
@@ -459,7 +468,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        emit(SuccessState("Profile Updated Successful", userModel));
+        emit(SuccessState("Profile Updated Successful", userModel, false));
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
         emit(ErrorState("There was a problem completing profile set up."));

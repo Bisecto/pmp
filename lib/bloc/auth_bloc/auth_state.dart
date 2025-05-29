@@ -20,8 +20,9 @@ class ErrorState extends AuthState {
 class SuccessState extends AuthState {
   final String msg;
   final UserModel? userModel;
+  final bool isTenant;
   SuccessState(
-    this.msg, this.userModel,
+    this.msg, this.userModel, this.isTenant,
   );
 }
 class ProfileSetUpState extends AuthState {

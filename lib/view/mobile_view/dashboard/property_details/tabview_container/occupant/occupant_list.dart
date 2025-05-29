@@ -188,7 +188,7 @@ class _OccupantListState extends State<OccupantList> {
                 width: AppUtils.deviceScreenSize(context).width,
                 height: 75,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

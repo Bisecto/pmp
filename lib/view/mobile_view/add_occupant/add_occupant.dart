@@ -1592,21 +1592,7 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      CustomText(
-                        text: "Marital status:",
-                        color: AppColors.black,
-                        size: 13,
-                        weight: FontWeight.bold,
-                      ),
-                      CustomText(
-                        text: ' ${selectedMaritalStatus}  ',
-                        size: 12,
-                        maxLines: 3,
-                      ),
-                    ],
-                  ),
+
                   Row(
                     children: [
                       CustomText(
@@ -1623,7 +1609,22 @@ class _AddOccupantScreenState extends State<AddOccupantScreen> {
                     ],
                   ),
                 ],
-              )
+              ),
+              Row(
+                children: [
+                  CustomText(
+                    text: "Marital status:",
+                    color: AppColors.black,
+                    size: 13,
+                    weight: FontWeight.bold,
+                  ),
+                  CustomText(
+                    text: ' ${selectedMaritalStatus}  ',
+                    size: 12,
+                    maxLines: 3,
+                  ),
+                ],
+              ),
             ],
           ),
         ),

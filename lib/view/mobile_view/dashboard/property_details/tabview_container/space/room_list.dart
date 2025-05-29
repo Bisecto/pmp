@@ -58,16 +58,16 @@ class _SpaceListState extends State<SpaceList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              bool isDeleteUpdate = await  AppNavigator.pushAndStackPage(context,
-                  page: SpaceDetails(
-                      space: widget.spaces[index],
-                      userModel: widget.userModel,
-                      property: widget.property))??false;
+              bool isDeleteUpdate = await AppNavigator.pushAndStackPage(context,
+                      page: SpaceDetails(
+                          space: widget.spaces[index],
+                          userModel: widget.userModel,
+                          property: widget.property)) ??
+                  false;
               if (isDeleteUpdate) {
                 widget.propertyBloc
                     .add(GetSinglePropertyEvent(widget.property.id.toString()));
               }
-
             },
             child:
                 spaceContainer(space: widget.spaces[index], context: context),

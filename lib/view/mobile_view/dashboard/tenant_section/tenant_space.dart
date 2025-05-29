@@ -3,31 +3,37 @@ import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/property_details.dart';
+import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/space/space_details.dart';
+import 'package:pim/view/mobile_view/dashboard/tenant_section/tenant_space_details.dart';
 import 'package:pim/view/widgets/form_input.dart';
 
-import '../../../../res/app_colors.dart';
-import '../../../res/app_images.dart';
-import '../../../utills/app_navigator.dart';
-import '../../../utills/app_utils.dart';
-import '../../widgets/app_custom_text.dart';
+import '../../../../../res/app_colors.dart';
+import '../../../../res/app_images.dart';
+import '../../../../utills/app_navigator.dart';
+import '../../../../utills/app_utils.dart';
+import '../../../widgets/app_custom_text.dart';
 
-class LodgeList extends StatefulWidget {
-  List<Property> properties;
+class TenantSpace extends StatefulWidget {
   final UserModel userModel;
 
-  LodgeList({super.key, required this.properties, required this.userModel});
+  TenantSpace({super.key, required this.userModel});
 
   @override
-  State<LodgeList> createState() => _LodgeListState();
+  State<TenantSpace> createState() => _TenantSpaceState();
 }
 
-class _LodgeListState extends State<LodgeList> {
+class _TenantSpaceState extends State<TenantSpace> {
   final TextEditingController _searchTextEditingController =
       TextEditingController();
-
+@override
+  void initState() {
+    // TODO: implement initState
+  print(widget.userModel.occupiedSpaces[0].propertySpaceDetails!.propertySpaceImages);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    return widget.properties.isNotEmpty
+    return widget.userModel.occupiedSpaces.isNotEmpty
         ? Column(children: [
             CustomTextFormField(
                 controller: _searchTextEditingController,
@@ -43,18 +49,19 @@ class _LodgeListState extends State<LodgeList> {
                 },
                 label: ''),
             Container(
-              height: widget.properties.length * 351,
+              height: widget.userModel.occupiedSpaces.length * 351,
               child: ListView.builder(
-                itemCount: widget.properties.length,
+                itemCount: widget.userModel.occupiedSpaces.length,
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  if (widget.properties[index].propertyName
+                  if (widget.userModel.occupiedSpaces[index].spaceNumber
                       .toLowerCase()
                       .contains(
                           _searchTextEditingController.text.toLowerCase())) {
-                    return lodgeContainer(
-                        property: widget.properties[index], context: context);
+                    return spaceContainer(
+                        occupiedSpace: widget.userModel.occupiedSpaces[index],
+                        context: context,index:index);
                   } else {
                     return Container();
                   }
@@ -68,7 +75,7 @@ class _LodgeListState extends State<LodgeList> {
           );
   }
 
-  Widget lodgeContainer({required Property property, required context}) {
+  Widget spaceContainer({required Occupant occupiedSpace, required context, required index}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -94,18 +101,20 @@ class _LodgeListState extends State<LodgeList> {
                 height: 180,
                 width: AppUtils.deviceScreenSize(context).width,
                 decoration: BoxDecoration(
-                  //color: AppColors.red,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black.withOpacity(0.15),
-                  //     spreadRadius: 0,
-                  //     blurRadius: 10,
-                  //     offset: const Offset(0, 4),
-                  //   ),
-                  // ],
+                  color: AppColors.red,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      spreadRadius: 0,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                   image: DecorationImage(
                       image: NetworkImage(
-                        AppApis.appBaseUrl + property.firstImage,
+occupiedSpace.propertySpaceDetails!.propertySpaceImages.isEmpty?"https://nigerianbuildingdesigns.com/wp-content/uploads/2023/09/1-BEDROOM-FLATS-DESIGN-B.jpg":
+                            occupiedSpace.propertySpaceDetails!
+                                .propertySpaceImages.first,
                       ),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
@@ -117,7 +126,7 @@ class _LodgeListState extends State<LodgeList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextStyles.textHeadings(
-                      textValue: property.propertyName,
+                      textValue: occupiedSpace.spaceNumber,
                       textSize: 18,
                     ),
                     Padding(
@@ -125,12 +134,11 @@ class _LodgeListState extends State<LodgeList> {
                       child: Row(
                         children: [
                           const Icon(
-                            Icons.location_on_outlined,
+                            Icons.type_specimen_rounded,
                             color: AppColors.red,
                           ),
                           CustomText(
-                              text: "${property.city}, ${property.location}",
-                              size: 14),
+                              text: "${occupiedSpace.spaceType}", size: 14),
                         ],
                       ),
                     ),
@@ -143,62 +151,14 @@ class _LodgeListState extends State<LodgeList> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      height: 50,
-                      width: AppUtils.deviceScreenSize(context).width / 2.5,
-                      decoration: BoxDecoration(
-                        //color: AppColors.red,
-                        // boxShadow: [
-                        //   BoxShadow(
-                        //     color: Colors.black.withOpacity(0.15),
-                        //     spreadRadius: 0,
-                        //     blurRadius: 10,
-                        //     offset: const Offset(0, 4),
-                        //   ),
-                        // ],
-
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.cabin_rounded,
-                                color: Colors.purple,
-                              ),
-                              CustomText(
-                                text: ' ${property.totalSpace}  ',
-                                size: 14,
-                                maxLines: 3,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.people,
-                                color: Colors.green,
-                              ),
-                              CustomText(
-                                text: '  ${property.occupiedSpace}',
-                                size: 14,
-                                maxLines: 3,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                     GestureDetector(
                       onTap: () {
                         AppNavigator.pushAndStackPage(context,
-                            page: PropertyDetails(
-                              property: property,
-                              userModel: widget.userModel,
-                            ));
+                            page: TenantSpaceDetail(
+                            userModel: widget.userModel,
+                            index:index));
                       },
                       child: Container(
                         height: 50,

@@ -126,6 +126,7 @@ class Occupant {
   final PropertySpaceDetails? propertySpaceDetails;
   final String qrCodeImage;
   final SelfEmployedProfile? selfEmployedProfile;
+  final PropertyDetailsInfo? propertyDetails;
   final EmployedProfile? employedProfile;
   final StudentProfile? studentProfile;
 
@@ -156,6 +157,7 @@ class Occupant {
     this.propertySpaceDetails,
     required this.qrCodeImage,
     this.selfEmployedProfile,
+    this.propertyDetails,
     this.employedProfile,
     this.studentProfile,
   });
@@ -192,6 +194,7 @@ class Occupant {
       selfEmployedProfile: json['self_employed_profile'] != null
           ? SelfEmployedProfile.fromJson(json['self_employed_profile'])
           : null,
+      propertyDetails: PropertyDetailsInfo.fromJson(json['property_details']),
       employedProfile: json['employed_profile'] != null
           ? EmployedProfile.fromJson(json['employed_profile'])
           : null,
@@ -226,6 +229,7 @@ class Occupant {
       'country': country,
       'space_type': spaceType,
       'property_space': propertySpace,
+      'property_details': propertyDetails!.toJson(),
       'property_space_details': propertySpaceDetails?.toJson(),
       'qr_code_image': qrCodeImage,
       'self_employed_profile': selfEmployedProfile?.toJson(),
@@ -236,24 +240,34 @@ class Occupant {
 }
 
 class PropertySpaceDetails {
+  final String id;
   final String spaceNumber;
   final String spaceType;
   final double price;
   final bool isOccupied;
+  final List<String> propertySpaceImages;
 
   PropertySpaceDetails({
+    required this.id,
     required this.spaceNumber,
     required this.spaceType,
     required this.price,
     required this.isOccupied,
+    required this.propertySpaceImages,
   });
 
   factory PropertySpaceDetails.fromJson(Map<String, dynamic> json) {
     return PropertySpaceDetails(
+      id: json['id'].toString() ?? '',
       spaceNumber: json['space_number'] ?? '',
       spaceType: json['space_type'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
+      price: double.parse(json['price'].toString()),
       isOccupied: json['is_occupied'] ?? false,
+      //propertySpaceImages: List<String>.from(json['property_space_images'] ?? []),
+      propertySpaceImages: (json["property_space_images"] as List<dynamic>?)
+              ?.map((x) => x as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -263,6 +277,7 @@ class PropertySpaceDetails {
       'space_type': spaceType,
       'price': price,
       'is_occupied': isOccupied,
+      'property_space_images': propertySpaceImages,
     };
   }
 }
@@ -373,4 +388,68 @@ class ImageUrl {
         "id": id,
         "url": url,
       };
+}
+
+class PropertyDetailsInfo {
+  final int id;
+  final String propertyName;
+  final String address;
+  final String location;
+  final String city;
+  final String description;
+  final String propertyType;
+  final int totalSpace;
+  final int occupiedSpace;
+  final String contractType;
+  final bool verified;
+  final List<String> propertyImages;
+
+  PropertyDetailsInfo({
+    required this.id,
+    required this.propertyName,
+    required this.address,
+    required this.location,
+    required this.city,
+    required this.description,
+    required this.propertyType,
+    required this.totalSpace,
+    required this.occupiedSpace,
+    required this.contractType,
+    required this.verified,
+    required this.propertyImages,
+  });
+
+  factory PropertyDetailsInfo.fromJson(Map<String, dynamic> json) {
+    return PropertyDetailsInfo(
+      id: json['id'],
+      propertyName: json['property_name'],
+      address: json['address'],
+      location: json['location'],
+      city: json['city'],
+      description: json['description'],
+      propertyType: json['property_type'],
+      totalSpace: json['total_space'],
+      occupiedSpace: json['occupied_space'],
+      contractType: json['contract_type'],
+      verified: json['verified'],
+      propertyImages: List<String>.from(json['property_images'] ?? []),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'property_name': propertyName,
+      'address': address,
+      'location': location,
+      'city': city,
+      'description': description,
+      'property_type': propertyType,
+      'total_space': totalSpace,
+      'occupied_space': occupiedSpace,
+      'contract_type': contractType,
+      'verified': verified,
+      'property_images': propertyImages,
+    };
+  }
 }

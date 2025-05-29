@@ -28,7 +28,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               children: [
                 CircleAvatar(
                   backgroundColor: AppColors.lightPurple,
-                  backgroundImage: NetworkImage(widget.userModel.profilePic),
+                  backgroundImage: NetworkImage(widget.userModel.profilePic.isEmpty?widget.userModel.profilePic:widget.userModel.occupiedSpaces[0].profilePic),
                   //child: TextStyles.textHeadings(textValue: widget.),
                 ),
               ],

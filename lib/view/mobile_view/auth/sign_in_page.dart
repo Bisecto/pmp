@@ -27,6 +27,7 @@ import '../../widgets/app_custom_text.dart';
 import '../../widgets/form_button.dart';
 import '../../widgets/form_input.dart';
 import '../../widgets/update.dart';
+import '../tenant_landing_page.dart';
 import 'forgot_password/password_reset_request.dart';
 
 class SignInPage extends StatefulWidget {
@@ -124,7 +125,8 @@ class _SignInPageState extends State<SignInPage> {
                         MSG.snackBar(context, state.msg);
 
                         AppNavigator.pushAndRemovePreviousPages(context,
-                            page: LandingPage(
+                            page: state.isTenant?TenantLandingPage( selectedIndex: 0,
+                          userModel: state.userModel!,):LandingPage(
                               selectedIndex: 0,
                               userModel: state.userModel!,
                             ));
