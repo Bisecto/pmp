@@ -138,7 +138,7 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
     AppRepository appRepository = AppRepository();
     String accessToken = await SharedPref.getString('access-token');
-    try {
+   // try {
       var singlePropertyResponse = await appRepository.getRequestWithToken(
           accessToken, AppApis.singlePropertyApi + event.propertyId);
       // var res = await appRepository.appGetRequest(
@@ -164,11 +164,11 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
             json.decode(singlePropertyResponse.body))));
         AppUtils().debuglog(json.decode(singlePropertyResponse.body));
       }
-    } catch (e) {
-      emit(PropertyErrorState(
-          "An error occurred while fetching property detail."));
-      AppUtils().debuglog(e);
-    }
+    // } catch (e) {
+    //   emit(PropertyErrorState(
+    //       "An error occurred while fetching property detail."));
+    //   AppUtils().debuglog(e);
+    // }
   }
 
   FutureOr<void> addOccupantEvent(

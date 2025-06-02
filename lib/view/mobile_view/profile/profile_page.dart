@@ -64,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             const AppAppBar(title: 'Profile'),
             profileContainer(widget.userModel, context: context),
+            if(widget.userModel.profilePic.isNotEmpty)
             FormButton(
               onPressed: () {
                 AppNavigator.pushAndStackPage(context,
@@ -73,7 +74,8 @@ class _ProfilePageState extends State<ProfilePage> {
               bgColor: AppColors.green.withOpacity(0.9),
               textColor: AppColors.white,
             ),
-            const SizedBox(height:30),
+            const SizedBox(height: 30),
+            if(widget.userModel.profilePic.isNotEmpty)
             FormButton(
               onPressed: () async {
                 String accessToken = await SharedPref.getString('access-token');
@@ -169,9 +171,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   //   ),
                   // ],
                   image: DecorationImage(
-                      image: NetworkImage(
-                        user.profilePic,
-                      ),
+                      image: NetworkImage(widget.userModel.profilePic.isNotEmpty
+                              ? widget.userModel.profilePic
+                              : widget.userModel.occupiedSpaces[0]
+                                  .profilePic //user.profilePic,
+                          ),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
                 ),

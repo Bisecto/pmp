@@ -52,7 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             'password': event.password,
           };
 
-    //try {
+    try {
     print(event.selectedUser);
     print(event.selectedUser);
     print(event.selectedUser);
@@ -88,14 +88,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails!.spaceType);
-        print(userModel.occupiedSpaces[0].propertySpaceDetails!.propertySpaceImages);
+
         emit(SuccessState("Login Successful", userModel,
             event.selectedUser.toLowerCase() == 'tenant'));
       } else if (profileResponse.statusCode == 404) {
@@ -120,14 +113,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppUtils().debuglog(json.decode(loginResponse.body));
       emit(AuthInitial());
     }
-    // } catch (e) {
-    //   AppUtils().debuglog(e);
-    //   emit(ErrorState("There was a problem login you in please try again."));
-    //
-    //   AppUtils().debuglog(e);
-    //   emit(AuthInitial());
-    //   AppUtils().debuglog(12345678);
-    // }
+    } catch (e) {
+      AppUtils().debuglog(e);
+      emit(ErrorState("There was a problem login you in please try again."));
+
+      AppUtils().debuglog(e);
+      emit(AuthInitial());
+      AppUtils().debuglog(12345678);
+    }
   }
 
   FutureOr<void> initialEvent(InitialEvent event, Emitter<AuthState> emit) {

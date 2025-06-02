@@ -101,7 +101,7 @@ class _TenantSpaceState extends State<TenantSpace> {
                 height: 180,
                 width: AppUtils.deviceScreenSize(context).width,
                 decoration: BoxDecoration(
-                  color: AppColors.red,
+                  //color: AppColors.red,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.15),

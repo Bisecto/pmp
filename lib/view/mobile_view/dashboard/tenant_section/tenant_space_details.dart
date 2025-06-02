@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -13,6 +14,7 @@ import 'package:pim/res/app_svg_images.dart';
 import 'package:pim/utills/app_navigator.dart';
 import 'package:pim/view/mobile_view/add_occupant/add_occupant.dart';
 import 'package:pim/view/mobile_view/dashboard/property_details/tabview_container/space/add_space/add_space_tab.dart';
+import 'package:pim/view/mobile_view/dashboard/tenant_section/pdf_view.dart';
 
 import 'package:pim/view/mobile_view/landing_page.dart';
 import 'package:pim/view/widgets/app_bar.dart';
@@ -23,6 +25,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../../../../../../model/space_model.dart';
 import '../../../../../../res/apis.dart';
 import '../../../../../../res/app_colors.dart';
@@ -51,173 +54,188 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
   @override
   void initState() {
     // TODO: implement initState
-    spaceBloc.add(GetSingleSpaceEvent(
-        widget.userModel.occupiedSpaces[widget.index].propertySpaceDetails!.id
-            .toString(),
-        widget.userModel.occupiedSpaces[widget.index].propertyDetails!.id
-            .toString()));
+    // spaceBloc.add(GetSingleSpaceEvent(
+    //     widget.userModel.occupiedSpaces[widget.index].propertySpaceDetails!.id
+    //         .toString(),
+    //     widget.userModel.occupiedSpaces[widget.index].propertyDetails!.id
+    //         .toString()));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    images = widget.userModel.occupiedSpaces[widget.index].propertySpaceDetails!
+        .propertySpaceImages;
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-          child: BlocConsumer<PropertyBloc, PropertyState>(
-              bloc: spaceBloc,
-              listenWhen: (previous, current) => current is! PropertyInitial,
-              buildWhen: (previous, current) => current is! PropertyInitial,
-              listener: (context, state) {
-                if (state is SingleSpaceSuccessState) {
-                  //MSG.snackBar(context, state.msg);
+          child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppAppBar(
+                    title: widget
+                        .userModel.occupiedSpaces[widget.index].spaceNumber),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      text: "Space Details",
+                      size: 16,
+                      weight: FontWeight.w700,
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                lodgeContainer(context: context),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextStyles.textDetails(
+                    textValue:
+                        "Occupant: ${widget.userModel.occupiedSpaces[widget.index].fullName}",
+                    textSize: 12,
+                    textColor: AppColors.black),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextStyles.textDetails(
+                    textValue:
+                        "Space Type: ${widget.userModel.occupiedSpaces[widget.index].spaceType}",
+                    textSize: 12,
+                    textColor: AppColors.black),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextStyles.textHeadings(
+                  textValue:
+                      "NGN ${AppUtils.convertPrice(widget.userModel.occupiedSpaces[widget.index].rentPaid)}",
+                  textSize: 12,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                FormButton(
+                  onPressed: () async {
+                    final data =widget.userModel.toJson();// jsonDecode(widget.userModel.toString());
+                    final pdfBytes = await _generatePdf(PdfPageFormat.a4, data);
 
-                  // AppNavigator.pushAndRemovePreviousPages(context,
-                  //     page: LandingPage(studentProfile: state.studentProfile));
-                } else if (state is DeleteSpaceSuccessState) {
-                  MSG.snackBar(context, "Space has beedn deleted");
-                  Navigator.pop(context, true);
-                  // AppNavigator.pushAndRemovePreviousPages(context,
-                  //     page: LandingPage(
-                  //         selectedIndex: 0, userModel: widget.userModel));
-                } else if (state is PropertyErrorState) {
-                  MSG.warningSnackBar(context, state.error);
-                }
-              },
-              builder: (context, state) {
-                switch (state.runtimeType) {
-                  // case PostsFetchingState:
-                  //   return const Center(
-                  //     child: CircularProgressIndicator(),
-                  //   );
-                  case SingleSpaceSuccessState:
-                    final singleSpaceSuccessState =
-                        state as SingleSpaceSuccessState;
-                    images = singleSpaceSuccessState.space.imageUrls
-                            .map((imageUrl) => AppApis.appBaseUrl + imageUrl)
-                            .toList() ??
-                        [];
-                    return Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppAppBar(
-                                  title: singleSpaceSuccessState
-                                      .space.spaceNumber),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const CustomText(
-                                    text: "Space Details",
-                                    size: 16,
-                                    weight: FontWeight.w700,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              lodgeContainer(
-                                  space: singleSpaceSuccessState.space,
-                                  context: context),
-                              TextStyles.textDetails(
-                                  textValue:
-                                      "Description: ${singleSpaceSuccessState.space.description}",
-                                  textSize: 12,
-                                  textColor: AppColors.black),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              TextStyles.textDetails(
-                                  textValue:
-                                      "Occupant: ${singleSpaceSuccessState.space.occupantName}",
-                                  textSize: 12,
-                                  textColor: AppColors.black),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              TextStyles.textDetails(
-                                  textValue:
-                                      "Space Type: ${singleSpaceSuccessState.space.spaceType}",
-                                  textSize: 12,
-                                  textColor: AppColors.black),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              TextStyles.textHeadings(
-                                textValue:
-                                    "NGN ${AppUtils.convertPrice(singleSpaceSuccessState.space.price)}",
-                                textSize: 12,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    // Trigger file sharing (or save)
+                    await Printing.sharePdf(
+                      bytes: pdfBytes,
+                      filename: 'tenant_report.pdf',
                     );
-
-                  case PropertyLoadingState:
-                    return const Column(
-                      children: [
-                        AppLoadingPage("Fetching Space..."),
-                      ],
-                    );
-                  default:
-                    return const Column(
-                      children: [
-                        AppLoadingPage("Fetching Space..."),
-                      ],
-                    );
-                }
-              })),
+                  },
+                  text: "Download",
+                )
+              ],
+            ),
+          ),
+        ),
+      )),
     );
   }
+  Future<Uint8List> _generatePdf(PdfPageFormat format, Map<String, dynamic> data) async {
+    final pdf = pw.Document();
+    final occupied = data['occupied_spaces'][0];
 
-  void showDeleteConfirmationModal(
-      BuildContext context, VoidCallback onConfirm) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Space'),
-          content: const Text(
-              'Are you sure you want to delete this space? This action cannot be undone.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the modal
-              },
-              child:
-                  const Text('Cancel', style: TextStyle(color: Colors.black)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the modal
-                onConfirm(); // Trigger the confirm action
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: const CustomText(
-                text: 'Delete',
-                color: AppColors.white,
-              ),
-            ),
-          ],
-        );
-      },
+    final profileImage = await _networkImage(occupied['profile_pic']);
+    final qrImage = await _networkImage(occupied['qr_code_image']);
+    final propertyImages = await Future.wait(
+      (occupied['property_details']['property_images'] as List<dynamic>)
+          .map((url) => _networkImage(url))
+          .toList(),
     );
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: format,
+        build: (context) => [
+          pw.Header(
+            level: 0,
+            child: pw.Text(
+              "Tenant Report",
+              style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+            ),
+          ),
+          pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              if (profileImage != null)
+                pw.Container(width: 100, height: 100, child: pw.Image(profileImage)),
+              pw.SizedBox(width: 20),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text("Name: ${occupied['full_name']}"),
+                  pw.Text("Title: ${occupied['title']}"),
+                  pw.Text("Gender: ${occupied['gender']}"),
+                  pw.Text("Phone: ${occupied['mobile_phone']}"),
+                  pw.Text("Email: ${occupied['email']}"),
+                  pw.Text("Occupation: ${occupied['occupation_status']}"),
+                  pw.Text("Relationship: ${occupied['relationship']}"),
+                ],
+              ),
+              pw.Spacer(),
+              if (qrImage != null)
+                pw.Container(width: 100, height: 100, child: pw.Image(qrImage)),
+            ],
+          ),
+          pw.SizedBox(height: 20),
+          pw.Text("Rent Details", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+          pw.Bullet(text: "Timeline: ${occupied['rent_timeline']}"),
+          pw.Bullet(text: "Start: ${occupied['rent_commencement_date']}"),
+          pw.Bullet(text: "End: ${occupied['rent_expiration_date']}"),
+          pw.Bullet(text: "Paid: ₦${occupied['rent_paid']}"),
+          pw.Bullet(text: "Status: ${occupied['payment_status']}"),
+          pw.Bullet(text: "Mesh Bill Paid: ₦${occupied['mesh_bill_paid']}"),
+          pw.Bullet(text: "Due In: ${occupied['rent_due_deadline_countdown']}"),
+          pw.SizedBox(height: 20),
+          pw.Text("Property Details", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+          pw.Bullet(text: "Name: ${occupied['property_details']['property_name']}"),
+          pw.Bullet(text: "Type: ${occupied['property_details']['property_type']}"),
+          pw.Bullet(text: "Address: ${occupied['property_details']['address']}"),
+          pw.Bullet(text: "City: ${occupied['property_details']['city']}"),
+          pw.Bullet(text: "Location: ${occupied['property_details']['location']}"),
+          pw.Bullet(text: "Description: ${occupied['property_details']['description']}"),
+          pw.Bullet(text: "Total Spaces: ${occupied['property_details']['total_space']}"),
+          pw.Bullet(text: "Occupied Spaces: ${occupied['property_details']['occupied_space']}"),
+          pw.SizedBox(height: 20),
+          if (propertyImages.isNotEmpty)
+            pw.Text("Property Images", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+          pw.Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: propertyImages
+                .where((img) => img != null)
+                .map((img) => pw.Container(width: 150, child: pw.Image(img!)))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+
+    return pdf.save();
   }
 
+  Future<pw.ImageProvider?> _networkImage(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return pw.MemoryImage(response.bodyBytes);
+      }
+    } catch (_) {}
+    return null;
+  }
   int imageNum = 0;
 
   PageController _controller = PageController();
@@ -260,11 +278,14 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
   //   });
   // }
 
-  Widget lodgeContainer({required Space space, required context}) {
+  Widget lodgeContainer({required context}) {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: space.imageUrls.isEmpty ? 50 : 270,
+        height: widget.userModel.occupiedSpaces[widget.index]
+                .propertySpaceDetails!.propertySpaceImages.isEmpty
+            ? 50
+            : 270,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           // color: AppColors.white,
@@ -276,12 +297,14 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
             //crossAxisAlignment: CrossAxisAlignment.start,
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (space.imageUrls.isEmpty)
+              if (widget.userModel.occupiedSpaces[widget.index]
+                  .propertySpaceDetails!.propertySpaceImages.isEmpty)
                 TextStyles.textDetails(
                     textValue:
                         "No image has been added to this space yet. \nClick the edit icon to added required details",
                     textColor: AppColors.black),
-              if (space.imageUrls.isNotEmpty)
+              if (widget.userModel.occupiedSpaces[widget.index]
+                  .propertySpaceDetails!.propertySpaceImages.isNotEmpty)
                 Stack(
                   children: [
                     SizedBox(

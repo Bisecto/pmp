@@ -76,63 +76,87 @@ class _TenantDashboardState extends State<TenantDashboard> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
+                      //width: context.size!.width,
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
                         border: Border.all(color: AppColors.mainAppColor),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Properties
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: 'Room Number: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text:
-                                      '${widget.userModel.occupiedSpaces[0].spaceNumber}  ',
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                ),
-                              ],
+                      child:  RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Room Number: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 13.0,
+                              ),
                             ),
-                          ),
-                          // Rooms
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: 'Rent Due Date: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text:
-                                      '${widget.userModel.occupiedSpaces[0].rentExpirationDate}  ',
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                ),
-                              ],
+                            TextSpan(
+                              text:
+                              '${widget.userModel.occupiedSpaces[0].spaceNumber}  ',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 13.0,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   crossAxisAlignment: CrossAxisAlignment.center,
+                      //   children: [
+                      //     // Properties
+                      //     RichText(
+                      //       text: TextSpan(
+                      //         children: [
+                      //           const TextSpan(
+                      //             text: 'Room Number: ',
+                      //             style: TextStyle(
+                      //               fontWeight: FontWeight.bold,
+                      //               color: Colors.black,
+                      //               fontSize: 13.0,
+                      //             ),
+                      //           ),
+                      //           TextSpan(
+                      //             text:
+                      //                 '${widget.userModel.occupiedSpaces[0].spaceNumber}  ',
+                      //             style: const TextStyle(
+                      //               color: Colors.black,
+                      //               fontSize: 13.0,
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //     // Rooms
+                      //     // RichText(
+                      //     //   text: TextSpan(
+                      //     //     children: [
+                      //     //       const TextSpan(
+                      //     //         text: 'Rent Due Date: ',
+                      //     //         style: TextStyle(
+                      //     //           fontWeight: FontWeight.bold,
+                      //     //           color: Colors.black,
+                      //     //           fontSize: 13.0,
+                      //     //         ),
+                      //     //       ),
+                      //     //       TextSpan(
+                      //     //         text:
+                      //     //             '${widget.userModel.occupiedSpaces[0].rentExpirationDate}  ',
+                      //     //         style: const TextStyle(
+                      //     //           color: Colors.black,
+                      //     //           fontSize: 13.0,
+                      //     //         ),
+                      //     //       ),
+                      //     //     ],
+                      //     //   ),
+                      //     // ),
+                      //   ],
+                      // ),
                     ),
                   ),
                   TenantSpace(

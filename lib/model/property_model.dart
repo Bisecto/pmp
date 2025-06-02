@@ -194,7 +194,9 @@ class Occupant {
       selfEmployedProfile: json['self_employed_profile'] != null
           ? SelfEmployedProfile.fromJson(json['self_employed_profile'])
           : null,
-      propertyDetails: PropertyDetailsInfo.fromJson(json['property_details']),
+      propertyDetails: json['property_details'] != null
+          ? PropertyDetailsInfo.fromJson(json['property_details'])
+          : null,
       employedProfile: json['employed_profile'] != null
           ? EmployedProfile.fromJson(json['employed_profile'])
           : null,
