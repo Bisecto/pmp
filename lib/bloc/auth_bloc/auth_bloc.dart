@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:pim/model/current_plan_model.dart';
 
 import '../../model/user_model.dart';
 import '../../repository/auth_repository.dart';
@@ -53,66 +54,70 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           };
 
     try {
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    print(event.selectedUser);
-    final loginResponse = await authRepository.authPostRequest(
-        formData,
-        event.selectedUser.toLowerCase() == 'tenant'
-            ? AppApis.occupantLoginApi
-            : AppApis.loginApi);
-
-    AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
-    AppUtils().debuglog('Response body: ${loginResponse.body}');
-    AppUtils().debuglog(formData);
-
-    AppUtils().debuglog(loginResponse.body);
-    if (loginResponse.statusCode == 200 || loginResponse.statusCode == 201) {
-      await SharedPref.putString(
-          "refresh-token", json.decode(loginResponse.body)['refresh']);
-
-      await SharedPref.putString(
-          "access-token", json.decode(loginResponse.body)['access']);
-      final profileResponse = await appRepository.getRequestWithToken(
-          json.decode(loginResponse.body)['access'],
+      final loginResponse = await authRepository.authPostRequest(
+          formData,
           event.selectedUser.toLowerCase() == 'tenant'
-              ? AppApis.tenantProfile
-              : AppApis.profile);
-      AppUtils().debuglog('Response body: ${profileResponse.body}');
-      if (profileResponse.statusCode == 200 ||
-          profileResponse.statusCode == 201) {
-        UserModel userModel =
-            UserModel.fromJson(json.decode(profileResponse.body));
+              ? AppApis.occupantLoginApi
+              : AppApis.loginApi);
 
-        emit(SuccessState("Login Successful", userModel,
-            event.selectedUser.toLowerCase() == 'tenant'));
-      } else if (profileResponse.statusCode == 404) {
-        emit(ProfileSetUpState("Complete Profile Set up"));
+      AppUtils().debuglog('Response status: ${loginResponse.statusCode}');
+      AppUtils().debuglog('Response body: ${loginResponse.body}');
+      AppUtils().debuglog(formData);
+
+      AppUtils().debuglog(loginResponse.body);
+      if (loginResponse.statusCode == 200 || loginResponse.statusCode == 201) {
+        await SharedPref.putString(
+            "refresh-token", json.decode(loginResponse.body)['refresh']);
+
+        await SharedPref.putString(
+            "access-token", json.decode(loginResponse.body)['access']);
+        final profileResponse = await appRepository.getRequestWithToken(
+            json.decode(loginResponse.body)['access'],
+            event.selectedUser.toLowerCase() == 'tenant'
+                ? AppApis.tenantProfile
+                : AppApis.profile);
+
+        AppUtils().debuglog('Response body: ${profileResponse.body}');
+        if (profileResponse.statusCode == 200 ||
+            profileResponse.statusCode == 201) {
+          UserModel userModel =
+              UserModel.fromJson(json.decode(profileResponse.body));
+          final currentPlanSubscriptionResponse =
+              await appRepository.getRequestWithToken(
+                  json.decode(loginResponse.body)['access'],
+                  AppApis.currentPlan);
+          if (currentPlanSubscriptionResponse.statusCode == 200 ||
+              currentPlanSubscriptionResponse.statusCode == 201) {
+            CurrentPlan currentPlan = CurrentPlan.fromJson(
+                json.decode(currentPlanSubscriptionResponse.body)['data']);
+            emit(SuccessState("Login Successful", userModel,
+                event.selectedUser.toLowerCase() == 'tenant', currentPlan));
+          } else {
+            emit(ErrorState("There was a problem fetching your current plan"));
+            emit(AuthInitial());
+          }
+        } else if (profileResponse.statusCode == 404) {
+          emit(ProfileSetUpState("Complete Profile Set up"));
+        } else {
+          emit(ErrorState("There was a problem fetching your profile"));
+          emit(AuthInitial());
+        }
+      } else if (loginResponse.statusCode == 500 ||
+          loginResponse.statusCode == 501) {
+        emit(ErrorState(
+            "There was a problem logging user in please try again later."));
+        emit(AuthInitial());
       } else {
-        emit(ErrorState("There was a problem fetching your profile"));
+        emit(ErrorState(json
+            .decode(loginResponse.body)['non_field_errors'][0]
+            .toString()
+            .replaceAll('{', '')
+            .replaceAll('}', '')
+            .replaceAll('\'', '')));
+        //AppUtils().debuglog(event.password);
+        AppUtils().debuglog(json.decode(loginResponse.body));
         emit(AuthInitial());
       }
-    } else if (loginResponse.statusCode == 500 ||
-        loginResponse.statusCode == 501) {
-      emit(ErrorState(
-          "There was a problem logging user in please try again later."));
-      emit(AuthInitial());
-    } else {
-      emit(ErrorState(json
-          .decode(loginResponse.body)['non_field_errors'][0]
-          .toString()
-          .replaceAll('{', '')
-          .replaceAll('}', '')
-          .replaceAll('\'', '')));
-      //AppUtils().debuglog(event.password);
-      AppUtils().debuglog(json.decode(loginResponse.body));
-      emit(AuthInitial());
-    }
     } catch (e) {
       AppUtils().debuglog(e);
       emit(ErrorState("There was a problem login you in please try again."));
@@ -262,8 +267,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (resetPasswordResponse.statusCode == 200) {
         AppUtils().debuglog(resetPasswordResponse.body);
-        // await SharedPref.putString(
-        //     "refresh-token", json.decode(response.body)['refresh']);
         await SharedPref.putString("password", event.password);
 
         emit(ResetPasswordSuccessState(
@@ -313,7 +316,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (registerResponse.statusCode == 200 ||
           registerResponse.statusCode == 201) {
-        emit(SuccessState("Sign up Successful", null, false));
+        emit(SuccessState("Sign up Successful", null, false, null));
       } else if (registerResponse.statusCode == 500 ||
           registerResponse.statusCode == 501) {
         emit(ErrorState(
@@ -410,7 +413,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        emit(SuccessState("Profile Updated Successful", userModel, false));
+        final currentPlanSubscriptionResponse = await appRepository
+            .getRequestWithToken(accessToken, AppApis.currentPlan);
+
+        if (currentPlanSubscriptionResponse.statusCode == 200 ||
+            currentPlanSubscriptionResponse.statusCode == 201) {
+          CurrentPlan currentPlan = CurrentPlan.fromJson(
+              json.decode(currentPlanSubscriptionResponse.body)['data']);
+          emit(SuccessState(
+              "Profile Updated Successful", userModel, false, currentPlan));
+        } else {
+          emit(ErrorState("There was a problem fetching your current plan"));
+          emit(AuthInitial());
+        }
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
         emit(ErrorState("There was a problem completing profile set up."));
@@ -461,7 +476,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           profileResponse.statusCode == 201) {
         UserModel userModel =
             UserModel.fromJson(json.decode(profileResponse.body));
-        emit(SuccessState("Profile Updated Successful", userModel, false));
+
+        final currentPlanSubscriptionResponse = await appRepository
+            .getRequestWithToken(accessToken, AppApis.currentPlan);
+
+        if (currentPlanSubscriptionResponse.statusCode == 200 ||
+            currentPlanSubscriptionResponse.statusCode == 201) {
+          CurrentPlan currentPlan = CurrentPlan.fromJson(
+              json.decode(currentPlanSubscriptionResponse.body)['data']);
+          emit(SuccessState(
+              "Profile Updated Successful", userModel, false, currentPlan));
+        } else {
+          emit(ErrorState("There was a problem fetching your current plan"));
+          emit(AuthInitial());
+        }
       } else if (profileResponse.statusCode == 500 ||
           profileResponse.statusCode == 501) {
         emit(ErrorState("There was a problem completing profile set up."));

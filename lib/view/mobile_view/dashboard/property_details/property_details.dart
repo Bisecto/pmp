@@ -23,6 +23,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import '../../../../model/current_plan_model.dart';
 import '../../../../model/property_model.dart';
 import '../../../../res/apis.dart';
 import '../../../../res/app_colors.dart';
@@ -35,9 +36,13 @@ import 'tabview_container/occupant/occupant_list.dart';
 class PropertyDetails extends StatefulWidget {
   final Property property;
   final UserModel userModel;
+  final CurrentPlan currentPlan;
 
   const PropertyDetails(
-      {super.key, required this.property, required this.userModel});
+      {super.key,
+      required this.property,
+      required this.userModel,
+      required this.currentPlan});
 
   @override
   State<PropertyDetails> createState() => _PropertyDetailsState();
@@ -91,6 +96,7 @@ class _PropertyDetailsState extends State<PropertyDetails>
                 page: LandingPage(
                   selectedIndex: 0,
                   userModel: widget.userModel,
+                  currentPlan: widget.currentPlan,
                 ),
               );
             } else if (state is PropertyErrorState) {
@@ -139,7 +145,7 @@ class _PropertyDetailsState extends State<PropertyDetails>
                                       userModel: widget.userModel,
                                       isEdit: true,
                                       property:
-                                          singlePropertySuccessState.property,
+                                          singlePropertySuccessState.property, currentPlan: widget.currentPlan,
                                     ),
                                   );
                                 },
@@ -184,12 +190,11 @@ class _PropertyDetailsState extends State<PropertyDetails>
                           Expanded(
                             child: FormButton(
                               height: 50,
-
                               bgColor: currentIndex == 0
                                   ? AppColors.mainAppColor
                                   : AppColors.white,
-
-                              text: 'Spaces (${singlePropertySuccessState.property.spaces.length})',
+                              text:
+                                  'Spaces (${singlePropertySuccessState.property.spaces.length})',
                               textColor: currentIndex != 0
                                   ? AppColors.mainAppColor
                                   : AppColors.white,
@@ -198,7 +203,6 @@ class _PropertyDetailsState extends State<PropertyDetails>
                                   currentIndex = 0;
                                 });
                               },
-
                             ),
                           ),
                           Expanded(
@@ -208,7 +212,8 @@ class _PropertyDetailsState extends State<PropertyDetails>
                               bgColor: currentIndex == 1
                                   ? AppColors.mainAppColor
                                   : AppColors.white,
-                              text: 'Occupants (${singlePropertySuccessState.property.occupants.length})',
+                              text:
+                                  'Occupants (${singlePropertySuccessState.property.occupants.length})',
                               textColor: currentIndex != 1
                                   ? AppColors.mainAppColor
                                   : AppColors.white,
@@ -221,9 +226,7 @@ class _PropertyDetailsState extends State<PropertyDetails>
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 10),
-
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         //height: tabHeight,

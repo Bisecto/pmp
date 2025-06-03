@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/view/mobile_view/auth/sign_up_screen.dart';
 import 'package:pim/view/widgets/loading_animation.dart';
 import 'package:provider/provider.dart';
@@ -32,8 +33,9 @@ import 'forgot_password/password_reset_request.dart';
 
 class SetUpProfile extends StatefulWidget {
   final String userName;
+  CurrentPlan? currentPlan;
 
-  const SetUpProfile({super.key, required this.userName});
+   SetUpProfile({super.key, required this.userName,  this.currentPlan});
 
   @override
   State<SetUpProfile> createState() => _SetUpProfileState();
@@ -95,7 +97,7 @@ class _SetUpProfileState extends State<SetUpProfile> {
               AppNavigator.pushAndRemovePreviousPages(context,
                   page: LandingPage(
                     selectedIndex: 0,
-                    userModel: state.userModel!,
+                    userModel: state.userModel!, currentPlan: widget.currentPlan!,
                   ));
             } else if (state is ErrorState) {
               MSG.warningSnackBar(context, state.error);

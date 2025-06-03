@@ -6,6 +6,7 @@ import 'package:pim/view/mobile_view/dashboard/property_details/property_details
 import 'package:pim/view/widgets/form_input.dart';
 
 import '../../../../res/app_colors.dart';
+import '../../../model/current_plan_model.dart';
 import '../../../res/app_images.dart';
 import '../../../utills/app_navigator.dart';
 import '../../../utills/app_utils.dart';
@@ -14,8 +15,13 @@ import '../../widgets/app_custom_text.dart';
 class LodgeList extends StatefulWidget {
   List<Property> properties;
   final UserModel userModel;
+  final CurrentPlan currentPlan;
 
-  LodgeList({super.key, required this.properties, required this.userModel});
+  LodgeList(
+      {super.key,
+      required this.properties,
+      required this.userModel,
+      required this.currentPlan});
 
   @override
   State<LodgeList> createState() => _LodgeListState();
@@ -198,6 +204,7 @@ class _LodgeListState extends State<LodgeList> {
                             page: PropertyDetails(
                               property: property,
                               userModel: widget.userModel,
+                              currentPlan: widget.currentPlan,
                             ));
                       },
                       child: Container(

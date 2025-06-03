@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/utills/app_utils.dart';
 import 'package:pim/view/mobile_view/auth/sign_in_page.dart';
 import 'package:pim/view/mobile_view/profile/profile_page.dart';
@@ -18,15 +19,15 @@ import 'contact_us_page.dart';
 
 class ProfileTab extends StatefulWidget {
   final UserModel userModel;
+  final CurrentPlan? currentPlan;
 
-  ProfileTab({super.key, required this.userModel});
+  ProfileTab({super.key, required this.userModel, required this.currentPlan});
 
   @override
   State<ProfileTab> createState() => _ProfileTabState();
 }
 
 class _ProfileTabState extends State<ProfileTab> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +44,10 @@ class _ProfileTabState extends State<ProfileTab> {
         child: Column(
           children: [
             // Settings options list
+            currentPlan(),
+            const SizedBox(
+              height: 20,
+            ),
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
@@ -55,6 +60,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         AppNavigator.pushAndStackPage(context,
                             page: ProfilePage(
                               userModel: widget.userModel,
+                              currentPlan: widget.currentPlan!,
                             ));
                       },
                       child: _buildSettingsOption('Profile')),
@@ -66,9 +72,9 @@ class _ProfileTabState extends State<ProfileTab> {
                       },
                       child: _buildSettingsOption('Contact Us')),
                   InkWell(
-                    onTap: (){
-                      _launchUrl('https://property.appleadng.net/about/');
-                    },
+                      onTap: () {
+                        _launchUrl('https://property.appleadng.net/about/');
+                      },
                       child: _buildSettingsOption('About PMP')),
                   //_buildSettingsOption('Support'),
                 ],
@@ -96,7 +102,7 @@ class _ProfileTabState extends State<ProfileTab> {
     final Uri uri = Uri.parse(url);
     try {
       bool launched =
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!launched) {
         // Handle the case where the URL couldn't be launched
         // You might want to display an error message to the user
@@ -123,6 +129,33 @@ class _ProfileTabState extends State<ProfileTab> {
           text: title,
           size: 18,
           weight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget currentPlan() {
+    return Container(
+      height: 80,
+      width: AppUtils.deviceScreenSize(context).width,
+      decoration:  BoxDecoration(
+          color: AppColors.mainAppColor, borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextStyles.textHeadings(textValue: "PMP ${widget.currentPlan!.plan!.displayName}",textColor: AppColors.white),
+                const SizedBox(height: 10,),
+                CustomText(text: "${widget.currentPlan!.plan!.description}",size: 13,color: AppColors.white)
+              ],
+            ),
+            Icon(Icons.next_plan,color: AppColors.white,)
+          ],
         ),
       ),
     );

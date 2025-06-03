@@ -6,6 +6,7 @@ class AppApis {
   ///Authentication Endpoints
   static String registerApi = "$appBaseUrl/api/register/";
   static String profile = "$appBaseUrl/api/profile/";
+  static String currentPlan = "$appBaseUrl/api/subscription/subscriptions/current/";
   static String tenantProfile = "$appBaseUrl/api/occupant/profile/";
   static String verifyOTP = "$appBaseUrl/api/verify-email/";
   static String validateOTP = "$appBaseUrl/api/password-reset/validate/";

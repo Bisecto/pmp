@@ -47,9 +47,9 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
         userModel: widget.userModel,
       ),
       Container(),
-
       ProfileTab(
         userModel: widget.userModel,
+        currentPlan: null,
       )
     ];
     super.initState();
@@ -85,7 +85,7 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
           currentIndex: selectedIndex,
           selectedItemColor: AppColors.mainAppColor,
           unselectedItemColor:
-          theme.isDark ? AppColors.lightPrimary : AppColors.lightDivider,
+              theme.isDark ? AppColors.lightPrimary : AppColors.lightDivider,
           onTap: (index) {
             setState(() {
               selectedIndex = index;
@@ -98,8 +98,8 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
                 color: selectedIndex == 0
                     ? AppColors.mainAppColor
                     : theme.isDark
-                    ? AppColors.lightPrimary
-                    : AppColors.lightDivider,
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
               ),
               label: 'Dashboard',
             ),
@@ -109,8 +109,8 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
                 color: selectedIndex == 1
                     ? AppColors.mainAppColor
                     : theme.isDark
-                    ? AppColors.lightPrimary
-                    : AppColors.lightDivider,
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
               ),
               label: 'Payment',
             ),
@@ -120,8 +120,8 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
                 color: selectedIndex == 2
                     ? AppColors.mainAppColor
                     : theme.isDark
-                    ? AppColors.lightPrimary
-                    : AppColors.lightDivider,
+                        ? AppColors.lightPrimary
+                        : AppColors.lightDivider,
               ), //Icon(Icons.home),
               label: 'Profile',
             ),

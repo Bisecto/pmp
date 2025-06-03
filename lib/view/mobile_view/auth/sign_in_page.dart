@@ -128,14 +128,14 @@ class _SignInPageState extends State<SignInPage> {
                             page: state.isTenant?TenantLandingPage( selectedIndex: 0,
                           userModel: state.userModel!,):LandingPage(
                               selectedIndex: 0,
-                              userModel: state.userModel!,
+                              userModel: state.userModel!, currentPlan: state.currentPlan!,
                             ));
                       } else if (state is ErrorState) {
                         MSG.warningSnackBar(context, state.error);
                       } else if (state is ProfileSetUpState) {
                         AppNavigator.pushAndStackPage(context,
                             page: SetUpProfile(
-                              userName: _userNameController.text,
+                              userName: _userNameController.text, currentPlan: null,
                             ));
                       }
                     },

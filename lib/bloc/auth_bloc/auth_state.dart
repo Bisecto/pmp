@@ -20,9 +20,10 @@ class ErrorState extends AuthState {
 class SuccessState extends AuthState {
   final String msg;
   final UserModel? userModel;
+  final CurrentPlan? currentPlan;
   final bool isTenant;
   SuccessState(
-    this.msg, this.userModel, this.isTenant,
+    this.msg, this.userModel, this.isTenant, this.currentPlan,
   );
 }
 class ProfileSetUpState extends AuthState {

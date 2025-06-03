@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pim/bloc/property_bloc/property_bloc.dart';
+import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/res/apis.dart';
 import 'package:pim/view/widgets/drop_down.dart';
@@ -26,12 +27,13 @@ class AddPropertyScreen extends StatefulWidget {
   UserModel userModel;
   bool isEdit;
   Property property;
+  final CurrentPlan currentPlan;
 
   AddPropertyScreen(
       {super.key,
       required this.userModel,
       required this.isEdit,
-      required this.property});
+      required this.property, required this.currentPlan});
 
   @override
   _AddPropertyScreenState createState() => _AddPropertyScreenState();
@@ -256,7 +258,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
                 AppNavigator.pushAndRemovePreviousPages(context,
                     page: LandingPage(
-                        selectedIndex: 0, userModel: widget.userModel));
+                        selectedIndex: 0, userModel: widget.userModel, currentPlan: widget.currentPlan,));
               } else if (state is PropertyErrorState) {
                 MSG.warningSnackBar(context, state.error);
               }

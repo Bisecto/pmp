@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/view/mobile_view/profile/profile_tab.dart';
@@ -13,9 +14,13 @@ import 'dashboard/dashboard.dart';
 class LandingPage extends StatefulWidget {
   int selectedIndex;
   UserModel userModel;
+  final CurrentPlan currentPlan;
 
   LandingPage(
-      {super.key, required this.selectedIndex, required this.userModel});
+      {super.key,
+      required this.selectedIndex,
+      required this.userModel,
+      required this.currentPlan});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -44,6 +49,7 @@ class _LandingPageState extends State<LandingPage> {
       Dashboard(
         onPageChanged: _onPageChanged,
         userModel: widget.userModel,
+        currentPlan: widget.currentPlan,
       ),
       AddPropertyScreen(
         userModel: widget.userModel,
@@ -68,9 +74,11 @@ class _LandingPageState extends State<LandingPage> {
             imageUrls: [ImageUrl(id: 0, url: '')],
             advertise: false,
             spaces: []),
+        currentPlan: widget.currentPlan,
       ),
       ProfileTab(
         userModel: widget.userModel,
+        currentPlan: widget.currentPlan,
       )
     ];
     super.initState();

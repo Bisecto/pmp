@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/view/widgets/loading_animation.dart';
 import 'package:provider/provider.dart';
@@ -27,8 +28,10 @@ import '../../widgets/form_input.dart';
 
 class UpdateProfile extends StatefulWidget {
   final UserModel userModel;
+  final CurrentPlan currentPlan;
 
-  const UpdateProfile({super.key, required this.userModel});
+  const UpdateProfile(
+      {super.key, required this.userModel, required this.currentPlan});
 
   @override
   State<UpdateProfile> createState() => _UpdateProfileState();
@@ -135,6 +138,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                   page: LandingPage(
                     selectedIndex: 0,
                     userModel: state.userModel!,
+                    currentPlan: widget.currentPlan,
                   ));
             } else if (state is ErrorState) {
               MSG.warningSnackBar(context, state.error);
