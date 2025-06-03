@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:pim/model/property_model.dart';
 import 'package:pim/model/user_model.dart';
 import 'package:pim/view/mobile_view/profile/profile_tab.dart';
+import 'package:pim/view/widgets/app_custom_text.dart';
 import 'package:provider/provider.dart';
 import 'package:pim/res/app_colors.dart';
 import '../../utills/custom_theme.dart';
@@ -46,7 +47,7 @@ class _TenantLandingPageState extends State<TenantLandingPage> {
         onPageChanged: _onPageChanged,
         userModel: widget.userModel,
       ),
-      Container(),
+      const CustomText(text: "Nothing here to display",),
       ProfileTab(
         userModel: widget.userModel,
         currentPlan: null,

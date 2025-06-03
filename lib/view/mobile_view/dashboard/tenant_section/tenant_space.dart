@@ -79,7 +79,7 @@ class _TenantSpaceState extends State<TenantSpace> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 335,
+        height: 255,
         padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -148,47 +148,47 @@ occupiedSpace.propertySpaceDetails!.propertySpaceImages.isEmpty?"https://nigeria
               const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
-                child: Row(
-                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        AppNavigator.pushAndStackPage(context,
-                            page: TenantSpaceDetail(
-                            userModel: widget.userModel,
-                            index:index));
-                      },
-                      child: Container(
-                        height: 50,
-                        width: AppUtils.deviceScreenSize(context).width / 2.5,
-                        decoration: BoxDecoration(
-                          color: AppColors.mainAppColor,
-                          // boxShadow: [
-                          //   BoxShadow(
-                          //     color: Colors.black.withOpacity(0.15),
-                          //     spreadRadius: 0,
-                          //     blurRadius: 10,
-                          //     offset: const Offset(0, 4),
-                          //   ),
-                          // ],
-
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: const Center(
-                          child: CustomText(
-                            text: 'View Property',
-                            size: 16,
-                            maxLines: 3,
-                            color: AppColors.white,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              )
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(10.0, 0, 10, 0),
+              //   child: Row(
+              //     //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       GestureDetector(
+              //         onTap: () {
+              //           AppNavigator.pushAndStackPage(context,
+              //               page: TenantSpaceDetail(
+              //               userModel: widget.userModel,
+              //               index:index));
+              //         },
+              //         child: Container(
+              //           height: 50,
+              //           width: AppUtils.deviceScreenSize(context).width / 2.5,
+              //           decoration: BoxDecoration(
+              //             color: AppColors.mainAppColor,
+              //             // boxShadow: [
+              //             //   BoxShadow(
+              //             //     color: Colors.black.withOpacity(0.15),
+              //             //     spreadRadius: 0,
+              //             //     blurRadius: 10,
+              //             //     offset: const Offset(0, 4),
+              //             //   ),
+              //             // ],
+              //
+              //             borderRadius: BorderRadius.circular(15),
+              //           ),
+              //           child: const Center(
+              //             child: CustomText(
+              //               text: 'View Property',
+              //               size: 16,
+              //               maxLines: 3,
+              //               color: AppColors.white,
+              //             ),
+              //           ),
+              //         ),
+              //       )
+              //     ],
+              //   ),
+              // )
             ],
           ),
         ),
