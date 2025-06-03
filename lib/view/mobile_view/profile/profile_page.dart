@@ -18,9 +18,9 @@ import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
   final UserModel userModel;
-  final CurrentPlan currentPlan;
+   CurrentPlan? currentPlan;
 
-  const ProfilePage({super.key, required this.userModel, required this.currentPlan});
+   ProfilePage({super.key, required this.userModel,  this.currentPlan});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -70,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
             FormButton(
               onPressed: () {
                 AppNavigator.pushAndStackPage(context,
-                    page: UpdateProfile(userModel: widget.userModel, currentPlan: widget.currentPlan,));
+                    page: UpdateProfile(userModel: widget.userModel, currentPlan: widget.currentPlan!,));
               },
               text: "Edit Profile",
               bgColor: AppColors.green.withOpacity(0.9),

@@ -126,7 +126,8 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
                 ),
                 FormButton(
                   onPressed: () async {
-                    final data =widget.userModel.toJson();// jsonDecode(widget.userModel.toString());
+                    final data = widget.userModel
+                        .toJson(); // jsonDecode(widget.userModel.toString());
                     final pdfBytes = await _generatePdf(PdfPageFormat.a4, data);
 
                     // Trigger file sharing (or save)
@@ -144,17 +145,14 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
       )),
     );
   }
-  Future<Uint8List> _generatePdf(PdfPageFormat format, Map<String, dynamic> data) async {
+
+  Future<Uint8List> _generatePdf(
+      PdfPageFormat format, Map<String, dynamic> data) async {
     final pdf = pw.Document();
     final occupied = data['occupied_spaces'][0];
 
     final profileImage = await _networkImage(occupied['profile_pic']);
     final qrImage = await _networkImage(occupied['qr_code_image']);
-    final propertyImages = await Future.wait(
-      (occupied['property_details']['property_images'] as List<dynamic>)
-          .map((url) => _networkImage(url))
-          .toList(),
-    );
 
     pdf.addPage(
       pw.MultiPage(
@@ -167,65 +165,106 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
               style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
             ),
           ),
+          pw.SizedBox(height: 10),
           pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               if (profileImage != null)
-                pw.Container(width: 100, height: 100, child: pw.Image(profileImage)),
-              pw.SizedBox(width: 20),
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text("Name: ${occupied['full_name']}"),
-                  pw.Text("Title: ${occupied['title']}"),
-                  pw.Text("Gender: ${occupied['gender']}"),
-                  pw.Text("Phone: ${occupied['mobile_phone']}"),
-                  pw.Text("Email: ${occupied['email']}"),
-                  pw.Text("Occupation: ${occupied['occupation_status']}"),
-                  pw.Text("Relationship: ${occupied['relationship']}"),
-                ],
-              ),
-              pw.Spacer(),
+                pw.Container(
+                  width: 100,
+                  height: 100,
+                  child: pw.Image(profileImage),
+                ),
               if (qrImage != null)
-                pw.Container(width: 100, height: 100, child: pw.Image(qrImage)),
+                pw.Container(
+                  width: 100,
+                  height: 100,
+                  child: pw.Image(qrImage),
+                ),
             ],
           ),
           pw.SizedBox(height: 20),
-          pw.Text("Rent Details", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.Bullet(text: "Timeline: ${occupied['rent_timeline']}"),
-          pw.Bullet(text: "Start: ${occupied['rent_commencement_date']}"),
-          pw.Bullet(text: "End: ${occupied['rent_expiration_date']}"),
-          pw.Bullet(text: "Paid: ₦${occupied['rent_paid']}"),
-          pw.Bullet(text: "Status: ${occupied['payment_status']}"),
-          pw.Bullet(text: "Mesh Bill Paid: ₦${occupied['mesh_bill_paid']}"),
-          pw.Bullet(text: "Due In: ${occupied['rent_due_deadline_countdown']}"),
+
+          /// Tenant Info Table
+          _sectionTitle("Tenant Information"),
+          _infoTable([
+            ["Full Name", occupied['full_name']],
+            ["Title", occupied['title']],
+            ["Gender", occupied['gender']],
+            ["Phone", occupied['mobile_phone']],
+            ["Email", occupied['email']],
+            ["Occupation", occupied['occupation_status']],
+            ["Relationship", occupied['relationship']],
+          ]),
+
+          /// Rent Details Table
           pw.SizedBox(height: 20),
-          pw.Text("Property Details", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.Bullet(text: "Name: ${occupied['property_details']['property_name']}"),
-          pw.Bullet(text: "Type: ${occupied['property_details']['property_type']}"),
-          pw.Bullet(text: "Address: ${occupied['property_details']['address']}"),
-          pw.Bullet(text: "City: ${occupied['property_details']['city']}"),
-          pw.Bullet(text: "Location: ${occupied['property_details']['location']}"),
-          pw.Bullet(text: "Description: ${occupied['property_details']['description']}"),
-          pw.Bullet(text: "Total Spaces: ${occupied['property_details']['total_space']}"),
-          pw.Bullet(text: "Occupied Spaces: ${occupied['property_details']['occupied_space']}"),
+          _sectionTitle("Rent Details"),
+          _infoTable([
+            ["Timeline", occupied['rent_timeline']],
+            ["Start Date", occupied['rent_commencement_date']],
+            ["End Date", occupied['rent_expiration_date']],
+            ["Amount Paid", "NGN${occupied['rent_paid']}"],
+            ["Payment Status", occupied['payment_status']],
+            ["Mesh Bill Paid", "NGN${occupied['mesh_bill_paid']}"],
+            ["Due In", occupied['rent_due_deadline_countdown']],
+          ]),
+
+          /// Property Details Table
           pw.SizedBox(height: 20),
-          if (propertyImages.isNotEmpty)
-            pw.Text("Property Images", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: propertyImages
-                .where((img) => img != null)
-                .map((img) => pw.Container(width: 150, child: pw.Image(img!)))
-                .toList(),
-          ),
+          _sectionTitle("Property Details"),
+          _infoTable([
+            ["Property Name", occupied['property_details']['property_name']],
+            ["Type", occupied['property_details']['property_type']],
+            ["Address", occupied['property_details']['address']],
+            ["City", occupied['property_details']['city']],
+            ["Location", occupied['property_details']['location']],
+            ["Description", occupied['property_details']['description']],
+            ["Total Spaces", occupied['property_details']['total_space'].toString()],
+            ["Occupied Spaces", occupied['property_details']['occupied_space'].toString()],
+          ]),
         ],
       ),
     );
 
     return pdf.save();
   }
+  pw.Widget _sectionTitle(String title) {
+    return pw.Text(
+      title,
+      style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+    );
+  }
+
+  pw.Widget _infoTable(List<List<String>> rows) {
+    return pw.Table(
+      border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
+      columnWidths: {
+        0: pw.FlexColumnWidth(3),
+        1: pw.FlexColumnWidth(5),
+      },
+      children: rows
+          .map(
+            (row) => pw.TableRow(
+          children: [
+            pw.Container(
+              padding: const pw.EdgeInsets.all(6),
+              color: PdfColors.grey200,
+              child: pw.Text(row[0],
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            ),
+            pw.Container(
+              padding: const pw.EdgeInsets.all(6),
+              child: pw.Text(row[1]),
+            ),
+          ],
+        ),
+      )
+          .toList(),
+    );
+  }
+
 
   Future<pw.ImageProvider?> _networkImage(String url) async {
     try {
@@ -236,6 +275,7 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
     } catch (_) {}
     return null;
   }
+
   int imageNum = 0;
 
   PageController _controller = PageController();

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pim/model/current_plan_model.dart';
 import 'package:pim/utills/app_utils.dart';
 import 'package:pim/view/mobile_view/auth/sign_in_page.dart';
+import 'package:pim/view/mobile_view/profile/plan/plan_listing.dart';
 import 'package:pim/view/mobile_view/profile/profile_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,6 +45,7 @@ class _ProfileTabState extends State<ProfileTab> {
         child: Column(
           children: [
             // Settings options list
+            if(widget.userModel.occupiedSpaces.isEmpty)
             currentPlan(),
             const SizedBox(
               height: 20,
@@ -60,7 +62,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         AppNavigator.pushAndStackPage(context,
                             page: ProfilePage(
                               userModel: widget.userModel,
-                              currentPlan: widget.currentPlan!,
+                              currentPlan: widget.currentPlan?? CurrentPlan(hasActiveSubscription: false, plan: null, subscription: null, usage: null, daysRemaining: 0, expiresAt: null),
                             ));
                       },
                       child: _buildSettingsOption('Profile')),
@@ -135,27 +137,47 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget currentPlan() {
-    return Container(
-      height: 80,
-      width: AppUtils.deviceScreenSize(context).width,
-      decoration:  BoxDecoration(
-          color: AppColors.mainAppColor, borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextStyles.textHeadings(textValue: "PMP ${widget.currentPlan!.plan!.displayName}",textColor: AppColors.white),
-                const SizedBox(height: 10,),
-                CustomText(text: "${widget.currentPlan!.plan!.description}",size: 13,color: AppColors.white)
-              ],
-            ),
-            Icon(Icons.next_plan,color: AppColors.white,)
-          ],
+    return GestureDetector(
+      onTap: () {
+        AppNavigator.pushAndStackPage(context,
+            page: PlanListing(
+              currentPlan: widget.currentPlan!,
+              userModel: widget.userModel,
+            ));
+      },
+      child: Container(
+        height: 80,
+        width: AppUtils.deviceScreenSize(context).width,
+        decoration: BoxDecoration(
+            color: AppColors.mainAppColor,
+            borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextStyles.textHeadings(
+                      textValue: "PMP ${widget.currentPlan!.plan!.displayName}",
+                      textColor: AppColors.white),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CustomText(
+                      text: "${widget.currentPlan!.plan!.description}",
+                      size: 13,
+                      color: AppColors.white)
+                ],
+              ),
+              const Icon(
+                Icons.next_plan,
+                color: AppColors.white,
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -24,6 +24,9 @@ class AppApis {
   static String loginApi = "$appBaseUrl/api/login/";
   static String occupantLoginApi = "$appBaseUrl/api/occupant/login/";
 
+  static String planListApi = "$appBaseUrl/api/subscription/plans/";
+  static String initializePlan = "$appBaseUrl/api/subscription/payment/initialize/";
+
 
   static String propertiesListApi = "$appBaseUrl/api/list-of-properties/";
   static String singlePropertyApi = "$appBaseUrl/api/property/detail/";
