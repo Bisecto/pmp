@@ -13,6 +13,8 @@ class Plan {
     required this.sendingEmailEnabled,
     required this.occupantImageEnabled,
     required this.propertyListingEnabled,
+    required this.postExpiryWarningEnabled,
+    required this.rentWarningNotificationEnabled,
   });
 
   final int? id;
@@ -28,6 +30,8 @@ class Plan {
   final bool? sendingEmailEnabled;
   final bool? occupantImageEnabled;
   final bool? propertyListingEnabled;
+  final bool? postExpiryWarningEnabled;
+  final bool? rentWarningNotificationEnabled;
 
   factory Plan.fromJson(Map<String, dynamic> json){
     return Plan(
@@ -44,6 +48,8 @@ class Plan {
       sendingEmailEnabled: json["sending_email_enabled"],
       occupantImageEnabled: json["occupant_image_enabled"],
       propertyListingEnabled: json["property_listing_enabled"],
+      postExpiryWarningEnabled: json["post_expiry_warnings_enabled"],
+      rentWarningNotificationEnabled: json["rent_warning_notifications_enabled"],
     );
   }
 
@@ -61,6 +67,8 @@ class Plan {
     "sending_email_enabled": sendingEmailEnabled,
     "occupant_image_enabled": occupantImageEnabled,
     "property_listing_enabled": propertyListingEnabled,
+    "post_expiry_warnings_enabled": postExpiryWarningEnabled,
+    "rent_warning_notifications_enabled": rentWarningNotificationEnabled,
   };
 
 }

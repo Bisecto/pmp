@@ -132,6 +132,7 @@ class _PlanListingState extends State<PlanListing> {
   ];
 
   Widget planContainer(Plan plan, Color color) {
+    print(plan.postExpiryWarningEnabled);
     return Container(
       //height: 300,
       decoration: BoxDecoration(
@@ -334,6 +335,54 @@ class _PlanListingState extends State<PlanListing> {
                         color: AppColors.green,
                         size: 15,
                       )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ), Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        text: "Rent Warning Notification",
+                        size: 12,
+                        weight: FontWeight.w800,
+                      ),
+                      if (plan.rentWarningNotificationEnabled!)
+                        Icon(
+                          Icons.verified_user,
+                          color: AppColors.green,
+                          size: 15,
+                        )
+                      else
+                        Icon(
+                          Icons.cancel_sharp,
+                          color: AppColors.red,
+                          size: 15,
+                        )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ), Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        text: "Rent Expiration Warning",
+                        size: 12,
+                        weight: FontWeight.w800,
+                      ),
+                      if (plan.postExpiryWarningEnabled!)
+                        Icon(
+                          Icons.verified_user,
+                          color: AppColors.green,
+                          size: 15,
+                        )
+                      else
+                        Icon(
+                          Icons.cancel_sharp,
+                          color: AppColors.red,
+                          size: 15,
+                        )
                     ],
                   ),
                   const SizedBox(
