@@ -199,7 +199,7 @@ class _SignInPageState extends State<SignInPage> {
                                               children: [
                                                 DropDown(
                                                   selectedValue: selectedUser,
-                                                 // initialValue: 'Landlord',
+                                                  initialValue: selectedUser,
                                                   items: const [
                                                     'Landlord',
                                                     'Agent',
