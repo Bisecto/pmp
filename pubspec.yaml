@@ -1,7 +1,7 @@
 name: pim
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.6+14
+version: 1.0.7+16
 
 environment:
   sdk: ^3.5.4
