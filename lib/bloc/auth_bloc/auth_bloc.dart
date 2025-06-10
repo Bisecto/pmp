@@ -45,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthRepository authRepository = AuthRepository();
     Map<String, String> formData = event.selectedUser.toLowerCase() == 'tenant'
         ? {
-            'username': event.userData,
+            'username': event.userData.startsWith("0")?event.userData.replaceFirst('0', "+234"):event.userData,
             'password': event.password,
           }
         : {

@@ -217,8 +217,8 @@ class _SignInPageState extends State<SignInPage> {
                                                 ),
                                                 CustomTextFormField(
                                                   hint:
-                                                      'Enter your email or username',
-                                                  label: 'Username/Email',
+                                                      'Enter your email/username${selectedUser.toLowerCase()=='tenant'?"/phone number":""}',
+                                                  label: 'Username/Email${selectedUser.toLowerCase()=='tenant'?"/phone number":""}',
                                                   borderColor: Colors.black54,
                                                   controller:
                                                       _userNameController,
