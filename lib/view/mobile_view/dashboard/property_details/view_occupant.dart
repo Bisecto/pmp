@@ -697,7 +697,7 @@ class _ViewOccupantState extends State<ViewOccupant> {
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Container(
-        height: 350,
+        height: 400,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.grey.withOpacity(0.2),
@@ -751,6 +751,44 @@ class _ViewOccupantState extends State<ViewOccupant> {
                 height: 10,
               ),
               Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomText(
+                    text: 'Phone number:  ',
+                    size: 14,
+                    color: AppColors.black,
+
+                    weight: FontWeight.bold,
+                  ),
+                  CustomText(
+                    text: occupant.mobilePhone,
+                    size: 14,
+
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  const CustomText(
+                    text: "Employment Status:",
+                    color: AppColors.black,
+                    size: 13,
+                    weight: FontWeight.bold,
+                  ),
+                  CustomText(
+                    text: '  ${occupant.occupationStatus}',
+                    size: 13,
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
@@ -763,21 +801,6 @@ class _ViewOccupantState extends State<ViewOccupant> {
                       ),
                       CustomText(
                         text: ' ${occupant.relationship}  ',
-                        size: 13,
-                        maxLines: 3,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const CustomText(
-                        text: "Employment Status:",
-                        color: AppColors.black,
-                        size: 13,
-                        weight: FontWeight.bold,
-                      ),
-                      CustomText(
-                        text: '  ${occupant.occupationStatus}',
                         size: 13,
                         maxLines: 3,
                       ),
