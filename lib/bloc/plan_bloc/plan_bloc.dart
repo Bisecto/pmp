@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:pim/model/current_plan_model.dart';
 
 import '../../model/initialize_plan_model.dart';
 import '../../model/plan_model.dart';
@@ -89,7 +90,7 @@ class PlanBloc extends Bloc<PlanEvent, PlanState> {
             json.decode(initializePlanResponse.body)['data']);
 
         emit(PlanInitializeSuccessState(
-            initializeModel)); // Emit success state with data
+            initializeModel,event.plan)); // Emit success state with data
       } else {
         emit(PlanErrorState(AppUtils.getAllErrorMessages(
             json.decode(initializePlanResponse.body)['errors'])));

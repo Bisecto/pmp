@@ -8,5 +8,6 @@ class GetPlanEvent extends PlanEvent {
 }
 class InitializePlanEvent extends PlanEvent {
   final String planId;
-  InitializePlanEvent(this.planId);
+  final CurrentPlan plan;
+  InitializePlanEvent(this.planId, this.plan);
 }

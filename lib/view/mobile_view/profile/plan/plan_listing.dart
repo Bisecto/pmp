@@ -67,6 +67,7 @@ class _PlanListingState extends State<PlanListing> {
                             initializeModel: state.initializeModel,
                             currentPlan: widget.currentPlan,
                             userModel: widget.userModel,
+                            newPlan: state.newPlan,
                           ));
                     }
                   },
@@ -412,7 +413,7 @@ class _PlanListingState extends State<PlanListing> {
             padding: const EdgeInsets.all(10.0),
             child: FormButton(
               onPressed: () {
-                planBloc.add(InitializePlanEvent(plan.id.toString()));
+                planBloc.add(InitializePlanEvent(plan.id.toString(),CurrentPlan(hasActiveSubscription: true, plan: plan, subscription: null, usage: null, daysRemaining: null, expiresAt: null)));
               },
               text: "Subscribe",
               bgColor: color,

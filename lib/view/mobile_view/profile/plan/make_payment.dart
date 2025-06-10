@@ -22,13 +22,14 @@ import '../../landing_page.dart';
 class MakePayment extends StatefulWidget {
   final InitializeModel initializeModel;
   final CurrentPlan currentPlan;
+  final CurrentPlan newPlan;
   final UserModel userModel;
 
   MakePayment({
     super.key,
     required this.initializeModel,
     required this.currentPlan,
-    required this.userModel,
+    required this.userModel, required this.newPlan,
   });
 
   @override
@@ -169,7 +170,7 @@ class _MakePaymentState extends State<MakePayment> {
                   page: LandingPage(
                     selectedIndex: 0,
                     userModel: widget.userModel,
-                    currentPlan: widget.currentPlan,
+                    currentPlan: widget.newPlan,
                   ));
             },
           )

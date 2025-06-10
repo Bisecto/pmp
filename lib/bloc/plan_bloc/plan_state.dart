@@ -22,6 +22,7 @@ class PlanSuccessState extends PlanState {
 
 class PlanInitializeSuccessState extends PlanState {
   final InitializeModel initializeModel;
+  final CurrentPlan newPlan;
 
-  PlanInitializeSuccessState(this.initializeModel);
+  PlanInitializeSuccessState(this.initializeModel, this.newPlan);
 }
