@@ -30,6 +30,7 @@ import '../../../../../../model/space_model.dart';
 import '../../../../../../res/apis.dart';
 import '../../../../../../res/app_colors.dart';
 import '../../../../../../utills/app_utils.dart';
+import '../../../../res/app_images.dart';
 import '../../../important_pages/dialog_box.dart';
 import '../../../important_pages/not_found_page.dart';
 
@@ -54,6 +55,7 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
   @override
   void initState() {
     // TODO: implement initState
+    _preloadImages();
     // spaceBloc.add(GetSingleSpaceEvent(
     //     widget.userModel.occupiedSpaces[widget.index].propertySpaceDetails!.id
     //         .toString(),
@@ -126,15 +128,16 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
                 ),
                 FormButton(
                   onPressed: () async {
-                    final data = widget.userModel
-                        .toJson(); // jsonDecode(widget.userModel.toString());
-                    final pdfBytes = await _generatePdf(PdfPageFormat.a4, data);
 
-                    // Trigger file sharing (or save)
-                    await Printing.sharePdf(
-                      bytes: pdfBytes,
-                      filename: 'tenant_report.pdf',
-                    );
+                    final pdfData =
+                    await generatePdf();
+                    await Printing.layoutPdf(
+                        onLayout: (PdfPageFormat
+                        format) async =>
+                        pdfData,
+                        dynamicLayout: false,
+                        name:
+                        "${widget.userModel.firstName}OCCUPANT_INFO");
                   },
                   text: "Download",
                 )
@@ -145,136 +148,377 @@ class _TenantSpaceDetailState extends State<TenantSpaceDetail> {
       )),
     );
   }
+  late Uint8List logoImage;
+  late Uint8List companyImage;
+  late Uint8List studentImageBytes;
+  late Uint8List qrCodeImageBytes;
+  Future<void> _preloadImages() async {
+    try {
+      logoImage = await _loadAssetImage(AppImages.logo);
+      companyImage = await _loadAssetImage(AppImages.companyLogo);
 
-  Future<Uint8List> _generatePdf(
-      PdfPageFormat format, Map<String, dynamic> data) async {
+      studentImageBytes = await _fetchOrDefaultImage(
+        widget.userModel.occupiedSpaces[widget.index].profilePic,
+        AppImages.person,
+      );
+
+      qrCodeImageBytes = await _fetchOrDefaultImage(
+        AppApis.appBaseUrl + widget.userModel.occupiedSpaces[widget.index].qrCodeImage,
+        AppImages.defaultQrCode,
+      );
+      setState(() {
+        isImageLoaded = true;
+      });
+    } catch (e) {
+      AppUtils().debuglog("Error preloading images: $e");
+    }
+  }
+  bool isImageLoaded = false;
+
+  Future<Uint8List> _fetchOrDefaultImage(
+      String url, String defaultAssetPath) async {
+    try {
+      AppUtils().debuglog('Fetching image from: $url');
+      final http.Response response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        AppUtils().debuglog('Image fetched successfully from: $url');
+        return response.bodyBytes;
+      } else {
+        AppUtils().debuglog(
+            'Failed to fetch image. Status: ${response.statusCode}, URL: $url');
+      }
+    } catch (e) {
+      AppUtils().debuglog('Error fetching image from $url: $e');
+    }
+    return _loadAssetImage(defaultAssetPath);
+  }
+
+  // Helper functions for image loading
+  Future<Uint8List> _loadAssetImage(String path) async {
+    final ByteData data = await rootBundle.load(path);
+    return data.buffer.asUint8List();
+  }
+  Future<Uint8List> generatePdf() async {
     final pdf = pw.Document();
-    final occupied = data['occupied_spaces'][0];
-
-    final profileImage = await _networkImage(occupied['profile_pic']);
-    final qrImage = await _networkImage(occupied['qr_code_image']);
 
     pdf.addPage(
-      pw.MultiPage(
-        pageFormat: format,
-        build: (context) => [
-          pw.Header(
-            level: 0,
-            child: pw.Text(
-              "Tenant Report",
-              style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Container(
+            child: pw.Column(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(logoImage),
+                    pw.SizedBox(height: 10),
+                    _buildTitle('Generated Occupant Details'),
+                    pw.SizedBox(height: 10),
+                    _buildOccupantBio(studentImageBytes),
+                    pw.Divider(),
+                    pw.SizedBox(height: 10),
+                    _buildOccupantInfo(),
+                    pw.SizedBox(height: 10),
+                    if (widget.userModel.occupiedSpaces[widget.index].occupationStatus.toLowerCase() ==
+                        'employed')
+                      _buildEmploymentDetails(),
+                    if (widget.userModel.occupiedSpaces[widget.index].occupationStatus.toLowerCase() ==
+                        'student')
+                      _buildStudentDetails(),
+                    if (widget.userModel.occupiedSpaces[widget.index].occupationStatus.toLowerCase() ==
+                        'self-employed')
+                      _buildSelfEmployedDetails(),
+                    pw.SizedBox(height: 10),
+                    _buildOccupantDetails(),
+                    pw.SizedBox(height: 10),
+                    _buildRentDetails(),
+                  ],
+                ),
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Image(
+                      pw.MemoryImage(
+                        qrCodeImageBytes,
+                      ),
+                      width: 70,
+                    ),
+                    pw.Text("Scan to get information about the property owner"),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      children: [
+                        pw.Text("Powered by"),
+                        pw.Image(pw.MemoryImage(companyImage),
+                            width: 100, height: 100),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          pw.SizedBox(height: 10),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              if (profileImage != null)
-                pw.Container(
-                  width: 100,
-                  height: 100,
-                  child: pw.Image(profileImage),
-                ),
-              if (qrImage != null)
-                pw.Container(
-                  width: 100,
-                  height: 100,
-                  child: pw.Image(qrImage),
-                ),
-            ],
-          ),
-          pw.SizedBox(height: 20),
-
-          /// Tenant Info Table
-          _sectionTitle("Tenant Information"),
-          _infoTable([
-            ["Full Name", occupied['full_name']],
-            ["Title", occupied['title']],
-            ["Gender", occupied['gender']],
-            ["Phone", occupied['mobile_phone']],
-            ["Email", occupied['email']],
-            ["Occupation", occupied['occupation_status']],
-            ["Relationship", occupied['relationship']],
-          ]),
-
-          /// Rent Details Table
-          pw.SizedBox(height: 20),
-          _sectionTitle("Rent Details"),
-          _infoTable([
-            ["Timeline", occupied['rent_timeline']],
-            ["Start Date", occupied['rent_commencement_date']],
-            ["End Date", occupied['rent_expiration_date']],
-            ["Amount Paid", "NGN${occupied['rent_paid']}"],
-            ["Payment Status", occupied['payment_status']],
-            ["Mesh Bill Paid", "NGN${occupied['mesh_bill_paid']}"],
-            ["Due In", occupied['rent_due_deadline_countdown']],
-          ]),
-
-          /// Property Details Table
-          pw.SizedBox(height: 20),
-          _sectionTitle("Property Details"),
-          _infoTable([
-            ["Property Name", occupied['property_details']['property_name']],
-            ["Type", occupied['property_details']['property_type']],
-            ["Address", occupied['property_details']['address']],
-            ["City", occupied['property_details']['city']],
-            ["Location", occupied['property_details']['location']],
-            ["Description", occupied['property_details']['description']],
-            ["Total Spaces", occupied['property_details']['total_space'].toString()],
-            ["Occupied Spaces", occupied['property_details']['occupied_space'].toString()],
-          ]),
-        ],
+          );
+        },
       ),
     );
 
     return pdf.save();
   }
-  pw.Widget _sectionTitle(String title) {
+
+  pw.Widget _buildEmploymentDetails() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('Employment Information'),
+          pw.SizedBox(height: 5),
+          _buildPaymentTable([
+            [
+              'Organization',
+              widget.userModel.occupiedSpaces[widget.index].employedProfile?.organisation ?? 'N/A'
+            ],
+            ['Position', widget.userModel.occupiedSpaces[widget.index].employedProfile?.position ?? 'N/A'],
+            [
+              'Employer Contact',
+              widget.userModel.occupiedSpaces[widget.index].employedProfile?.employerContact ?? 'N/A'
+            ],
+            [
+              'Organization Location',
+              widget.userModel.occupiedSpaces[widget.index].employedProfile?.organisationLocation ?? 'N/A'
+            ],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildStudentDetails() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('Student Information'),
+          pw.SizedBox(height: 5),
+          _buildPaymentTable([
+            ['University', widget.userModel.occupiedSpaces[widget.index].studentProfile?.university ?? 'N/A'],
+            ['Student ID', widget.userModel.occupiedSpaces[widget.index].studentProfile?.studentId ?? 'N/A'],
+            ['Faculty', widget.userModel.occupiedSpaces[widget.index].studentProfile?.faculty ?? 'N/A'],
+            ['Department', widget.userModel.occupiedSpaces[widget.index].studentProfile?.department ?? 'N/A'],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildSelfEmployedDetails() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('Self-Employed Information'),
+          pw.SizedBox(height: 5),
+          _buildPaymentTable([
+            [
+              'Nature of Job',
+              widget.userModel.occupiedSpaces[widget.index].selfEmployedProfile?.natureOfJob ?? 'N/A'
+            ],
+            [
+              'Job Description',
+              widget.userModel.occupiedSpaces[widget.index].selfEmployedProfile?.jobDescription ?? 'N/A'
+            ],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildHeader(logoImage) {
+    return pw.Container(
+      //padding: pw.EdgeInsets.all(16),
+      // padding: pw.EdgeInsets.all(16),
+      //color: PdfColors.redAccent,
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Image(pw.MemoryImage(logoImage), width: 70),
+          pw.Text(widget.userModel.occupiedSpaces[widget.index].spaceType.toUpperCase(),
+              style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.black)),
+          pw.SizedBox()
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildTitle(String text) {
+    return pw.Text(
+      text,
+      style: pw.TextStyle(
+          fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
+    );
+  }
+
+  pw.Widget _buildOccupantBio(Uint8List studentImage) {
+    return pw.Row(
+      children: [
+        pw.Image(pw.MemoryImage(studentImage),
+            width: 100, height: 100, fit: pw.BoxFit.cover),
+        pw.SizedBox(width: 5),
+        pw.Expanded(
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow('Full Name', widget.userModel.occupiedSpaces[widget.index].fullName),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildOccupantInfo() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('PROPERTY INFORMATION'),
+          pw.SizedBox(height: 10),
+          _buildAcademicTable([
+            ['Property Name', widget.userModel.occupiedSpaces[widget.index].propertyDetails!.propertyName],
+            ['Property Address', widget.userModel.occupiedSpaces[widget.index].propertyDetails!.address],
+            ['Property Type', widget.userModel.occupiedSpaces[widget.index].propertyDetails!.propertyType],
+            ['City', widget.userModel.occupiedSpaces[widget.index].propertyDetails!.city],
+            ['Location', widget.userModel.occupiedSpaces[widget.index].propertyDetails!.location],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildOccupantDetails() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('Occupant INFORMATION'),
+          pw.SizedBox(height: 10),
+          _buildPaymentTable([
+            ['MOBILE NUMBER', widget.userModel.occupiedSpaces[widget.index].mobilePhone],
+            ['STATE', widget.userModel.occupiedSpaces[widget.index].state],
+            ['LGA', widget.userModel.occupiedSpaces[widget.index].localGovernment],
+            ['DOB', widget.userModel.occupiedSpaces[widget.index].dob],
+            ['MARITAL STATUS', widget.userModel.occupiedSpaces[widget.index].relationship],
+            ['OCCUPATION', widget.userModel.occupiedSpaces[widget.index].occupationStatus],
+            ['GENDER', widget.userModel.occupiedSpaces[widget.index].gender],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildRentDetails() {
+    return pw.Container(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('RENT INFORMATION'),
+          pw.SizedBox(height: 10),
+          _buildPaymentTable([
+            ['RENT PAID', widget.userModel.occupiedSpaces[widget.index].rentPaid.toString()],
+            ['RENT DUE', widget.userModel.occupiedSpaces[widget.index].rentExpirationDate],
+            ['ROOM', widget.userModel.occupiedSpaces[widget.index].spaceNumber.toString()],
+            ['MARITAL STATUS', widget.userModel.occupiedSpaces[widget.index].relationship],
+          ]),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildInfoRow(String title, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+      child: pw.Row(
+        children: [
+          pw.Text('$title: ',
+              style: _infoTextStyle.copyWith(fontWeight: pw.FontWeight.bold)),
+          pw.Expanded(child: pw.Text(value, style: _infoTextStyle)),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildAcademicTable(List<List<String>> rows) {
+    return pw.Table(
+      border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
+      children: [
+        pw.TableRow(
+          decoration: const pw.BoxDecoration(color: PdfColors.redAccent),
+          children: rows.map((row) {
+            return pw.Padding(
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(row[0],
+                  style: pw.TextStyle(
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.white,
+                      fontSize: 10)),
+            );
+          }).toList(),
+        ),
+        pw.TableRow(
+          children: rows.map((row) {
+            return pw.Padding(
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(row[1], style: const pw.TextStyle(fontSize: 8)),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildPaymentTable(List<List<String>> rows) {
+    return pw.Table(
+      border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
+      children: [
+        pw.TableRow(
+          decoration: const pw.BoxDecoration(color: PdfColors.redAccent),
+          children: rows.map((row) {
+            return pw.Padding(
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(row[0],
+                  style: pw.TextStyle(
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.white)),
+            );
+          }).toList(),
+        ),
+        pw.TableRow(
+          children: rows.map((row) {
+            return pw.Padding(
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(row[1].replaceAll('₦', 'NGN'),
+                  style: const pw.TextStyle(fontSize: 8)),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildSectionTitle(String title) {
     return pw.Text(
       title,
-      style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+      style: pw.TextStyle(
+          fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.black),
     );
   }
 
-  pw.Widget _infoTable(List<List<String>> rows) {
-    return pw.Table(
-      border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey),
-      columnWidths: {
-        0: pw.FlexColumnWidth(3),
-        1: pw.FlexColumnWidth(5),
-      },
-      children: rows
-          .map(
-            (row) => pw.TableRow(
-          children: [
-            pw.Container(
-              padding: const pw.EdgeInsets.all(6),
-              color: PdfColors.grey200,
-              child: pw.Text(row[0],
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Container(
-              padding: const pw.EdgeInsets.all(6),
-              child: pw.Text(row[1]),
-            ),
-          ],
-        ),
-      )
-          .toList(),
-    );
-  }
+  pw.TextStyle get _infoTextStyle =>
+      const pw.TextStyle(fontSize: 12, color: PdfColors.black);
 
-
-  Future<pw.ImageProvider?> _networkImage(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return pw.MemoryImage(response.bodyBytes);
-      }
-    } catch (_) {}
-    return null;
-  }
 
   int imageNum = 0;
 
